@@ -2,20 +2,10 @@
   "name": "agentic-workspace",
   "version": "1.0.0",
   "private": true,
-  "description": "Workspace wrapper for local model runtime, Pi agent profiles, and project context tools.",
+  "description": "Context-aware workspace for local coding-agent experiments and microservice validation.",
   "scripts": {
-    "models": "local-agents/local_llm.py list",
-    "serve:qwen": "local-agents/local_llm.py unsloth/Qwen3.5-4B-GGUF:Q4_K_M",
-    "serve:gemma": "local-agents/local_llm.py unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL",
-    "serve:fluently": "local-agents/local_llm.py mradermacher/FluentlyQwen3-Coder-4B-GGUF:Q4_K_M",
-    "serve:gemma12b-agentic16": "local-agents/local_llm.py yuxinlu1/gemma-4-12B-agentic-fable5-composer2.5-v2-3.5x-tau2-GGUF:Q3_K_M",
-    "agent:gemma": "local-agents/agent.py gemma",
-    "agent:fluently": "local-agents/agent.py fluently",
-    "agent:qwen": "local-agents/agent.py qwen",
-    "agent:gemma16": "local-agents/agent.py gemma16",
-    "agent:fluently16": "local-agents/agent.py fluently16",
-    "agent:qwen16": "local-agents/agent.py qwen16",
-    "agent:gemma12b-agentic16": "local-agents/agent.py gemma12b-agentic16",
-    "pi:models": "npm --prefix local-agents run pi:models"
+    "context:report": "python3 scripts/context_efficiency_report.py",
+    "models:8gb": "cat config/pi-models-8gb.json",
+    "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md"
   }
 }

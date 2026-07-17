@@ -1,129 +1,82 @@
 # Agentic Workspace
 
-This folder is the combined workspace for local coding-agent work.
+This repository is a portable workspace pattern for local coding-agent work. It
+does not vendor a local model runtime. Instead, it keeps the context files,
+skills, validation projects, and docs that a local agent should use.
 
 ```text
 agentic-workspace/
-  local-agents/       -> local GGUF, llama.cpp, Pi, and Kilo runtime
-  context-starter/    -> agentic context reference material
+  config/             -> local agent model profiles
   contexts/
     current/          -> current Jira/service context used by the agent
     examples/         -> microservice and monolith context examples
+  docs/               -> validation docs and workflow diagrams
+  skills/             -> compact reusable agent instructions
   projects/
     microservices/    -> Spring Boot service/deployment repos
     monolithic/       -> monolithic application repos
+  scripts/            -> context efficiency utilities
 ```
 
-The `local-agents` and `context-starter` entries are symlinks, so this
-workspace does not duplicate model files or llama.cpp builds.
+## 8 GB MacBook Air Local Agent Setup
 
-## Local Models
+This repo does not include a `local-agents/` folder. For an 8 GB MacBook Air,
+use a small GGUF model through `llama.cpp`, then run your coding agent from the
+repo you want to edit.
 
-From this workspace root:
+Install the runtime tools:
 
 ```bash
-npm run models
+brew install llama.cpp
+npm install -g @earendil-works/pi-coding-agent
 ```
 
-After extracting the clean zip, this will say no GGUF models are found. That is
-expected because models are intentionally excluded. The first `serve:*` or
-`agent:*` command downloads its GGUF on demand.
-
-Manual server commands are still available:
-
-```bash
-npm run serve:gemma
-npm run serve:fluently
-npm run serve:qwen
-```
-
-For the 16 GB Mac only, start the larger Gemma 4 12B agentic v2 profile:
-
-```bash
-npm run serve:gemma12b-agentic16
-```
-
-The OpenAI-compatible endpoint is:
+Recommended model:
 
 ```text
-http://127.0.0.1:8082/v1
+Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M
 ```
 
-Use model ID:
+Fallback model when memory pressure is high:
 
 ```text
-local-model
+Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M
 ```
 
-## One-Command Pi Agent
-
-Run these from the repo you want Pi to edit. Each command starts the matching
-llama server if needed, waits for it, then launches Pi in the current repo:
+Start the recommended model:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/YOUR_REPO
-npm --prefix /Users/balaji/agentic-workspace run agent:fluently
+llama serve -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model
 ```
 
-Prompt the agent with the central context file, not repo-local `.github` files:
+Configure Pi:
+
+```bash
+mkdir -p ~/.pi/agent
+cp /Users/balaji/agentic-workspace/config/pi-models-8gb.json ~/.pi/agent/models.json
+```
+
+Then run Pi from the repo you want it to edit:
+
+```bash
+cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
+pi
+```
+
+Prompt the agent with the central context file:
 
 ```text
 Use the Jira context in /Users/balaji/agentic-workspace/contexts/current/service-context.yml.
-Use the configured service repo path to confirm the response DTO and OpenAPI contract.
-Reuse shared QA steps and scenario patterns before adding any local step definitions.
+Follow repository_topology before deciding where tests or deployment changes belong.
+Update service code, OpenAPI, tests, and deployment impact only as required by the context.
 ```
 
-For monoliths, use the same agent command from the monolith repo:
+More detail lives at:
 
-```bash
-cd /Users/balaji/agentic-workspace/projects/monolithic/YOUR_REPO
-npm --prefix /Users/balaji/agentic-workspace run agent:fluently
+```text
+docs/local-agent-runtime.md
+config/pi-models-8gb.json
 ```
-
-Useful profiles:
-
-```bash
-npm --prefix /Users/balaji/agentic-workspace run agent:gemma
-npm --prefix /Users/balaji/agentic-workspace run agent:fluently
-npm --prefix /Users/balaji/agentic-workspace run agent:qwen
-```
-
-On the 16 GB Mac:
-
-```bash
-npm --prefix /Users/balaji/agentic-workspace run agent:gemma16
-npm --prefix /Users/balaji/agentic-workspace run agent:fluently16
-npm --prefix /Users/balaji/agentic-workspace run agent:qwen16
-npm --prefix /Users/balaji/agentic-workspace run agent:gemma12b-agentic16
-```
-
-By default the wrapper stops a server it started when Pi exits. To keep the
-server warm, use the wrapper directly:
-
-```bash
-/Users/balaji/agentic-workspace/local-agents/agent.py fluently --keep-server
-```
-
-If a different untracked process is already using port `8082`, stop it first.
-
-## Other Mac Setup
-
-After copying or unzipping this workspace on another Mac:
-
-```bash
-cd /path/to/agentic-workspace/local-agents
-npm install
-python3 -m pip install -U huggingface_hub
-mkdir -p ~/.pi/agent
-cp config/pi/models.json ~/.pi/agent/models.json
-```
-
-Then run the one-command agent profile from a target repo as shown above.
-The first run may take time while the selected GGUF downloads.
-
-If the workspace is not extracted at `/Users/balaji/agentic-workspace`, adjust
-the absolute paths in `contexts/current/service-context.yml` before starting a
-ticket.
 
 ## Central Context
 
@@ -144,9 +97,6 @@ Examples live at:
 /Users/balaji/agentic-workspace/contexts/examples/service-context.service-owned-tests.yml
 /Users/balaji/agentic-workspace/contexts/examples/service-context.monolithic.yml
 ```
-
-The `context-starter/` folder is now reference material only. Use it for shared
-guidelines and prompt wording, not for installing files into every repo.
 
 ## Microservice Validation Slice
 
@@ -199,4 +149,5 @@ skills/microservice-change/SKILL.md
 skills/context-efficiency-audit/SKILL.md
 docs/karpathy-style-skill-format.md
 docs/agentic-workflow-diagrams.md
+docs/local-agent-runtime.md
 ```
