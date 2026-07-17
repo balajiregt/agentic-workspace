@@ -1,0 +1,34 @@
+service_name: "monolith-abc"
+deployment_repo: ""
+architecture: "monolithic"
+
+work_item:
+  source: "jira"
+  key: "ABC-456"
+  summary: "Paste Jira summary here"
+  description: |-
+    Paste Jira description here.
+  acceptance_criteria:
+    - "Paste acceptance criterion here"
+  change_type: "feature"
+  in_scope:
+    - application_code
+    - tests
+  out_of_scope: []
+  affected_endpoints: []
+  affected_fields: []
+  verification:
+    required_commands: []
+    ci_jobs: []
+  notes: []
+
+related_repositories:
+  application_repo:
+    name: "monolith-abc"
+    local_path: "/Users/balaji/agentic-workspace/projects/monolithic/monolith-abc"
+
+quality_gates:
+  require_tests_for_behavior_change: true
+  require_openapi_alignment: false
+  require_deployment_impact_check: false
+  require_hallucination_check: true

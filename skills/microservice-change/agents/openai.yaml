@@ -1,0 +1,4 @@
+interface:
+  display_name: "Microservice Change"
+  short_description: "Make context-aware microservice changes."
+  default_prompt: "Use the microservice-change skill to make a code, contract, deployment, and API-test update from the central service context."

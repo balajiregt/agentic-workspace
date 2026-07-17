@@ -1,0 +1,49 @@
+service_name: "xyz-service"
+deployment_repo: "xyz-deployments"
+architecture: "microservice"
+
+repository_topology:
+  service_and_tests: "split-qa"
+  deployment: "separate-repo"
+
+work_item:
+  source: "jira"
+  key: "ABC-123"
+  summary: "Add riskCategory to xyz endpoint response"
+  description: |-
+    Paste the Jira ticket description here.
+  acceptance_criteria:
+    - "xyz response includes riskCategory for eligible customers"
+  change_type: "feature"
+  in_scope:
+    - service_code
+    - openapi_contract
+    - gauge_tests
+  out_of_scope: []
+  affected_endpoints:
+    - "GET /xyz"
+  affected_fields:
+    - "riskCategory"
+  verification:
+    required_commands: []
+    ci_jobs: []
+  notes: []
+
+related_repositories:
+  service_repo:
+    name: "xyz-service"
+    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
+  deployment_repo:
+    name: "xyz-deployments"
+    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-deployments"
+  shared_qa:
+    qa_steps:
+      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps"
+    qa_projects:
+      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects"
+
+quality_gates:
+  require_tests_for_behavior_change: true
+  require_openapi_alignment: true
+  require_deployment_impact_check: true
+  require_hallucination_check: true

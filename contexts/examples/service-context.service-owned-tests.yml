@@ -1,0 +1,52 @@
+service_name: "xyz-service"
+deployment_repo: ""
+architecture: "microservice"
+
+repository_topology:
+  service_and_tests: "same-repo"
+  deployment: "same-repo"
+
+work_item:
+  source: "jira"
+  key: "ABC-789"
+  summary: "Add riskCategory to xyz endpoint response"
+  description: |-
+    Example topology where endpoint code, OpenAPI contract, unit tests,
+    integration tests, API tests, and deployment manifests are owned by the
+    service repository.
+  acceptance_criteria:
+    - "xyz response includes riskCategory for eligible customers"
+  change_type: "feature"
+  in_scope:
+    - service_code
+    - openapi_contract
+    - service_owned_api_tests
+    - deployment_check
+  out_of_scope: []
+  affected_endpoints:
+    - "GET /xyz"
+  affected_fields:
+    - "riskCategory"
+  verification:
+    required_commands:
+      - "cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn test"
+    ci_jobs: []
+  notes:
+    - "Prefer this topology when the team keeps service code and tests together."
+
+related_repositories:
+  service_repo:
+    name: "xyz-service"
+    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
+    test_locations:
+      unit_tests: "src/test/java"
+      api_tests: "src/test/java or api-tests"
+    deployment_locations:
+      - "deployments"
+      - "k8s"
+
+quality_gates:
+  require_tests_for_behavior_change: true
+  require_openapi_alignment: true
+  require_deployment_impact_check: true
+  require_hallucination_check: true

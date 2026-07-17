@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xyz-service
+  labels:
+    app: xyz-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xyz-service
+  template:
+    metadata:
+      labels:
+        app: xyz-service
+    spec:
+      containers:
+        - name: xyz-service
+          image: xyz-service:local
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xyz-service
+spec:
+  selector:
+    app: xyz-service
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

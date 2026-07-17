@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: xyz-service API
+  version: 0.1.0
+  description: Dummy API used to validate context-aware local coding agents.
+paths:
+  /xyz:
+    get:
+      summary: Evaluate customer risk
+      operationId: getCustomerRisk
+      parameters:
+        - name: customerId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: CUST-1001
+      responses:
+        "200":
+          description: Customer risk decision
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerRiskResponse"
+              examples:
+                lowRisk:
+                  value:
+                    customerId: CUST-1001
+                    eligible: true
+                    riskCategory: LOW
+                    score: 18
+                    decisionReason: Customer is eligible with low risk signals.
+        "400":
+          description: Missing or blank customerId
+components:
+  schemas:
+    CustomerRiskResponse:
+      type: object
+      required:
+        - customerId
+        - eligible
+        - riskCategory
+        - score
+        - decisionReason
+      properties:
+        customerId:
+          type: string
+        eligible:
+          type: boolean
+        riskCategory:
+          type: string
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+        score:
+          type: integer
+          format: int32
+        decisionReason:
+          type: string

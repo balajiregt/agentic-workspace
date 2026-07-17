@@ -1,0 +1,4 @@
+interface:
+  display_name: "Context Efficiency Audit"
+  short_description: "Measure local-agent context efficiency."
+  default_prompt: "Use the context-efficiency-audit skill to compare central YAML context against the full microservice corpus and summarize the efficiency metrics."

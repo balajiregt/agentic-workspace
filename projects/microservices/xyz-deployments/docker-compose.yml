@@ -1,0 +1,14 @@
+services:
+  xyz-service:
+    image: xyz-service:local
+    build:
+      context: ../xyz-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5

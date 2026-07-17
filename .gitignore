@@ -1,0 +1,21 @@
+.DS_Store
+.idea/
+*.iml
+
+# Local runtime and reference symlinks.
+local-agents
+context-starter
+
+# Generated build/test artifacts.
+target/
+build/
+node_modules/
+__pycache__/
+*.py[cod]
+
+# Keep the Medium draft local; publish the repo as the reference artifact.
+docs/medium-blog-agentic-workspace.md
+
+# Older standalone PoC repo retained locally, not part of this workspace commit.
+projects/copilot-sprint-metrics-starter/
+

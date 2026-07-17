@@ -1,0 +1,64 @@
+service_name: "xyz-service"
+deployment_repo: "xyz-deployments"
+architecture: "microservice"
+
+repository_topology:
+  service_and_tests: "split-qa"
+  deployment: "separate-repo"
+  notes:
+    - "Use service-owned tests when tests live in the same repo as the endpoint."
+    - "Use split-qa when reusable QA utilities or API suites are maintained separately."
+
+work_item:
+  source: "jira"
+  key: "ABC-123"
+  summary: "Validate agentic workspace with Spring Boot service and RestAssured API tests"
+  description: |-
+    Create a concrete dummy microservice slice that proves the local coding-agent
+    workspace can reason across service code, OpenAPI contract, deployment
+    assets, shared QA utilities, and service-specific API tests.
+  acceptance_criteria:
+    - "xyz-service exposes GET /xyz with customer risk response data"
+    - "OpenAPI contract documents the /xyz endpoint and riskCategory field"
+    - "RestAssured shared utilities live in qa-steps"
+    - "Actual xyz-service API tests live under qa-projects/xyz-service-api-tests"
+    - "Deployment impact is represented in xyz-deployments"
+  change_type: "feature"
+  in_scope:
+    - service_code
+    - openapi_contract
+    - tests
+    - deployment_check
+  out_of_scope: []
+  affected_endpoints:
+    - "GET /xyz"
+  affected_fields:
+    - "riskCategory"
+    - "eligible"
+    - "score"
+  verification:
+    required_commands:
+      - "cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn spring-boot:run"
+      - "cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test"
+    ci_jobs: []
+  notes:
+    - "Maven must be installed locally before running the validation commands."
+
+related_repositories:
+  service_repo:
+    name: "xyz-service"
+    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
+  deployment_repo:
+    name: "xyz-deployments"
+    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-deployments"
+  shared_qa:
+    qa_steps:
+      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps"
+    qa_projects:
+      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects"
+
+quality_gates:
+  require_tests_for_behavior_change: true
+  require_openapi_alignment: true
+  require_deployment_impact_check: true
+  require_hallucination_check: true
