@@ -1,8 +1,9 @@
 # Agentic Workspace
 
 This repository is a portable workspace pattern for local coding-agent work. It
-does not vendor a local model runtime. Instead, it keeps the context files,
-skills, validation projects, and docs that a local agent should use.
+does not vendor model binaries or llama.cpp builds. Instead, it keeps the
+runtime wrappers, context files, skills, validation projects, and docs that a
+local agent should use.
 
 ```text
 agentic-workspace/

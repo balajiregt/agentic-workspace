@@ -99,13 +99,13 @@ npm install -g @earendil-works/pi-coding-agent
 ## Start the Recommended 8 GB Model
 
 ```bash
-llama-server -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model
+llama-server -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model --ctx-size 8192
 ```
 
 If the machine feels constrained:
 
 ```bash
-llama-server -hf Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M --alias local-model
+llama-server -hf Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M --alias local-model --ctx-size 4096
 ```
 
 The llama.cpp server exposes an OpenAI-compatible API at:
