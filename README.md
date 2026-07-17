@@ -65,6 +65,9 @@ npm run agent:low-memory
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache, not inside this repository.
 
+The selected RAM profile controls both Pi's `contextWindow`/`maxTokens` and the
+`llama-server` context size used when this repo starts the server.
+
 To run against another repo:
 
 ```bash
@@ -153,12 +156,6 @@ Run the RestAssured API tests:
 ```bash
 cd /Users/balaji/agentic-workspace/projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
-```
-
-The Medium draft explaining the framework and validation slice lives at:
-
-```text
-/Users/balaji/agentic-workspace/docs/medium-blog-agentic-workspace.md
 ```
 
 ## Agent Skills

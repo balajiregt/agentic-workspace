@@ -34,10 +34,10 @@ From the workspace root:
 npm run setup:8gb
 ```
 
-This checks for `llama.cpp`, installs Pi if needed, and copies:
+This checks for `llama.cpp`, installs Pi if needed, and renders:
 
 ```text
-local-agents/config/model-profiles.json -> ~/.pi/agent/models.json
+local-agents/config/model-profiles.json -> generated ~/.pi/agent/models.json
 ```
 
 Then start the recommended model and Pi from the sample service repo:
@@ -59,6 +59,11 @@ npm run agent:low-memory
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache. It does not commit models into
 `local-agents/`.
+
+The run script starts `llama-server` with the same context window declared in
+the selected profile. If an existing llama server is already running on the
+configured port, the script reuses it and assumes the server was started with
+compatible settings.
 
 To run against another repo:
 

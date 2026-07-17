@@ -26,9 +26,9 @@ if [[ ! -d "${TARGET_REPO}" ]]; then
 fi
 
 if command -v llama-server >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}")
+  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}")
 elif command -v llama >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}")
+  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}")
 else
   echo "llama.cpp is not installed. Run: npm run setup:8gb" >&2
   exit 1
@@ -53,6 +53,7 @@ server_running() {
 
 if server_running; then
   echo "==> Reusing llama.cpp server at ${BASE_URL}"
+  echo "==> Existing server is assumed to match profile '${PROFILE}' context settings."
   STARTED_SERVER=0
 else
   echo "==> Starting llama.cpp on ${BASE_URL}"

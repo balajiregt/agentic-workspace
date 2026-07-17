@@ -5,6 +5,8 @@ LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
 PROFILE="${AGENTIC_PROFILE:-8gb}"
+AGENT_SCRIPT="agent:${PROFILE}"
+MODEL_REF="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["modelRef"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" 2>/dev/null || true)"
 
 echo "==> Agentic workspace local agent setup (${PROFILE})"
 
@@ -47,7 +49,7 @@ Setup complete.
 
 Run the sample workspace agent with:
 
-  npm run agent:8gb
+  npm run ${AGENT_SCRIPT}
 
 For a 16 GB profile:
 
@@ -60,5 +62,5 @@ Or from any repo:
 
 The first model start may download:
 
-  Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M
+  ${MODEL_REF}
 EOF
