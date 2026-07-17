@@ -24,11 +24,10 @@ This repo does not include a `local-agents/` folder. For an 8 GB MacBook Air,
 use a small GGUF model through `llama.cpp`, then run your coding agent from the
 repo you want to edit.
 
-Install the runtime tools:
+Run one setup command:
 
 ```bash
-brew install llama.cpp
-npm install -g @earendil-works/pi-coding-agent
+npm run setup:8gb
 ```
 
 Recommended model:
@@ -43,24 +42,19 @@ Fallback model when memory pressure is high:
 Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M
 ```
 
-Start the recommended model:
+Then start the model and Pi agent from the sample service repo:
 
 ```bash
-llama serve -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model
+npm run agent:8gb
 ```
 
-Configure Pi:
+The first run downloads the GGUF model through `llama.cpp` and stores it in the
+user-level Hugging Face/llama.cpp cache, not inside this repository.
+
+To run against another repo:
 
 ```bash
-mkdir -p ~/.pi/agent
-cp /Users/balaji/agentic-workspace/config/pi-models-8gb.json ~/.pi/agent/models.json
-```
-
-Then run Pi from the repo you want it to edit:
-
-```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
-pi
+bash scripts/run-8gb-agent.sh /path/to/your/service-repo
 ```
 
 Prompt the agent with the central context file:
@@ -76,6 +70,8 @@ More detail lives at:
 ```text
 docs/local-agent-runtime.md
 config/pi-models-8gb.json
+scripts/setup-8gb-local-agent.sh
+scripts/run-8gb-agent.sh
 ```
 
 ## Central Context

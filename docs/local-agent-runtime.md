@@ -26,7 +26,39 @@ Why this sizing:
   open at the same time.
 - Larger 7B+ or 12B+ models are better treated as 16 GB+ profiles.
 
-## Install Runtime Tools
+## One-Command Setup
+
+From the workspace root:
+
+```bash
+npm run setup:8gb
+```
+
+This checks for `llama.cpp`, installs Pi if needed, and copies:
+
+```text
+config/pi-models-8gb.json -> ~/.pi/agent/models.json
+```
+
+Then start the recommended model and Pi from the sample service repo:
+
+```bash
+npm run agent:8gb
+```
+
+The first run downloads the GGUF model through `llama.cpp` and stores it in the
+user-level Hugging Face/llama.cpp cache. It does not create a `local-agents/`
+folder in this repository.
+
+To run against another repo:
+
+```bash
+bash scripts/run-8gb-agent.sh /path/to/your/service-repo
+```
+
+## Manual Runtime Setup
+
+The scripts above are preferred. Manual setup is:
 
 ```bash
 brew install llama.cpp
@@ -36,13 +68,13 @@ npm install -g @earendil-works/pi-coding-agent
 ## Start the Recommended 8 GB Model
 
 ```bash
-llama serve -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model
+llama-server -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model
 ```
 
 If the machine feels constrained:
 
 ```bash
-llama serve -hf Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M --alias local-model
+llama-server -hf Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M --alias local-model
 ```
 
 The llama.cpp server exposes an OpenAI-compatible API at:
@@ -87,6 +119,13 @@ Run the context efficiency report:
 
 ```bash
 npm run context:report
+```
+
+Run setup and launch scripts:
+
+```bash
+npm run setup:8gb
+npm run agent:8gb
 ```
 
 ## Notes
