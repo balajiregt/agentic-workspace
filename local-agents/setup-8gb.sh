@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PI_MODELS_SOURCE="${ROOT_DIR}/config/pi-models-8gb.json"
+LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
+PI_MODELS_SOURCE="${LOCAL_AGENTS_DIR}/config/pi-models-8gb.json"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
 
 echo "==> Agentic workspace 8 GB setup"
@@ -50,7 +51,7 @@ Run the sample workspace agent with:
 
 Or from any repo:
 
-  /bin/bash ${ROOT_DIR}/scripts/run-8gb-agent.sh /path/to/repo
+  /bin/bash ${ROOT_DIR}/local-agents/run-agent.sh /path/to/repo
 
 The first model start may download:
 

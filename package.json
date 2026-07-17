@@ -4,10 +4,10 @@
   "private": true,
   "description": "Context-aware workspace for local coding-agent experiments and microservice validation.",
   "scripts": {
-    "setup:8gb": "bash scripts/setup-8gb-local-agent.sh",
-    "agent:8gb": "bash scripts/run-8gb-agent.sh",
+    "setup:8gb": "bash local-agents/setup-8gb.sh",
+    "agent:8gb": "bash local-agents/run-agent.sh",
     "context:report": "python3 scripts/context_efficiency_report.py",
-    "models:8gb": "cat config/pi-models-8gb.json",
+    "models:8gb": "cat local-agents/config/pi-models-8gb.json",
     "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md"
   }
 }

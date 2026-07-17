@@ -2,9 +2,16 @@
 .idea/
 *.iml
 
-# Local runtime and reference symlinks.
-local-agents
+# Local reference symlink.
 context-starter
+
+# Local runtime downloads/builds stay out of Git.
+local-agents/models/
+local-agents/cache/
+local-agents/.cache/
+local-agents/llama.cpp/
+local-agents/node_modules/
+local-agents/*.log
 
 # Generated build/test artifacts.
 target/
@@ -18,4 +25,3 @@ docs/medium-blog-agentic-workspace.md
 
 # Older standalone PoC repo retained locally, not part of this workspace commit.
 projects/copilot-sprint-metrics-starter/
-

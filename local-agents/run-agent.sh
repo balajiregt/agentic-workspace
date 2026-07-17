@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
 TARGET_REPO="${1:-${ROOT_DIR}/projects/microservices/xyz-service}"
 MODEL_REF="${AGENTIC_MODEL_REF:-Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M}"
 PORT="${AGENTIC_LLAMA_PORT:-8080}"

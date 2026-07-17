@@ -6,7 +6,7 @@ skills, validation projects, and docs that a local agent should use.
 
 ```text
 agentic-workspace/
-  config/             -> local agent model profiles
+  local-agents/       -> lightweight setup/run wrappers for local models
   contexts/
     current/          -> current Jira/service context used by the agent
     examples/         -> microservice and monolith context examples
@@ -20,9 +20,9 @@ agentic-workspace/
 
 ## 8 GB MacBook Air Local Agent Setup
 
-This repo does not include a `local-agents/` folder. For an 8 GB MacBook Air,
-use a small GGUF model through `llama.cpp`, then run your coding agent from the
-repo you want to edit.
+This repo includes a lightweight `local-agents/` folder. For an 8 GB MacBook
+Air, it sets up `llama.cpp`, configures Pi, starts the model, and launches the
+agent. It does not commit model files, llama.cpp builds, or `node_modules`.
 
 Run one setup command:
 
@@ -54,7 +54,13 @@ user-level Hugging Face/llama.cpp cache, not inside this repository.
 To run against another repo:
 
 ```bash
-bash scripts/run-8gb-agent.sh /path/to/your/service-repo
+bash local-agents/run-agent.sh /path/to/your/service-repo
+```
+
+To switch models for a single run:
+
+```bash
+AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M" npm run agent:8gb
 ```
 
 Prompt the agent with the central context file:
@@ -69,9 +75,10 @@ More detail lives at:
 
 ```text
 docs/local-agent-runtime.md
-config/pi-models-8gb.json
-scripts/setup-8gb-local-agent.sh
-scripts/run-8gb-agent.sh
+local-agents/README.md
+local-agents/config/pi-models-8gb.json
+local-agents/setup-8gb.sh
+local-agents/run-agent.sh
 ```
 
 ## Central Context

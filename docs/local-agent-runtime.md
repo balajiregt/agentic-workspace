@@ -1,8 +1,8 @@
 # Local Agent Runtime
 
-This repository does not include a `local-agents/` runtime folder. It is a
-portable workspace pattern: context files, skills, validation projects, and
-docs. Bring your own local coding agent runtime and point it at this workspace.
+This repository includes a lightweight `local-agents/` wrapper folder. It is not
+a vendored runtime: model files, llama.cpp builds, and npm dependencies remain
+outside Git.
 
 ## 8 GB MacBook Air Baseline
 
@@ -37,7 +37,7 @@ npm run setup:8gb
 This checks for `llama.cpp`, installs Pi if needed, and copies:
 
 ```text
-config/pi-models-8gb.json -> ~/.pi/agent/models.json
+local-agents/config/pi-models-8gb.json -> ~/.pi/agent/models.json
 ```
 
 Then start the recommended model and Pi from the sample service repo:
@@ -47,13 +47,13 @@ npm run agent:8gb
 ```
 
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
-user-level Hugging Face/llama.cpp cache. It does not create a `local-agents/`
-folder in this repository.
+user-level Hugging Face/llama.cpp cache. It does not commit models into
+`local-agents/`.
 
 To run against another repo:
 
 ```bash
-bash scripts/run-8gb-agent.sh /path/to/your/service-repo
+bash local-agents/run-agent.sh /path/to/your/service-repo
 ```
 
 ## Manual Runtime Setup
@@ -89,7 +89,7 @@ Copy the committed 8 GB model profile:
 
 ```bash
 mkdir -p ~/.pi/agent
-cp /Users/balaji/agentic-workspace/config/pi-models-8gb.json ~/.pi/agent/models.json
+cp /Users/balaji/agentic-workspace/local-agents/config/pi-models-8gb.json ~/.pi/agent/models.json
 ```
 
 Then run Pi from the repository you want the agent to edit:
