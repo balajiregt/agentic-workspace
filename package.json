@@ -4,10 +4,15 @@
   "private": true,
   "description": "Context-aware workspace for local coding-agent experiments and microservice validation.",
   "scripts": {
-    "setup:8gb": "bash local-agents/setup-8gb.sh",
+    "setup:8gb": "AGENTIC_PROFILE=8gb bash local-agents/setup.sh",
     "agent:8gb": "bash local-agents/run-agent.sh",
+    "setup:16gb": "AGENTIC_PROFILE=16gb bash local-agents/setup.sh",
+    "agent:16gb": "AGENTIC_PROFILE=16gb bash local-agents/run-agent.sh",
+    "setup:low-memory": "AGENTIC_PROFILE=low-memory bash local-agents/setup.sh",
+    "agent:low-memory": "AGENTIC_PROFILE=low-memory bash local-agents/run-agent.sh",
     "context:report": "python3 scripts/context_efficiency_report.py",
-    "models:8gb": "cat local-agents/config/pi-models-8gb.json",
+    "models:profiles": "cat local-agents/config/model-profiles.json",
+    "models:8gb": "AGENTIC_PROFILE=8gb python3 local-agents/render-pi-models.py --profile 8gb --output /tmp/agentic-pi-models-8gb.json && cat /tmp/agentic-pi-models-8gb.json",
     "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md"
   }
 }

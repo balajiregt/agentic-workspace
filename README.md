@@ -48,6 +48,20 @@ Then start the model and Pi agent from the sample service repo:
 npm run agent:8gb
 ```
 
+For a 16 GB Mac:
+
+```bash
+npm run setup:16gb
+npm run agent:16gb
+```
+
+For tighter memory:
+
+```bash
+npm run setup:low-memory
+npm run agent:low-memory
+```
+
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache, not inside this repository.
 
@@ -63,6 +77,12 @@ To switch models for a single run:
 AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M" npm run agent:8gb
 ```
 
+To change output tokens for one run:
+
+```bash
+AGENTIC_MAX_TOKENS=4096 npm run agent:16gb
+```
+
 Prompt the agent with the central context file:
 
 ```text
@@ -76,8 +96,8 @@ More detail lives at:
 ```text
 docs/local-agent-runtime.md
 local-agents/README.md
-local-agents/config/pi-models-8gb.json
-local-agents/setup-8gb.sh
+local-agents/config/model-profiles.json
+local-agents/setup.sh
 local-agents/run-agent.sh
 ```
 

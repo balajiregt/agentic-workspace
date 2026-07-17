@@ -3,10 +3,10 @@ set -euo pipefail
 
 LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
-PI_MODELS_SOURCE="${LOCAL_AGENTS_DIR}/config/pi-models-8gb.json"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
+PROFILE="${AGENTIC_PROFILE:-8gb}"
 
-echo "==> Agentic workspace 8 GB setup"
+echo "==> Agentic workspace local agent setup (${PROFILE})"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "This setup script is intended for macOS." >&2
@@ -37,9 +37,9 @@ else
   echo "==> Pi coding agent already installed"
 fi
 
-mkdir -p "$(dirname "${PI_MODELS_TARGET}")"
-cp "${PI_MODELS_SOURCE}" "${PI_MODELS_TARGET}"
-echo "==> Wrote Pi model config to ${PI_MODELS_TARGET}"
+python3 "${LOCAL_AGENTS_DIR}/render-pi-models.py" \
+  --profile "${PROFILE}" \
+  --output "${PI_MODELS_TARGET}"
 
 cat <<EOF
 
@@ -48,6 +48,11 @@ Setup complete.
 Run the sample workspace agent with:
 
   npm run agent:8gb
+
+For a 16 GB profile:
+
+  npm run setup:16gb
+  npm run agent:16gb
 
 Or from any repo:
 

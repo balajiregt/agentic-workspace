@@ -37,13 +37,23 @@ npm run setup:8gb
 This checks for `llama.cpp`, installs Pi if needed, and copies:
 
 ```text
-local-agents/config/pi-models-8gb.json -> ~/.pi/agent/models.json
+local-agents/config/model-profiles.json -> ~/.pi/agent/models.json
 ```
 
 Then start the recommended model and Pi from the sample service repo:
 
 ```bash
 npm run agent:8gb
+```
+
+Other RAM profiles:
+
+```bash
+npm run setup:16gb
+npm run agent:16gb
+
+npm run setup:low-memory
+npm run agent:low-memory
 ```
 
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
@@ -54,6 +64,22 @@ To run against another repo:
 
 ```bash
 bash local-agents/run-agent.sh /path/to/your/service-repo
+```
+
+## Profile Budgets
+
+| Profile | Model | Context window | Max output tokens |
+| --- | --- | ---: | ---: |
+| `low-memory` | Qwen2.5 Coder 1.5B Q4_K_M | 4096 | 1024 |
+| `8gb` | Qwen2.5 Coder 3B Q4_K_M | 8192 | 2048 |
+| `16gb` | Qwen2.5 Coder 3B Q4_K_M | 12288 | 3072 |
+
+Override for one run:
+
+```bash
+AGENTIC_MAX_TOKENS=4096 npm run agent:16gb
+AGENTIC_CONTEXT_WINDOW=16384 npm run agent:16gb
+AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M" npm run agent:8gb
 ```
 
 ## Manual Runtime Setup
@@ -89,7 +115,9 @@ Copy the committed 8 GB model profile:
 
 ```bash
 mkdir -p ~/.pi/agent
-cp /Users/balaji/agentic-workspace/local-agents/config/pi-models-8gb.json ~/.pi/agent/models.json
+python3 /Users/balaji/agentic-workspace/local-agents/render-pi-models.py \
+  --profile 8gb \
+  --output ~/.pi/agent/models.json
 ```
 
 Then run Pi from the repository you want the agent to edit:
