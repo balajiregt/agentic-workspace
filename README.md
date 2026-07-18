@@ -67,6 +67,13 @@ npm run setup:low-memory
 npm run agent:low-memory
 ```
 
+For Pi file-edit validation, use the tool-call profile:
+
+```bash
+npm run setup:tool-agent
+npm run agent:tool-agent
+```
+
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache, not inside this repository.
 
@@ -133,6 +140,14 @@ default. For read-only/advisory model experiments, opt out explicitly:
 ```bash
 AGENTIC_REQUIRE_TOOL_CALLS=0 npm run agent:8gb
 ```
+
+Current model status:
+
+- Qwen Coder 3B: good for context/coding analysis, fails structured tool calls.
+- xLAM 2 3B: loads, but llama.cpp returns HTTP 500 because the generated
+  tool-call text does not match its parser.
+- Functionary Small v3.2: next profile to validate because it is designed for
+  function calling and has a dedicated `agent:tool-agent` profile.
 
 Prompt the agent with the central context file:
 

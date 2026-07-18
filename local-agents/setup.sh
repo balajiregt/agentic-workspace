@@ -69,6 +69,11 @@ For a 16 GB profile:
   npm run setup:16gb
   npm run agent:16gb
 
+For Pi file-edit tool-call validation:
+
+  npm run setup:tool-agent
+  npm run agent:tool-agent
+
 Or intentionally target another repo:
 
   /bin/bash ${ROOT_DIR}/local-agents/run-agent.sh /path/to/repo

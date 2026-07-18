@@ -182,6 +182,8 @@ Run setup and launch scripts:
 ```bash
 npm run setup:8gb
 npm run agent:8gb
+npm run setup:tool-agent
+npm run agent:tool-agent
 ```
 
 Check whether the current local model/server can execute Pi file tools:
@@ -224,6 +226,28 @@ out only for debugging:
 ```bash
 AGENTIC_ALLOW_SERVER_MISMATCH=1 npm run agent:8gb
 ```
+
+## Tool-Agent Profile
+
+Use this profile when the goal is Pi file edits rather than code-analysis
+quality:
+
+```bash
+npm run setup:tool-agent
+npm run agent:tool-agent
+```
+
+It uses:
+
+```text
+second-state/functionary-small-v3.2-GGUF:Q2_K
+contextWindow: 4096
+maxTokens: 1024
+```
+
+This profile is intentionally smaller because the first requirement is passing
+`npm run agent:doctor`. If it passes, try the real edit prompt. If it fails,
+the model is rejected for Pi edit automation regardless of its coding quality.
 
 Run the token metrics dashboard in another terminal while Pi is running:
 

@@ -8,7 +8,7 @@ PROFILE="${AGENTIC_PROFILE:-8gb}"
 PROFILE_JSON="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]][sys.argv[3]])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" modelRef 2>/dev/null || true)"
 
 if [[ -z "${PROFILE_JSON}" ]]; then
-  echo "Unknown AGENTIC_PROFILE '${PROFILE}'. Available: low-memory, 8gb, 16gb" >&2
+  echo "Unknown AGENTIC_PROFILE '${PROFILE}'. Available: low-memory, 8gb, tool-agent, 16gb" >&2
   exit 1
 fi
 

@@ -18,6 +18,15 @@
       "maxTokens": 2048,
       "port": 8080
     },
+    "tool-agent": {
+      "description": "Function-calling validation profile for Pi file edits on 8 GB machines.",
+      "modelRef": "second-state/functionary-small-v3.2-GGUF:Q2_K",
+      "providerName": "llama-cpp-functionary-small-v32-tool-agent",
+      "displayName": "Functionary Small v3.2 Q2_K tool agent",
+      "contextWindow": 4096,
+      "maxTokens": 1024,
+      "port": 8080
+    },
     "16gb": {
       "description": "Larger output budget for 16 GB Macs while keeping the same stable 3B model.",
       "modelRef": "Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M",

@@ -128,6 +128,19 @@ Practical meaning:
 - Do not use this xLAM profile for Pi edits until a different quant/template or
   server version passes `npm run agent:doctor`.
 
+Next candidate:
+
+```text
+second-state/functionary-small-v3.2-GGUF:Q2_K
+```
+
+Reason:
+
+- Functionary is a function-calling-oriented model family.
+- The workspace now exposes it as `npm run agent:tool-agent`.
+- It is the next model to validate for Pi edits; proceed only if
+  `npm run agent:doctor` returns `TOOL_CALL_CHECK=PASS`.
+
 ## Qwen Coder 3B Evidence
 
 Startup:

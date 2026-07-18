@@ -6,6 +6,8 @@
   "scripts": {
     "setup:8gb": "AGENTIC_PROFILE=8gb bash local-agents/setup.sh",
     "agent:8gb": "bash local-agents/run-agent.sh",
+    "setup:tool-agent": "AGENTIC_PROFILE=tool-agent bash local-agents/setup.sh",
+    "agent:tool-agent": "AGENTIC_PROFILE=tool-agent bash local-agents/run-agent.sh",
     "setup:16gb": "AGENTIC_PROFILE=16gb bash local-agents/setup.sh",
     "agent:16gb": "AGENTIC_PROFILE=16gb bash local-agents/run-agent.sh",
     "setup:low-memory": "AGENTIC_PROFILE=low-memory bash local-agents/setup.sh",
