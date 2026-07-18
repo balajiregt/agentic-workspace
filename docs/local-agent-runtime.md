@@ -128,9 +128,16 @@ python3 /Users/balaji/agentic-workspace/local-agents/render-pi-models.py \
 Then run Pi from the repository you want the agent to edit:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
-pi
+cd /Users/balaji/agentic-workspace
+pi --approve \
+  --skill skills/microservice-change \
+  --prompt-template docs/prompts \
+  --tools read,bash,edit,write,grep,find,ls
 ```
+
+The `npm run agent:*` scripts do this automatically. Starting from the
+workspace root is important because the root contains `AGENTS.md`, the current
+service YAML, and sibling service/QA/deployment folders.
 
 Use a prompt that points to the central context file:
 
@@ -138,6 +145,12 @@ Use a prompt that points to the central context file:
 Use the Jira context in /Users/balaji/agentic-workspace/contexts/current/service-context.yml.
 Follow the repository_topology field before deciding where tests or deployment changes belong.
 Update service code, OpenAPI, tests, and deployment impact only as required by the context.
+```
+
+For existing API-test assertions, Pi also exposes a prompt template:
+
+```text
+/existing-test-assertion riskCategory is not empty for the customer risk response
 ```
 
 ## Useful Workspace Commands
@@ -159,6 +172,40 @@ Run setup and launch scripts:
 ```bash
 npm run setup:8gb
 npm run agent:8gb
+```
+
+Check whether the current local model/server can execute Pi file tools:
+
+```bash
+npm run agent:doctor
+```
+
+The doctor sends a forced tool-call request to the OpenAI-compatible
+`/chat/completions` endpoint. `TOOL_CALL_CHECK=PASS` means the server returned
+structured `message.tool_calls`. `TOOL_CALL_CHECK=FAIL` means the server put the
+tool request in normal text, which usually appears in Pi as JSON such as
+`{"name":"edit",...}` instead of an actual edit.
+
+Run the token metrics dashboard in another terminal while Pi is running:
+
+```bash
+npm run metrics:8gb
+open http://localhost:8765
+```
+
+The dashboard reads:
+
+- Pi's rendered model config from `~/.pi/agent/models.json`.
+- llama.cpp model status from `/v1/models`.
+- live slot state from `/slots`.
+- prompt/output token counters from `/metrics`.
+
+`local-agents/run-agent.sh` starts `llama-server` with `--metrics`, so this
+works automatically when this repo launches llama.cpp. If you start llama.cpp
+manually, include:
+
+```bash
+llama-server ... --metrics --slots
 ```
 
 ## Notes

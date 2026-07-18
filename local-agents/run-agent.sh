@@ -3,7 +3,7 @@ set -euo pipefail
 
 LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
-TARGET_REPO="${1:-${ROOT_DIR}/projects/microservices/xyz-service}"
+TARGET_REPO="${1:-${ROOT_DIR}}"
 PROFILE="${AGENTIC_PROFILE:-8gb}"
 PROFILE_JSON="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]][sys.argv[3]])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" modelRef 2>/dev/null || true)"
 
@@ -19,6 +19,16 @@ MAX_TOKENS="${AGENTIC_MAX_TOKENS:-$(python3 -c 'import json,sys; print(json.load
 BASE_URL="http://localhost:${PORT}"
 LOG_FILE="${TMPDIR:-/tmp}/agentic-workspace-llama-${PORT}.log"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
+PI_SKILL_PATH="${ROOT_DIR}/skills/microservice-change"
+PI_PROMPTS_PATH="${ROOT_DIR}/docs/prompts"
+PI_ARGS=(--approve --tools read,bash,edit,write,grep,find,ls)
+NPM_PREFIX="$(npm config get prefix 2>/dev/null || true)"
+NPM_GLOBAL_BIN="${NPM_PREFIX}/bin"
+PI_BIN="$(command -v pi 2>/dev/null || true)"
+
+if [[ -z "${PI_BIN}" && -x "${NPM_GLOBAL_BIN}/pi" ]]; then
+  PI_BIN="${NPM_GLOBAL_BIN}/pi"
+fi
 
 if [[ ! -d "${TARGET_REPO}" ]]; then
   echo "Target repo does not exist: ${TARGET_REPO}" >&2
@@ -26,17 +36,34 @@ if [[ ! -d "${TARGET_REPO}" ]]; then
 fi
 
 if command -v llama-server >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}")
+  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --metrics)
 elif command -v llama >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}")
+  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --metrics)
 else
   echo "llama.cpp is not installed. Run: npm run setup:8gb" >&2
   exit 1
 fi
 
-if ! command -v pi >/dev/null 2>&1; then
+if [[ -z "${PI_BIN}" ]]; then
   echo "Pi coding agent is not installed. Run: npm run setup:8gb" >&2
+  if [[ -n "${NPM_GLOBAL_BIN}" ]]; then
+    echo "Expected Pi at: ${NPM_GLOBAL_BIN}/pi" >&2
+    echo "If setup already installed Pi, add npm's global bin to PATH:" >&2
+    echo "  export PATH=\"${NPM_GLOBAL_BIN}:\$PATH\"" >&2
+  fi
   exit 1
+fi
+
+if [[ -f "${ROOT_DIR}/AGENTS.md" ]]; then
+  PI_ARGS+=(--append-system-prompt "${ROOT_DIR}/AGENTS.md")
+fi
+
+if [[ -d "${PI_SKILL_PATH}" ]]; then
+  PI_ARGS+=(--skill "${PI_SKILL_PATH}")
+fi
+
+if [[ -d "${PI_PROMPTS_PATH}" ]]; then
+  PI_ARGS+=(--prompt-template "${PI_PROMPTS_PATH}")
 fi
 
 python3 "${LOCAL_AGENTS_DIR}/render-pi-models.py" \
@@ -81,6 +108,24 @@ else
   fi
 fi
 
+if ! python3 "${LOCAL_AGENTS_DIR}/check-tool-calls.py" --base-url "${BASE_URL}" --model local-model; then
+  cat <<EOF
+
+WARNING: The current local model/server did not return structured tool_calls.
+Pi may print JSON such as {"name":"edit",...} instead of executing file tools.
+This profile is still useful for context/token experiments, but do not treat it
+as a validated editing-agent profile until:
+
+  npm run agent:doctor
+
+prints TOOL_CALL_CHECK=PASS for the selected model/server.
+
+EOF
+  if [[ "${AGENTIC_REQUIRE_TOOL_CALLS:-0}" == "1" ]]; then
+    exit 1
+  fi
+fi
+
 cleanup() {
   if [[ "${STARTED_SERVER}" == "1" ]]; then
     echo "==> Stopping llama.cpp"
@@ -95,13 +140,18 @@ Profile: ${PROFILE}
 Model: ${MODEL_REF}
 Context window: ${CONTEXT_WINDOW}
 Max output tokens: ${MAX_TOKENS}
+Pi binary: ${PI_BIN}
+Pi options: ${PI_ARGS[*]}
+Metrics dashboard:
+  npm run metrics:8gb
+  open http://localhost:8765
 
 Suggested prompt:
-Use the Jira context in ${ROOT_DIR}/contexts/current/service-context.yml.
-Follow repository_topology before deciding where tests or deployment changes belong.
-Update service code, OpenAPI, tests, and deployment impact only as required by the context.
+For the existing customer risk API test, add one assertion that riskCategory is not empty.
+Use AGENTS.md and contexts/current/service-context.yml before editing.
+Do not create, rename, or append to unrelated test files.
 
 EOF
 
 cd "${TARGET_REPO}"
-pi
+"${PI_BIN}" "${PI_ARGS[@]}"

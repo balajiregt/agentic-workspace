@@ -29,8 +29,16 @@ deployment, and tests for the topology declared in the context YAML.
    inside the service repo.
 5. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
    `qa-steps` and actual service API tests in `qa-projects/<service>-api-tests`.
-6. Update the OpenAPI contract when response fields or endpoint behavior changes.
-7. Check deployment assets for ports, probes, env vars, image names, or runtime
+6. For "add one assertion" or "modify existing test" requests, edit the
+   existing test file that already covers the endpoint; do not create, rename,
+   append to, or assume files that were not listed from disk.
+7. Keep the repo's existing test framework. In this workspace, API tests are
+   Java/JUnit/RestAssured under Maven; do not invent TypeScript specs.
+8. If a task asks for a code or test change, use file tools to make the change.
+   Do not respond with a tool-shaped JSON object or patch suggestion as the
+   final result.
+9. Update the OpenAPI contract when response fields or endpoint behavior changes.
+10. Check deployment assets for ports, probes, env vars, image names, or runtime
    assumptions affected by the change.
 
 ## Quality Gates
@@ -42,6 +50,10 @@ deployment, and tests for the topology declared in the context YAML.
 - Deployment impact is checked and either updated or explicitly reported as no
   change needed.
 - No broad repo scan is used when the YAML points to exact files or folders.
+- No hallucinated paths or test files are used; every edited test file exists
+  before modification unless the task explicitly asks for a new test file.
+- No "edit JSON" or pseudo-tool output is returned in place of an actual file
+  change.
 
 ## Example Prompts
 
@@ -53,6 +65,11 @@ GET /xyz, update OpenAPI, and add RestAssured coverage.
 ```text
 Using the current service context, verify whether this change needs deployment
 updates and add only the missing API tests.
+```
+
+```text
+For the existing customer risk API test, add one assertion that riskCategory is
+not empty.
 ```
 
 ## Stop Condition

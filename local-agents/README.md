@@ -19,13 +19,17 @@ One-time setup:
 npm run setup:8gb
 ```
 
-Run the sample agent flow:
+Run the workspace-root agent flow:
 
 ```bash
 npm run agent:8gb
 ```
 
-Run against another repo:
+By default this starts Pi from the repository root so it can load `AGENTS.md`,
+`contexts/current/service-context.yml`, `skills/`, and the split service/QA
+folders.
+
+Run against another repo only when that is intentional:
 
 ```bash
 bash local-agents/run-agent.sh /path/to/your/service-repo
@@ -73,3 +77,13 @@ AGENTIC_CONTEXT_WINDOW=16384 \
 AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M" \
   npm run agent:16gb
 ```
+
+Check whether the active local model/server can drive Pi file tools:
+
+```bash
+npm run agent:doctor
+```
+
+`TOOL_CALL_CHECK=PASS` means the OpenAI-compatible endpoint returned structured
+`tool_calls`. `TOOL_CALL_CHECK=FAIL` means the model returned tool-shaped JSON
+as plain text, so Pi may describe edits instead of applying them.

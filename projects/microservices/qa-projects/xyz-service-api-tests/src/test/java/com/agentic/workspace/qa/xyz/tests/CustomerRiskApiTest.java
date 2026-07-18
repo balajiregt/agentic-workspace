@@ -5,6 +5,7 @@ import static com.agentic.workspace.qa.assertions.JsonFieldAssertions.hasRequire
 import static com.agentic.workspace.qa.fixtures.CustomerFixtures.HIGH_RISK_CUSTOMER;
 import static com.agentic.workspace.qa.fixtures.CustomerFixtures.LOW_RISK_CUSTOMER;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 import com.agentic.workspace.qa.client.RestClientFactory;
@@ -62,5 +63,18 @@ class CustomerRiskApiTest {
         .then()
         .statusCode(400)
         .body("error", equalTo("Bad Request"));
+  }
+
+  @Test
+  @DisplayName("GET /xyz rejects blank customerId")
+  void getCustomerRiskRejectsBlankCustomerId() {
+    given(requestSpec)
+        .queryParam("customerId", " ")
+        .when()
+        .get("/xyz")
+        .then()
+        .statusCode(400)
+        .body("error", equalTo("Bad Request"))
+        .body("message", containsString("customerId"));
   }
 }

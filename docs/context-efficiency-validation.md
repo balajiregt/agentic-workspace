@@ -11,6 +11,9 @@ Use these numbers in the blog or README:
 
 - **Central context tokens**: approximate tokens in `contexts/current/service-context.yml`.
 - **Central context plus skills tokens**: approximate tokens in YAML plus local `SKILL.md` files.
+- **Task profile tokens**: approximate tokens for a realistic focused change,
+  such as YAML + skill + endpoint contract + existing API test + shared QA
+  utilities.
 - **Full corpus tokens**: approximate tokens if all relevant microservice files were pasted into the prompt.
 - **Compression ratio**: `full corpus tokens / central context tokens`.
 - **Compression ratio with skills**: `full corpus tokens / (central context tokens + skill tokens)`.
@@ -34,6 +37,53 @@ JSON output for charts:
 ```bash
 python3 /Users/balaji/agentic-workspace/scripts/context_efficiency_report.py --format json
 ```
+
+Focused API-test-change output:
+
+```bash
+npm run context:api-test
+```
+
+Other focused task profiles:
+
+```bash
+npm run context:new-endpoint
+npm run context:shared-qa
+npm run context:walkthrough
+```
+
+This reports three useful layers:
+
+```text
+baseline context = service-context.yml
+workflow context = service-context.yml + SKILL.md files
+task context     = workflow context + only files needed for the endpoint/test change
+```
+
+Current focused API-test-change proof:
+
+```text
+Central context tokens: 594
+Central context plus skills tokens: 1754
+Full microservices corpus tokens: 5077
+Task profile tokens (api-test-change): 3001
+Central context compression ratio: 8.55x
+Task profile compression ratio: 1.69x
+```
+
+The task profile is larger than the YAML because it includes the actual code,
+contract, shared RestAssured helpers, and API test file needed for the change.
+It is still bounded by the context route instead of loading every microservice
+file up front.
+
+Current task-profile comparison:
+
+| Task profile | Estimated tokens | Fit on 4096 ctx | Fit on 8192 ctx |
+| --- | ---: | --- | --- |
+| `shared-qa-utility-change` | 2988 | Borderline | Yes |
+| `business-flow-walkthrough` | 3470 | Borderline | Yes |
+| `api-test-change` | 3001 | Borderline | Yes |
+| `new-endpoint-change` | 4128 | No | Yes |
 
 ## Run the Build and API Validation
 
@@ -70,3 +120,23 @@ A practical claim for the blog:
 For an 8 GB MacBook Air, the most useful proof is not raw speed. It is showing
 that the local workflow remains bounded: small prompt, explicit paths, focused
 file reads, passing tests, and no need to preload every repository file.
+
+## Editing-Agent Validation
+
+Context efficiency and edit automation are separate checks. Before claiming a
+local Pi profile can apply edits, verify structured tool-call support:
+
+```bash
+npm run agent:doctor
+```
+
+Current Qwen Coder 3B proof on llama.cpp:
+
+```text
+TOOL_CALL_CHECK=FAIL no structured tool_calls returned
+```
+
+That means the profile is useful for context-routing/token experiments, but it
+may print tool-shaped JSON instead of applying file edits. A model/profile is
+only a validated editing-agent profile after this check passes and the relevant
+Maven verification also passes.

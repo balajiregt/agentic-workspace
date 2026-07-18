@@ -7,6 +7,10 @@ local agent should use.
 
 ```text
 agentic-workspace/
+  AGENTS.md           -> default repo instructions for coding agents
+  LOOP.md             -> human-started agent workflow loop
+  STATE.md            -> current validation-slice state
+  loop-budget.md      -> RAM/context/output token budgets
   local-agents/       -> lightweight setup/run wrappers for local models
   contexts/
     current/          -> current Jira/service context used by the agent
@@ -43,7 +47,7 @@ Fallback model when memory pressure is high:
 Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M
 ```
 
-Then start the model and Pi agent from the sample service repo:
+Then start the model and Pi agent from the workspace root:
 
 ```bash
 npm run agent:8gb
@@ -69,7 +73,11 @@ user-level Hugging Face/llama.cpp cache, not inside this repository.
 The selected RAM profile controls both Pi's `contextWindow`/`maxTokens` and the
 `llama-server` context size used when this repo starts the server.
 
-To run against another repo:
+The launcher starts Pi from `/Users/balaji/agentic-workspace` by default so it
+can discover `AGENTS.md`, `contexts/current/service-context.yml`, `skills/`,
+and sibling service/QA/deployment folders before editing.
+
+To intentionally run against another repo:
 
 ```bash
 bash local-agents/run-agent.sh /path/to/your/service-repo
@@ -87,12 +95,44 @@ To change output tokens for one run:
 AGENTIC_MAX_TOKENS=4096 npm run agent:16gb
 ```
 
+To watch token usage while llama.cpp and Pi are running, start the dashboard in
+another terminal:
+
+```bash
+npm run metrics:8gb
+open http://localhost:8765
+```
+
+It shows prompt tokens, output tokens, total tokens, configured context window,
+configured max output tokens, active slot usage, model name, and raw token
+metrics from llama.cpp.
+
+Before trusting a local model for file edits, check whether the server returns
+structured tool calls:
+
+```bash
+npm run agent:doctor
+```
+
+If this prints `TOOL_CALL_CHECK=FAIL`, the model may answer with JSON such as
+`{"name":"edit",...}` instead of letting Pi execute the edit. The context setup
+is still useful for token/routing experiments, but the selected model/server is
+not yet a validated editing-agent profile.
+
 Prompt the agent with the central context file:
 
 ```text
 Use the Jira context in /Users/balaji/agentic-workspace/contexts/current/service-context.yml.
 Follow repository_topology before deciding where tests or deployment changes belong.
 Update service code, OpenAPI, tests, and deployment impact only as required by the context.
+```
+
+For existing-test edits, use a direct prompt like:
+
+```text
+For the existing customer risk API test, add one assertion that riskCategory is not empty.
+Use AGENTS.md and contexts/current/service-context.yml before editing.
+Do not create, rename, or append to unrelated test files.
 ```
 
 More detail lives at:
@@ -106,6 +146,16 @@ local-agents/run-agent.sh
 ```
 
 ## Central Context
+
+`AGENTS.md` is the repo-level fallback. If a user forgets to say "read the
+service YAML," the agent should still read:
+
+```text
+contexts/current/service-context.yml
+```
+
+Then it should follow `repository_topology` before deciding whether tests live
+inside the service repo or in the split QA project.
 
 Current ticket context lives at:
 
@@ -157,6 +207,45 @@ Run the RestAssured API tests:
 ```bash
 cd /Users/balaji/agentic-workspace/projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
+```
+
+## Loop Validation
+
+The repo includes a small loop-engineering layer for proof-oriented local agent
+runs:
+
+```text
+AGENTS.md
+LOOP.md
+STATE.md
+loop-budget.md
+docs/prompts/api-test-change-prompt.md
+docs/loop-run-log.md
+```
+
+Run a focused token report for an API test change:
+
+```bash
+python3 scripts/context_efficiency_report.py --task-profile api-test-change
+```
+
+Other task profiles:
+
+```bash
+npm run context:new-endpoint
+npm run context:shared-qa
+npm run context:walkthrough
+```
+
+The latest validation prompt added RestAssured coverage for blank
+`customerId` without naming the split-QA test folder directly. The workspace
+routed the change through the YAML topology and the API test suite passed with
+4 tests, 0 failures.
+
+Local model comparison notes live at:
+
+```text
+docs/model-comparison-log.md
 ```
 
 ## Agent Skills

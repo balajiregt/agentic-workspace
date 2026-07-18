@@ -7,6 +7,8 @@ PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
 PROFILE="${AGENTIC_PROFILE:-8gb}"
 AGENT_SCRIPT="agent:${PROFILE}"
 MODEL_REF="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["modelRef"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" 2>/dev/null || true)"
+NPM_PREFIX="$(npm config get prefix 2>/dev/null || true)"
+NPM_GLOBAL_BIN="${NPM_PREFIX}/bin"
 
 echo "==> Agentic workspace local agent setup (${PROFILE})"
 
@@ -39,6 +41,17 @@ else
   echo "==> Pi coding agent already installed"
 fi
 
+if [[ -x "${NPM_GLOBAL_BIN}/pi" && ":${PATH}:" != *":${NPM_GLOBAL_BIN}:"* ]]; then
+  cat <<EOF
+==> Pi was found at ${NPM_GLOBAL_BIN}/pi, but that folder is not on PATH.
+==> The run script will use it automatically.
+==> For direct 'pi' commands, add this to your shell profile:
+
+  export PATH="${NPM_GLOBAL_BIN}:\$PATH"
+
+EOF
+fi
+
 python3 "${LOCAL_AGENTS_DIR}/render-pi-models.py" \
   --profile "${PROFILE}" \
   --output "${PI_MODELS_TARGET}"
@@ -47,7 +60,7 @@ cat <<EOF
 
 Setup complete.
 
-Run the sample workspace agent with:
+Run the workspace agent with:
 
   npm run ${AGENT_SCRIPT}
 
@@ -56,7 +69,7 @@ For a 16 GB profile:
   npm run setup:16gb
   npm run agent:16gb
 
-Or from any repo:
+Or intentionally target another repo:
 
   /bin/bash ${ROOT_DIR}/local-agents/run-agent.sh /path/to/repo
 
