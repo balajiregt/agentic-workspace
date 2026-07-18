@@ -210,6 +210,21 @@ it with `Ctrl+C` and retry with a smaller context window:
 AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
 ```
 
+By default, the launcher exits when the doctor fails. For advisory/read-only
+model experiments, opt out explicitly:
+
+```bash
+AGENTIC_REQUIRE_TOOL_CALLS=0 npm run agent:8gb
+```
+
+The launcher also refuses to reuse a running llama.cpp server when its context
+window does not match the requested profile. Stop the old server first, or opt
+out only for debugging:
+
+```bash
+AGENTIC_ALLOW_SERVER_MISMATCH=1 npm run agent:8gb
+```
+
 Run the token metrics dashboard in another terminal while Pi is running:
 
 ```bash

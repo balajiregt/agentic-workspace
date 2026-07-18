@@ -127,6 +127,13 @@ the doctor again. If startup stalls, retry with a smaller context window:
 AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
 ```
 
+The launcher now treats failed tool-call validation as a stop condition by
+default. For read-only/advisory model experiments, opt out explicitly:
+
+```bash
+AGENTIC_REQUIRE_TOOL_CALLS=0 npm run agent:8gb
+```
+
 Prompt the agent with the central context file:
 
 ```text

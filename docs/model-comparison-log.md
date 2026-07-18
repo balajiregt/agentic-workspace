@@ -113,6 +113,21 @@ Practical meaning:
 - Use a tool-call-capable provider/model for real Pi file-edit automation, or
   treat the local profile as advisory/read-only.
 
+Observed with `Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M`:
+
+```text
+TOOL_CALL_CHECK=ERROR server request failed: HTTP Error 500: Internal Server Error
+llama.cpp log: The model produced output that does not match the expected peg-native format
+unparsed peg-native output: {"name": "read", "arguments": {"path": "AGENTS.md"}}]
+```
+
+Practical meaning:
+
+- xLAM 2 3B loaded on the 8 GB machine, but did not pass llama.cpp structured
+  tool-call parsing in this setup.
+- Do not use this xLAM profile for Pi edits until a different quant/template or
+  server version passes `npm run agent:doctor`.
+
 ## Qwen Coder 3B Evidence
 
 Startup:

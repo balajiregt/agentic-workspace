@@ -18,6 +18,7 @@ CONTEXT_WINDOW="${AGENTIC_CONTEXT_WINDOW:-$(python3 -c 'import json,sys; print(j
 MAX_TOKENS="${AGENTIC_MAX_TOKENS:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["maxTokens"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}")}"
 PARALLEL_SLOTS="${AGENTIC_PARALLEL_SLOTS:-1}"
 LLAMA_TOOLS="${AGENTIC_LLAMA_TOOLS:-all}"
+REQUIRE_TOOL_CALLS="${AGENTIC_REQUIRE_TOOL_CALLS:-1}"
 BASE_URL="http://localhost:${PORT}"
 LOG_FILE="${TMPDIR:-/tmp}/agentic-workspace-llama-${PORT}.log"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
@@ -80,9 +81,32 @@ server_running() {
   curl -fsS "${BASE_URL}/v1/models" >/dev/null 2>&1
 }
 
+server_context_window() {
+  curl -fsS "${BASE_URL}/v1/models" 2>/dev/null \
+    | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("data",[{}])[0].get("meta",{}).get("n_ctx",""))' 2>/dev/null \
+    || true
+}
+
 if server_running; then
   echo "==> Reusing llama.cpp server at ${BASE_URL}"
-  echo "==> Existing server is assumed to match profile '${PROFILE}' context settings."
+  ACTUAL_CONTEXT_WINDOW="$(server_context_window)"
+  if [[ -n "${ACTUAL_CONTEXT_WINDOW}" && "${ACTUAL_CONTEXT_WINDOW}" != "${CONTEXT_WINDOW}" && "${AGENTIC_ALLOW_SERVER_MISMATCH:-0}" != "1" ]]; then
+    cat <<EOF >&2
+Existing llama.cpp server context does not match this run.
+
+Requested context window: ${CONTEXT_WINDOW}
+Running server context:  ${ACTUAL_CONTEXT_WINDOW}
+
+Stop the existing agent/server terminal with Ctrl+C, or run:
+
+  lsof -nP -iTCP:${PORT} -sTCP:LISTEN
+  kill <PID>
+
+Then rerun this command.
+EOF
+    exit 1
+  fi
+  echo "==> Existing server context window: ${ACTUAL_CONTEXT_WINDOW:-unknown}"
   STARTED_SERVER=0
 else
   echo "==> Starting llama.cpp on ${BASE_URL}"
@@ -123,7 +147,7 @@ as a validated editing-agent profile until:
 prints TOOL_CALL_CHECK=PASS for the selected model/server.
 
 EOF
-  if [[ "${AGENTIC_REQUIRE_TOOL_CALLS:-0}" == "1" ]]; then
+  if [[ "${REQUIRE_TOOL_CALLS}" == "1" ]]; then
     exit 1
   fi
 fi
