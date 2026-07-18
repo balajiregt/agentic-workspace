@@ -119,6 +119,14 @@ If this prints `TOOL_CALL_CHECK=FAIL`, the model may answer with JSON such as
 is still useful for token/routing experiments, but the selected model/server is
 not yet a validated editing-agent profile.
 
+If it prints `Connection refused`, the model server is not listening yet. Wait
+for the agent terminal to show `listening on http://127.0.0.1:8080`, then run
+the doctor again. If startup stalls, retry with a smaller context window:
+
+```bash
+AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
+```
+
 Prompt the agent with the central context file:
 
 ```text

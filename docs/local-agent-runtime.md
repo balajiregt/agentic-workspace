@@ -139,6 +139,16 @@ The `npm run agent:*` scripts do this automatically. Starting from the
 workspace root is important because the root contains `AGENTS.md`, the current
 service YAML, and sibling service/QA/deployment folders.
 
+The launcher starts llama.cpp with:
+
+```text
+--parallel 1 --metrics --tools all
+```
+
+`--parallel 1` keeps memory bounded on an 8 GB machine. `--tools all` enables
+llama.cpp's tool-call formatting path, which is required before a GGUF model can
+drive Pi's file tools.
+
 Use a prompt that points to the central context file:
 
 ```text
@@ -185,6 +195,20 @@ The doctor sends a forced tool-call request to the OpenAI-compatible
 structured `message.tool_calls`. `TOOL_CALL_CHECK=FAIL` means the server put the
 tool request in normal text, which usually appears in Pi as JSON such as
 `{"name":"edit",...}` instead of an actual edit.
+
+If the doctor prints `Connection refused`, the llama.cpp server is not listening
+yet. In the agent terminal, wait until you see:
+
+```text
+listening on http://127.0.0.1:8080
+```
+
+Then rerun `npm run agent:doctor`. If the server never reaches that line, stop
+it with `Ctrl+C` and retry with a smaller context window:
+
+```bash
+AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
+```
 
 Run the token metrics dashboard in another terminal while Pi is running:
 

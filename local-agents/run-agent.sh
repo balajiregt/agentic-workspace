@@ -16,6 +16,8 @@ MODEL_REF="${AGENTIC_MODEL_REF:-${PROFILE_JSON}}"
 PORT="${AGENTIC_LLAMA_PORT:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["port"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}")}"
 CONTEXT_WINDOW="${AGENTIC_CONTEXT_WINDOW:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["contextWindow"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}")}"
 MAX_TOKENS="${AGENTIC_MAX_TOKENS:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["maxTokens"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}")}"
+PARALLEL_SLOTS="${AGENTIC_PARALLEL_SLOTS:-1}"
+LLAMA_TOOLS="${AGENTIC_LLAMA_TOOLS:-all}"
 BASE_URL="http://localhost:${PORT}"
 LOG_FILE="${TMPDIR:-/tmp}/agentic-workspace-llama-${PORT}.log"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
@@ -36,9 +38,9 @@ if [[ ! -d "${TARGET_REPO}" ]]; then
 fi
 
 if command -v llama-server >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --metrics)
+  LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --parallel "${PARALLEL_SLOTS}" --metrics --tools "${LLAMA_TOOLS}")
 elif command -v llama >/dev/null 2>&1; then
-  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --metrics)
+  LLAMA_SERVER_CMD=(llama serve -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --parallel "${PARALLEL_SLOTS}" --metrics --tools "${LLAMA_TOOLS}")
 else
   echo "llama.cpp is not installed. Run: npm run setup:8gb" >&2
   exit 1
@@ -140,6 +142,8 @@ Profile: ${PROFILE}
 Model: ${MODEL_REF}
 Context window: ${CONTEXT_WINDOW}
 Max output tokens: ${MAX_TOKENS}
+Parallel slots: ${PARALLEL_SLOTS}
+llama.cpp tools: ${LLAMA_TOOLS}
 Pi binary: ${PI_BIN}
 Pi options: ${PI_ARGS[*]}
 Metrics dashboard:
