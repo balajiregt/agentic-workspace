@@ -12,7 +12,7 @@ Profile:
 
 ```text
 contextWindow: 4096
-maxTokens: 1024
+maxTokens: 1536
 parallel slots: 1
 llama.cpp tools: all
 ```
@@ -58,6 +58,13 @@ TOOL_CALL_CHECK=PASS
 
 ```text
 --ctx-size 4096 --parallel 1 --metrics --tools all
+```
+
+The Pi output-token budget comes from `local-agents/config/model-profiles.json`.
+For a one-run override:
+
+```bash
+AGENTIC_MAX_TOKENS=2048 npm run agent:tool-agent
 ```
 
 It starts Pi from the workspace root and loads:

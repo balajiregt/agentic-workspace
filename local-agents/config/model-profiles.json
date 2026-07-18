@@ -6,7 +6,7 @@
       "providerName": "llama-cpp-gemma-4-e2b-qat-tool-agent",
       "displayName": "Gemma 4 E2B IT QAT UD-Q4_K_XL tool agent",
       "contextWindow": 4096,
-      "maxTokens": 1024,
+      "maxTokens": 1536,
       "port": 8080
     }
   }

@@ -51,7 +51,7 @@ npm run agent:8gb
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache, not inside this repository.
 
-The profile uses `contextWindow=4096`, `maxTokens=1024`, `--parallel 1`, and
+The profile uses `contextWindow=4096`, `maxTokens=1536`, `--parallel 1`, and
 `--tools all`.
 
 The launcher starts Pi from `/Users/balaji/agentic-workspace` by default so it
