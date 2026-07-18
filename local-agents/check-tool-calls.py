@@ -46,7 +46,7 @@ def main() -> int:
                 },
             }
         ],
-        "tool_choice": {"type": "function", "function": {"name": "read"}},
+        "tool_choice": "required",
         "temperature": 0,
         "max_tokens": 200,
     }
