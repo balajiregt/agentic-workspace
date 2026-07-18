@@ -78,12 +78,16 @@ file up front.
 
 Current task-profile sizing:
 
-| Task profile | Estimated tokens | Fit on 4096 ctx | Fit on 8192 ctx |
-| --- | ---: | --- | --- |
-| `shared-qa-utility-change` | 2988 | Borderline | Yes |
-| `business-flow-walkthrough` | 3470 | Borderline | Yes |
-| `api-test-change` | 3001 | Borderline | Yes |
-| `new-endpoint-change` | 4128 | No | Yes |
+| Task profile | Estimated tokens | Local 4096 ctx action |
+| --- | ---: | --- |
+| `shared-qa-utility-change` | 2988 | Fits if output stays focused |
+| `business-flow-walkthrough` | 3470 | Fits as read-only explanation |
+| `api-test-change` | 3001 | Fits if scoped to existing tests |
+| `new-endpoint-change` | 4128 | Split into service/contract, tests, deployment passes |
+
+The validated local edit profile intentionally keeps `contextWindow=4096`.
+When a task profile exceeds that budget, the scalable approach is staged
+execution, not loading a larger unvalidated local profile.
 
 ## Run the Build and API Validation
 

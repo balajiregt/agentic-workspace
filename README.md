@@ -44,6 +44,7 @@ npm run agent:tool-agent
 
 The 8 GB aliases point to the same working profile:
 
+```bash
 npm run setup:8gb
 npm run agent:8gb
 ```
