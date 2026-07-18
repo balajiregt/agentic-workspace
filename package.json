@@ -8,6 +8,10 @@
     "agent:8gb": "AGENTIC_PROFILE=tool-agent bash local-agents/run-agent.sh",
     "setup:tool-agent": "AGENTIC_PROFILE=tool-agent bash local-agents/setup.sh",
     "agent:tool-agent": "AGENTIC_PROFILE=tool-agent bash local-agents/run-agent.sh",
+    "setup:tool-agent-long": "AGENTIC_PROFILE=tool-agent-long bash local-agents/setup.sh",
+    "agent:tool-agent-long": "AGENTIC_PROFILE=tool-agent-long bash local-agents/run-agent.sh",
+    "setup:tool-agent-25k": "AGENTIC_PROFILE=tool-agent-experimental-25k bash local-agents/setup.sh",
+    "agent:tool-agent-25k": "AGENTIC_PROFILE=tool-agent-experimental-25k bash local-agents/run-agent.sh",
     "context:report": "python3 scripts/context_efficiency_report.py",
     "context:api-test": "python3 scripts/context_efficiency_report.py --task-profile api-test-change",
     "context:new-endpoint": "python3 scripts/context_efficiency_report.py --task-profile new-endpoint-change",
@@ -19,6 +23,7 @@
     "agent:doctor": "python3 local-agents/check-tool-calls.py --base-url http://localhost:8080/v1 --model local-model",
     "models:profiles": "cat local-agents/config/model-profiles.json",
     "models:tool-agent": "AGENTIC_PROFILE=tool-agent python3 local-agents/render-pi-models.py --profile tool-agent --output /tmp/agentic-pi-models-tool-agent.json && cat /tmp/agentic-pi-models-tool-agent.json",
+    "models:tool-agent-long": "AGENTIC_PROFILE=tool-agent-long python3 local-agents/render-pi-models.py --profile tool-agent-long --output /tmp/agentic-pi-models-tool-agent-long.json && cat /tmp/agentic-pi-models-tool-agent-long.json",
     "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md"
   }
 }

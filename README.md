@@ -55,6 +55,21 @@ user-level Hugging Face/llama.cpp cache, not inside this repository.
 The profile uses `contextWindow=4096`, `maxTokens=1536`, `--parallel 1`, and
 `--tools all`.
 
+If Pi reaches the output-token limit during edit loops, use the long profile:
+
+```bash
+npm run setup:tool-agent-long
+npm run agent:tool-agent-long
+```
+
+That uses `contextWindow=8192` and `maxTokens=4096`. The repo also has an
+explicit experimental 25k profile for machines that can tolerate it:
+
+```bash
+npm run setup:tool-agent-25k
+npm run agent:tool-agent-25k
+```
+
 The launcher starts Pi from `/Users/balaji/agentic-workspace` by default so it
 can discover `AGENTS.md`, `contexts/current/service-context.yml`, `skills/`,
 and sibling service/QA/deployment folders before editing.

@@ -8,7 +8,8 @@ PROFILE="${AGENTIC_PROFILE:-tool-agent}"
 PROFILE_JSON="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]][sys.argv[3]])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" modelRef 2>/dev/null || true)"
 
 if [[ -z "${PROFILE_JSON}" ]]; then
-  echo "Unknown AGENTIC_PROFILE '${PROFILE}'. Available: tool-agent" >&2
+  AVAILABLE_PROFILES="$(python3 -c 'import json,sys; print(", ".join(json.load(open(sys.argv[1]))["profiles"].keys()))' "${LOCAL_AGENTS_DIR}/config/model-profiles.json")"
+  echo "Unknown AGENTIC_PROFILE '${PROFILE}'. Available: ${AVAILABLE_PROFILES}" >&2
   exit 1
 fi
 

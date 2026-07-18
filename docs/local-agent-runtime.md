@@ -1,6 +1,7 @@
 # Local Agent Runtime
 
-This workspace keeps one validated local Pi editing profile.
+This workspace keeps one validated local Pi editing model with three budget
+profiles.
 
 ## Working Model
 
@@ -8,7 +9,7 @@ This workspace keeps one validated local Pi editing profile.
 unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL
 ```
 
-Profile:
+Default profile:
 
 ```text
 contextWindow: 4096
@@ -29,6 +30,31 @@ TOOL_CALL_CHECK=PASS structured tool_calls returned: read
 npm run setup:tool-agent
 npm run agent:tool-agent
 ```
+
+If Pi reaches the output-token limit during edit loops, use the long profile:
+
+```bash
+npm run setup:tool-agent-long
+npm run agent:tool-agent-long
+```
+
+Long profile:
+
+```text
+contextWindow: 8192
+maxTokens: 4096
+```
+
+If `25000/25000` works on your machine, keep it explicit:
+
+```bash
+npm run setup:tool-agent-25k
+npm run agent:tool-agent-25k
+```
+
+Treat the 25k profile as experimental. It is useful when the model keeps
+running on your machine, but it is not the default because it can create high
+memory pressure and very long turns.
 
 For convenience, the 8 GB aliases point to the same working profile:
 
@@ -54,10 +80,11 @@ TOOL_CALL_CHECK=PASS
 
 ## Runtime Behavior
 
-`local-agents/run-agent.sh` starts llama.cpp with:
+`local-agents/run-agent.sh` starts llama.cpp with the selected profile's
+context window and:
 
 ```text
---ctx-size 4096 --parallel 1 --metrics --tools all
+--parallel 1 --metrics --tools all
 ```
 
 The Pi output-token budget comes from `local-agents/config/model-profiles.json`.

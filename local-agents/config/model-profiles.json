@@ -1,12 +1,30 @@
 {
   "profiles": {
     "tool-agent": {
-      "description": "Validated tool-calling profile for Pi file edits on 8 GB machines.",
+      "description": "Validated tool-calling profile for normal Pi file edits on 8 GB machines.",
       "modelRef": "unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL",
       "providerName": "llama-cpp-gemma-4-e2b-qat-tool-agent",
       "displayName": "Gemma 4 E2B IT QAT UD-Q4_K_XL tool agent",
       "contextWindow": 4096,
       "maxTokens": 1536,
+      "port": 8080
+    },
+    "tool-agent-long": {
+      "description": "Validated tool-calling profile for longer Pi edit loops.",
+      "modelRef": "unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL",
+      "providerName": "llama-cpp-gemma-4-e2b-qat-tool-agent-long",
+      "displayName": "Gemma 4 E2B IT QAT UD-Q4_K_XL long edit agent",
+      "contextWindow": 8192,
+      "maxTokens": 4096,
+      "port": 8080
+    },
+    "tool-agent-experimental-25k": {
+      "description": "Experimental high-budget profile; use only when the machine can tolerate it.",
+      "modelRef": "unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL",
+      "providerName": "llama-cpp-gemma-4-e2b-qat-tool-agent-25k",
+      "displayName": "Gemma 4 E2B IT QAT UD-Q4_K_XL 25k experimental agent",
+      "contextWindow": 25000,
+      "maxTokens": 25000,
       "port": 8080
     }
   }

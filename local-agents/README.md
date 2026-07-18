@@ -14,6 +14,20 @@ npm run setup:tool-agent
 npm run agent:tool-agent
 ```
 
+For longer edit loops:
+
+```bash
+npm run setup:tool-agent-long
+npm run agent:tool-agent-long
+```
+
+For explicit high-budget experiments:
+
+```bash
+npm run setup:tool-agent-25k
+npm run agent:tool-agent-25k
+```
+
 The legacy 8 GB aliases point to the same profile:
 
 ```bash
