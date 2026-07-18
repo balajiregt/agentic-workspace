@@ -76,7 +76,7 @@ contract, shared RestAssured helpers, and API test file needed for the change.
 It is still bounded by the context route instead of loading every microservice
 file up front.
 
-Current task-profile comparison:
+Current task-profile sizing:
 
 | Task profile | Estimated tokens | Fit on 4096 ctx | Fit on 8192 ctx |
 | --- | ---: | --- | --- |
@@ -130,13 +130,13 @@ local Pi profile can apply edits, verify structured tool-call support:
 npm run agent:doctor
 ```
 
-Current Qwen Coder 3B proof on llama.cpp:
+Current working local model proof:
 
 ```text
-TOOL_CALL_CHECK=FAIL no structured tool_calls returned
+Model: unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL
+TOOL_CALL_CHECK=PASS structured tool_calls returned: read
 ```
 
-That means the profile is useful for context-routing/token experiments, but it
-may print tool-shaped JSON instead of applying file edits. A model/profile is
-only a validated editing-agent profile after this check passes and the relevant
-Maven verification also passes.
+Use this model for Pi file-edit validation. A model/profile is only accepted in
+this workspace after the doctor passes and the relevant Maven verification also
+passes.

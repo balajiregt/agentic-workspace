@@ -23,62 +23,36 @@ agentic-workspace/
   scripts/            -> context efficiency utilities
 ```
 
-## 8 GB MacBook Air Local Agent Setup
+## Local Agent Setup
 
 This repo includes a lightweight `local-agents/` folder. For an 8 GB MacBook
 Air, it sets up `llama.cpp`, configures Pi, starts the model, and launches the
 agent. It does not commit model files, llama.cpp builds, or `node_modules`.
 
-Run one setup command:
-
-```bash
-npm run setup:8gb
-```
-
-Recommended model:
+The only validated local editing model is:
 
 ```text
-Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M
+unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL
 ```
 
-Fallback model when memory pressure is high:
-
-```text
-Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M
-```
-
-Then start the model and Pi agent from the workspace root:
-
-```bash
-npm run agent:8gb
-```
-
-For a 16 GB Mac:
-
-```bash
-npm run setup:16gb
-npm run agent:16gb
-```
-
-For tighter memory:
-
-```bash
-npm run setup:low-memory
-npm run agent:low-memory
-```
-
-For Pi file-edit validation, use the tool-call profile:
+Run:
 
 ```bash
 npm run setup:tool-agent
 npm run agent:tool-agent
 ```
 
+The 8 GB aliases point to the same working profile:
+
+npm run setup:8gb
+npm run agent:8gb
+```
+
 The first run downloads the GGUF model through `llama.cpp` and stores it in the
 user-level Hugging Face/llama.cpp cache, not inside this repository.
 
-The selected RAM profile controls both Pi's `contextWindow`/`maxTokens` and the
-`llama-server` context size used when this repo starts the server.
+The profile uses `contextWindow=4096`, `maxTokens=1024`, `--parallel 1`, and
+`--tools all`.
 
 The launcher starts Pi from `/Users/balaji/agentic-workspace` by default so it
 can discover `AGENTS.md`, `contexts/current/service-context.yml`, `skills/`,
@@ -88,18 +62,6 @@ To intentionally run against another repo:
 
 ```bash
 bash local-agents/run-agent.sh /path/to/your/service-repo
-```
-
-To switch models for a single run:
-
-```bash
-AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M" npm run agent:8gb
-```
-
-To change output tokens for one run:
-
-```bash
-AGENTIC_MAX_TOKENS=4096 npm run agent:16gb
 ```
 
 To watch token usage while llama.cpp and Pi are running, start the dashboard in
@@ -126,28 +88,8 @@ If this prints `TOOL_CALL_CHECK=FAIL`, the model may answer with JSON such as
 is still useful for token/routing experiments, but the selected model/server is
 not yet a validated editing-agent profile.
 
-If it prints `Connection refused`, the model server is not listening yet. Wait
-for the agent terminal to show `listening on http://127.0.0.1:8080`, then run
-the doctor again. If startup stalls, retry with a smaller context window:
-
-```bash
-AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
-```
-
-The launcher now treats failed tool-call validation as a stop condition by
-default. For read-only/advisory model experiments, opt out explicitly:
-
-```bash
-AGENTIC_REQUIRE_TOOL_CALLS=0 npm run agent:8gb
-```
-
-Current model status:
-
-- Qwen Coder 3B: good for context/coding analysis, fails structured tool calls.
-- xLAM 2 3B: loads, but llama.cpp returns HTTP 500 because the generated
-  tool-call text does not match its parser.
-- Functionary Small v3.2: next profile to validate because it is designed for
-  function calling and has a dedicated `agent:tool-agent` profile.
+If it prints `Connection refused`, wait for the agent terminal to show
+`listening on http://127.0.0.1:8080`, then run the doctor again.
 
 Prompt the agent with the central context file:
 
@@ -271,12 +213,6 @@ The latest validation prompt added RestAssured coverage for blank
 `customerId` without naming the split-QA test folder directly. The workspace
 routed the change through the YAML topology and the API test suite passed with
 4 tests, 0 failures.
-
-Local model comparison notes live at:
-
-```text
-docs/model-comparison-log.md
-```
 
 ## Agent Skills
 

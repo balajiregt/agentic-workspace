@@ -4,7 +4,7 @@ set -euo pipefail
 LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
-PROFILE="${AGENTIC_PROFILE:-8gb}"
+PROFILE="${AGENTIC_PROFILE:-tool-agent}"
 AGENT_SCRIPT="agent:${PROFILE}"
 MODEL_REF="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]]["modelRef"])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" 2>/dev/null || true)"
 NPM_PREFIX="$(npm config get prefix 2>/dev/null || true)"
@@ -63,11 +63,6 @@ Setup complete.
 Run the workspace agent with:
 
   npm run ${AGENT_SCRIPT}
-
-For a 16 GB profile:
-
-  npm run setup:16gb
-  npm run agent:16gb
 
 For Pi file-edit tool-call validation:
 

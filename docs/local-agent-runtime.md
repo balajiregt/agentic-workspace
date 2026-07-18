@@ -1,283 +1,96 @@
 # Local Agent Runtime
 
-This repository includes a lightweight `local-agents/` wrapper folder. It is not
-a vendored runtime: model files, llama.cpp builds, and npm dependencies remain
-outside Git.
+This workspace keeps one validated local Pi editing profile.
 
-## 8 GB MacBook Air Baseline
-
-Recommended default:
+## Working Model
 
 ```text
-Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M
+unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL
 ```
 
-Fallback when memory pressure is high:
+Profile:
 
 ```text
-Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M
+contextWindow: 4096
+maxTokens: 1024
+parallel slots: 1
+llama.cpp tools: all
 ```
 
-Why this sizing:
-
-- 8 GB unified memory is tight for local coding agents.
-- 3B Q4_K_M is a practical default for small, context-aware repo tasks.
-- 1.5B Q4_K_M is useful when the browser, IDE, test runner, and model are all
-  open at the same time.
-- Larger 7B+ or 12B+ models are better treated as 16 GB+ profiles.
-
-## One-Command Setup
-
-From the workspace root:
-
-```bash
-npm run setup:8gb
-```
-
-This checks for `llama.cpp`, installs Pi if needed, and renders:
+This model passed the tool-call gate:
 
 ```text
-local-agents/config/model-profiles.json -> generated ~/.pi/agent/models.json
+TOOL_CALL_CHECK=PASS structured tool_calls returned: read
 ```
 
-Then start the recommended model and Pi from the sample service repo:
+## Setup
 
 ```bash
-npm run agent:8gb
-```
-
-Other RAM profiles:
-
-```bash
-npm run setup:16gb
-npm run agent:16gb
-
-npm run setup:low-memory
-npm run agent:low-memory
-```
-
-The first run downloads the GGUF model through `llama.cpp` and stores it in the
-user-level Hugging Face/llama.cpp cache. It does not commit models into
-`local-agents/`.
-
-The run script starts `llama-server` with the same context window declared in
-the selected profile. If an existing llama server is already running on the
-configured port, the script reuses it and assumes the server was started with
-compatible settings.
-
-To run against another repo:
-
-```bash
-bash local-agents/run-agent.sh /path/to/your/service-repo
-```
-
-## Profile Budgets
-
-| Profile | Model | Context window | Max output tokens |
-| --- | --- | ---: | ---: |
-| `low-memory` | Qwen2.5 Coder 1.5B Q4_K_M | 4096 | 1024 |
-| `8gb` | Qwen2.5 Coder 3B Q4_K_M | 8192 | 2048 |
-| `16gb` | Qwen2.5 Coder 3B Q4_K_M | 12288 | 3072 |
-
-Override for one run:
-
-```bash
-AGENTIC_MAX_TOKENS=4096 npm run agent:16gb
-AGENTIC_CONTEXT_WINDOW=16384 npm run agent:16gb
-AGENTIC_MODEL_REF="Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M" npm run agent:8gb
-```
-
-## Manual Runtime Setup
-
-The scripts above are preferred. Manual setup is:
-
-```bash
-brew install llama.cpp
-npm install -g @earendil-works/pi-coding-agent
-```
-
-## Start the Recommended 8 GB Model
-
-```bash
-llama-server -hf Qwen/Qwen2.5-Coder-3B-Instruct-GGUF:Q4_K_M --alias local-model --ctx-size 8192
-```
-
-If the machine feels constrained:
-
-```bash
-llama-server -hf Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q4_K_M --alias local-model --ctx-size 4096
-```
-
-The llama.cpp server exposes an OpenAI-compatible API at:
-
-```text
-http://localhost:8080/v1
-```
-
-## Configure Pi
-
-Copy the committed 8 GB model profile:
-
-```bash
-mkdir -p ~/.pi/agent
-python3 /Users/balaji/agentic-workspace/local-agents/render-pi-models.py \
-  --profile 8gb \
-  --output ~/.pi/agent/models.json
-```
-
-Then run Pi from the repository you want the agent to edit:
-
-```bash
-cd /Users/balaji/agentic-workspace
-pi --approve \
-  --skill skills/microservice-change \
-  --prompt-template docs/prompts \
-  --tools read,bash,edit,write,grep,find,ls
-```
-
-The `npm run agent:*` scripts do this automatically. Starting from the
-workspace root is important because the root contains `AGENTS.md`, the current
-service YAML, and sibling service/QA/deployment folders.
-
-The launcher starts llama.cpp with:
-
-```text
---parallel 1 --metrics --tools all
-```
-
-`--parallel 1` keeps memory bounded on an 8 GB machine. `--tools all` enables
-llama.cpp's tool-call formatting path, which is required before a GGUF model can
-drive Pi's file tools.
-
-Use a prompt that points to the central context file:
-
-```text
-Use the Jira context in /Users/balaji/agentic-workspace/contexts/current/service-context.yml.
-Follow the repository_topology field before deciding where tests or deployment changes belong.
-Update service code, OpenAPI, tests, and deployment impact only as required by the context.
-```
-
-For existing API-test assertions, Pi also exposes a prompt template:
-
-```text
-/existing-test-assertion riskCategory is not empty for the customer risk response
-```
-
-## Useful Workspace Commands
-
-Show configured 8 GB model profile:
-
-```bash
-npm run models:8gb
-```
-
-Run the context efficiency report:
-
-```bash
-npm run context:report
-```
-
-Run setup and launch scripts:
-
-```bash
-npm run setup:8gb
-npm run agent:8gb
 npm run setup:tool-agent
 npm run agent:tool-agent
 ```
 
-Check whether the current local model/server can execute Pi file tools:
+For convenience, the 8 GB aliases point to the same working profile:
+
+```bash
+npm run setup:8gb
+npm run agent:8gb
+```
+
+## Validation Gate
+
+Run this only after the agent terminal shows llama.cpp is listening on port
+`8080`:
 
 ```bash
 npm run agent:doctor
 ```
 
-The doctor sends a forced tool-call request to the OpenAI-compatible
-`/chat/completions` endpoint. `TOOL_CALL_CHECK=PASS` means the server returned
-structured `message.tool_calls`. `TOOL_CALL_CHECK=FAIL` means the server put the
-tool request in normal text, which usually appears in Pi as JSON such as
-`{"name":"edit",...}` instead of an actual edit.
-
-If the doctor prints `Connection refused`, the llama.cpp server is not listening
-yet. In the agent terminal, wait until you see:
+Proceed with Pi edits only when it prints:
 
 ```text
-listening on http://127.0.0.1:8080
+TOOL_CALL_CHECK=PASS
 ```
 
-Then rerun `npm run agent:doctor`. If the server never reaches that line, stop
-it with `Ctrl+C` and retry with a smaller context window:
+## Runtime Behavior
 
-```bash
-AGENTIC_CONTEXT_WINDOW=4096 AGENTIC_MODEL_REF="Salesforce/xLAM-2-3b-fc-r-gguf:Q4_K_M" npm run agent:8gb
-```
-
-By default, the launcher exits when the doctor fails. For advisory/read-only
-model experiments, opt out explicitly:
-
-```bash
-AGENTIC_REQUIRE_TOOL_CALLS=0 npm run agent:8gb
-```
-
-The launcher also refuses to reuse a running llama.cpp server when its context
-window does not match the requested profile. Stop the old server first, or opt
-out only for debugging:
-
-```bash
-AGENTIC_ALLOW_SERVER_MISMATCH=1 npm run agent:8gb
-```
-
-## Tool-Agent Profile
-
-Use this profile when the goal is Pi file edits rather than code-analysis
-quality:
-
-```bash
-npm run setup:tool-agent
-npm run agent:tool-agent
-```
-
-It uses:
+`local-agents/run-agent.sh` starts llama.cpp with:
 
 ```text
-second-state/functionary-small-v3.2-GGUF:Q2_K
-contextWindow: 4096
-maxTokens: 1024
+--ctx-size 4096 --parallel 1 --metrics --tools all
 ```
 
-This profile is intentionally smaller because the first requirement is passing
-`npm run agent:doctor`. If it passes, try the real edit prompt. If it fails,
-the model is rejected for Pi edit automation regardless of its coding quality.
+It starts Pi from the workspace root and loads:
 
-Run the token metrics dashboard in another terminal while Pi is running:
+```text
+AGENTS.md
+contexts/current/service-context.yml
+skills/microservice-change/SKILL.md
+docs/prompts/
+```
+
+## Prompt
+
+Use the project prompt template inside Pi:
+
+```text
+/existing-test-assertion riskCategory is not empty for the customer risk response
+```
+
+## Metrics
+
+Optional dashboard:
 
 ```bash
 npm run metrics:8gb
 open http://localhost:8765
 ```
 
-The dashboard reads:
+## Cleanup
 
-- Pi's rendered model config from `~/.pi/agent/models.json`.
-- llama.cpp model status from `/v1/models`.
-- live slot state from `/slots`.
-- prompt/output token counters from `/metrics`.
-
-`local-agents/run-agent.sh` starts `llama-server` with `--metrics`, so this
-works automatically when this repo launches llama.cpp. If you start llama.cpp
-manually, include:
+If port `8080` is occupied by an old model server:
 
 ```bash
-llama-server ... --metrics --slots
+lsof -nP -iTCP:8080 -sTCP:LISTEN
+kill <PID>
 ```
-
-## Notes
-
-The model choices are intentionally small. This workspace gets leverage from
-compact YAML context and explicit repo paths, not from loading every file into a
-large local model.
-
-Model references:
-
-- `Qwen/Qwen2.5-Coder-3B-Instruct-GGUF`
-- `Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF`
