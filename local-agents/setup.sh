@@ -27,6 +27,13 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v mvn >/dev/null 2>&1; then
+  echo "==> Installing Maven"
+  brew install maven
+else
+  echo "==> Maven already installed"
+fi
+
 if ! command -v llama-server >/dev/null 2>&1 && ! command -v llama >/dev/null 2>&1; then
   echo "==> Installing llama.cpp"
   brew install llama.cpp

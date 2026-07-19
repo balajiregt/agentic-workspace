@@ -3,6 +3,59 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-19 QA Gap Guardrail Validation
+
+Prompt scenario:
+
+```text
+I added a test expecting GET /xyz?customerId=INVALID_ID_FORMAT to return 400.
+Run/analyze it and tell me whether this is supported behavior or a
+product/contract gap.
+```
+
+Expected routing:
+
+- Read `AGENTS.md`.
+- Read `contexts/current/service-context.yml`.
+- Read `skills/microservice-change/SKILL.md`.
+- Inspect the controller, service, OpenAPI, shared QA utilities, and API test
+  files only.
+- Do not delete or rewrite a test only to make the suite pass.
+
+Actual evidence:
+
+- `CustomerRiskController` validates `customerId` with `@NotBlank`.
+- `CustomerRiskService` trims and uppercases the value, then evaluates risk.
+- OpenAPI declares `customerId` as a required string with `minLength: 1`.
+- There is no `@Pattern`, regex check, allowlist, or OpenAPI `pattern`.
+
+Expected agent conclusion:
+
+```text
+INVALID_ID_FORMAT is a nonblank customerId, so the current service evaluates it.
+A test expecting 400 is a product/contract gap unless service validation and
+OpenAPI are updated. Do not silently remove or rewrite the test.
+```
+
+Framework updates:
+
+- `AGENTS.md` now treats unsupported test expectations as QA/product gaps.
+- `skills/microservice-change/SKILL.md` now requires reporting the gap instead
+  of hiding it by deleting the test.
+- `docs/prompts/qa-gap-analysis.md` adds a reusable Pi prompt for this scenario.
+
+Validation:
+
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
 ## 2026-07-18 API Test Change Validation
 
 Prompt used:

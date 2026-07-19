@@ -6,7 +6,9 @@ import static com.agentic.workspace.qa.fixtures.CustomerFixtures.HIGH_RISK_CUSTO
 import static com.agentic.workspace.qa.fixtures.CustomerFixtures.LOW_RISK_CUSTOMER;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 import com.agentic.workspace.qa.client.RestClientFactory;
 import com.agentic.workspace.qa.config.ApiTestConfig;
@@ -37,13 +39,14 @@ class CustomerRiskApiTest {
     hasField(response, "customerId", LOW_RISK_CUSTOMER);
     hasField(response, "eligible", true);
     hasField(response, "riskCategory", "LOW");
+    response.body("riskCategory", not(emptyOrNullString()));
     hasRequiredField(response, "decisionReason");
   }
 
   @Test
   @DisplayName("GET /xyz returns high risk response for blocked customer")
   void getCustomerRiskReturnsHighRiskCustomer() {
-    given(requestSpec)
+    var response = given(requestSpec)
         .queryParam("customerId", HIGH_RISK_CUSTOMER)
         .when()
         .get("/xyz")
@@ -52,6 +55,8 @@ class CustomerRiskApiTest {
         .body("customerId", equalTo(HIGH_RISK_CUSTOMER))
         .body("eligible", equalTo(false))
         .body("riskCategory", equalTo("HIGH"));
+
+    response.body("riskCategory", not(emptyOrNullString()));
   }
 
   @Test

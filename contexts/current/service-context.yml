@@ -12,11 +12,9 @@ repository_topology:
 work_item:
   source: "jira"
   key: "ABC-123"
-  summary: "Validate agentic workspace with Spring Boot service and RestAssured API tests"
-  description: |-
-    Create a concrete dummy microservice slice that proves the local coding-agent
-    workspace can reason across service code, OpenAPI contract, deployment
-    assets, shared QA utilities, and service-specific API tests.
+  summary: "add one more api test assertion for 'riskCategory', and it is expected to be 'notempty' for 'low & high' "
+  description:
+    "whenever the response is 200, the property is expected to have some response in it."
   acceptance_criteria:
     - "xyz-service exposes GET /xyz with customer risk response data"
     - "OpenAPI contract documents the /xyz endpoint and riskCategory field"

@@ -37,8 +37,13 @@ deployment, and tests for the topology declared in the context YAML.
 8. If a task asks for a code or test change, use file tools to make the change.
    Do not respond with a tool-shaped JSON object or patch suggestion as the
    final result.
-9. Update the OpenAPI contract when response fields or endpoint behavior changes.
-10. Check deployment assets for ports, probes, env vars, image names, or runtime
+9. If a test expects behavior that is not implemented or documented, stop and
+   report a QA/product gap instead of silently removing or rewriting the test.
+   Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
+   actual format validation plus OpenAPI updates; `@NotBlank` only covers
+   missing or blank values.
+10. Update the OpenAPI contract when response fields or endpoint behavior changes.
+11. Check deployment assets for ports, probes, env vars, image names, or runtime
    assumptions affected by the change.
 
 ## Quality Gates
@@ -54,6 +59,8 @@ deployment, and tests for the topology declared in the context YAML.
   before modification unless the task explicitly asks for a new test file.
 - No "edit JSON" or pseudo-tool output is returned in place of an actual file
   change.
+- Unsupported test expectations are reported as implementation/OpenAPI gaps
+  with options, not hidden by deleting the test.
 
 ## Example Prompts
 
@@ -70,6 +77,11 @@ updates and add only the missing API tests.
 ```text
 For the existing customer risk API test, add one assertion that riskCategory is
 not empty.
+```
+
+```text
+I added an invalid customerId API test. Run it and tell me whether the service
+supports that behavior or whether this is a product/contract gap.
 ```
 
 ## Stop Condition

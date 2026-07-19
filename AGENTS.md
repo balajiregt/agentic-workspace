@@ -38,5 +38,10 @@ Context discipline:
 - When the user asks for a code/test change, apply the change with file tools.
   Do not answer with a JSON object that describes an edit; that is only a plan,
   not a completed change.
+- When a new or modified test expects behavior not implemented by the service
+  or documented in OpenAPI, treat it as a QA/product gap. Do not silently delete
+  or rewrite the test just to make the suite pass. Report the gap and the
+  concrete options: update service plus OpenAPI, mark the test pending/disabled
+  with a reason, or change the test expectation.
 - Run the verification commands from the YAML when the change touches behavior.
 - Report changed files, validation commands, and any skipped gates.

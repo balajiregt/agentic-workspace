@@ -18,4 +18,7 @@ Expected routing:
 - Read endpoint/controller/service/DTO/OpenAPI/test files only.
 - Do not edit files.
 - Explain low, medium, high, missing customerId, and blank customerId behavior.
+- Call out that nonblank arbitrary customerId values are evaluated by the
+  service unless a separate format validation rule is added to service code and
+  OpenAPI.
 - Include precise file references.
