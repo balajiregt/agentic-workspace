@@ -111,8 +111,8 @@ npm run context:resolve
 ```
 
 The current task YAML should stay small. Stable service facts live in
-`contexts/services/<service>.yml`; exact paths, commands, and behavior examples
-are generated into `contexts/current/resolved-context.yml`.
+the repo layout, OpenAPI, and service code; exact paths and commands are
+generated into `contexts/current/resolved-context.yml`.
 
 The prompt templates include a QA gap analysis flow. Use it when a test expects
 behavior that may not exist yet, such as treating

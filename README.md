@@ -14,7 +14,6 @@ agentic-workspace/
   local-agents/       -> lightweight setup/run wrappers for local models
   contexts/
     current/          -> current Jira/service context used by the agent
-    services/         -> stable service metadata used by the resolver
     examples/         -> microservice and monolith context examples
   docs/               -> validation docs and workflow diagrams
   skills/             -> compact reusable agent instructions
@@ -157,8 +156,8 @@ The split is intentional:
 
 ```text
 service-context.yml          -> small ticket/task facts
-contexts/services/*.yml      -> stable service metadata
-resolved-context.yml         -> generated exact paths, commands, and examples
+OpenAPI + repo layout        -> stable service and contract facts
+resolved-context.yml         -> generated exact paths and commands
 ```
 
 Agents should follow `repository_topology` before deciding whether tests live
@@ -172,9 +171,9 @@ Current ticket context lives at:
 
 Put only the current Jira ticket summary, scope, affected endpoints, and quality
 gates there. Do not hand-maintain exact file paths, Maven commands, fixtures, or
-response examples in the current task YAML; those belong in service metadata or
-the generated resolved context. Repos under `projects/` do not need to be
-modified just to use the local agent framework.
+response examples in the current task YAML. The resolver derives paths from the
+repo layout and treats OpenAPI/service code as the behavior source. Repos under
+`projects/` do not need to be modified just to use the local agent framework.
 
 Examples live at:
 

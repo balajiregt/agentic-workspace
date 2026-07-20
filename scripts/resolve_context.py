@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Generate resolved agent context from a small task YAML plus service metadata."""
+"""Generate resolved agent context from a small task YAML plus repo conventions."""
 
 from __future__ import annotations
 
 import argparse
 import datetime as dt
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -54,20 +53,37 @@ def command_with_cd(command: str, cwd: Path) -> str:
     return f"cd {cwd} && {command}"
 
 
-def build_resolved(workspace: Path, task: dict[str, Any], service: dict[str, Any]) -> dict[str, Any]:
-    service_name = task.get("service_name")
-    if service_name != service.get("service_name"):
-        raise SystemExit(
-            f"Task service_name {service_name!r} does not match metadata service_name {service.get('service_name')!r}"
-        )
+def first_affected_endpoint(task: dict[str, Any]) -> str:
+    endpoints = task.get("work_item", {}).get("affected_endpoints", [])
+    if not endpoints:
+        raise SystemExit("Missing work_item.affected_endpoints in current task context")
+    return str(endpoints[0])
 
-    repos = service["repositories"]
-    microservices_root = workspace / repos["microservices_root"]
-    service_repo = microservices_root / repos["service_repo"]
-    qa_steps = microservices_root / repos["qa_steps"]
-    qa_project = microservices_root / repos["qa_project"]
-    deployment_repo = microservices_root / repos["deployment_repo"]
-    endpoint = service["api"]["endpoint"]
+
+def deployment_repo_for(microservices_root: Path, service_name: str) -> Path:
+    prefix = service_name.removesuffix("-service")
+    candidates = [
+        microservices_root / f"{prefix}-deployments",
+        microservices_root / f"{service_name}-deployments",
+        microservices_root / "deployments",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
+def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
+    service_name = task.get("service_name")
+    if not service_name:
+        raise SystemExit("Missing service_name in current task context")
+
+    microservices_root = workspace / "projects/microservices"
+    service_repo = microservices_root / service_name
+    qa_steps = microservices_root / "qa-steps"
+    qa_project = microservices_root / "qa-projects" / f"{service_name}-api-tests"
+    deployment_repo = deployment_repo_for(microservices_root, service_name)
+    endpoint = first_affected_endpoint(task)
     path = endpoint_path(endpoint)
 
     controller = find_one(service_repo / "src/main/java", "*Controller.java", f'"{path}"')
@@ -77,15 +93,22 @@ def build_resolved(workspace: Path, task: dict[str, Any], service: dict[str, Any
     fixtures = find_one(qa_steps / "src/main/java", "*Fixtures.java")
     assertions = find_one(qa_steps / "src/main/java", "*Assertions.java")
 
-    validation = service["validation"]
-    service_command = command_with_cd(validation["service_start_command"], service_repo)
-    test_command = command_with_cd(validation["api_test_command"], microservices_root)
+    service_port = int(task.get("local_validation", {}).get("service_port", 8081))
+    test_port_property = str(task.get("local_validation", {}).get("test_port_property", "api.port"))
+    service_command = command_with_cd(
+        f"mvn spring-boot:run -Dspring-boot.run.arguments=--server.port={service_port}",
+        service_repo,
+    )
+    test_command = command_with_cd(
+        f"mvn -pl qa-projects/{service_name}-api-tests -am test -D{test_port_property}={service_port}",
+        microservices_root,
+    )
 
     return {
         "generated": {
             "at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
             "by": "scripts/resolve_context.py",
-            "note": "Generated file. Do not hand-maintain; update current task context or service metadata instead.",
+            "note": "Generated file. Do not hand-maintain; update current task context or repo conventions instead.",
         },
         "task_context": {
             "path": rel(workspace / "contexts/current/service-context.yml", workspace),
@@ -94,11 +117,14 @@ def build_resolved(workspace: Path, task: dict[str, Any], service: dict[str, Any
             "quality_gates": task.get("quality_gates", {}),
         },
         "service_context": {
-            "path": rel(workspace / f"contexts/services/{service_name}.yml", workspace),
-            "architecture": service.get("architecture"),
-            "repository_topology": task.get("repository_topology") or service.get("repository_topology"),
-            "api": service.get("api", {}),
-            "behavior_contract": service.get("behavior_contract", {}),
+            "source": "derived from current task context, repo layout, and OpenAPI",
+            "architecture": "microservice",
+            "repository_topology": task.get("repository_topology", {}),
+            "api": {
+                "endpoint": endpoint,
+                "path": path,
+                "contract_source": str(openapi),
+            },
         },
         "resolved_repositories": {
             "microservices_root": str(microservices_root),
@@ -117,7 +143,10 @@ def build_resolved(workspace: Path, task: dict[str, Any], service: dict[str, Any
         },
         "verification": {
             "commands": [service_command, test_command],
-            "notes": validation.get("notes", []),
+            "notes": [
+                "Start the service command first and keep it running while API tests execute.",
+                f"Use port {service_port} because local llama.cpp may already use 8080.",
+            ],
         },
     }
 
@@ -136,9 +165,7 @@ def main() -> None:
     if not service_name:
         raise SystemExit(f"Missing service_name in {context_path}")
 
-    service_path = workspace / "contexts/services" / f"{service_name}.yml"
-    service = read_yaml(service_path)
-    resolved = build_resolved(workspace, task, service)
+    resolved = build_resolved(workspace, task)
 
     output = workspace / args.output
     output.parent.mkdir(parents=True, exist_ok=True)

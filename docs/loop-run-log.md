@@ -16,9 +16,10 @@ Problem:
 Refactor:
 
 - `contexts/current/service-context.yml` now contains only the current task.
-- `contexts/services/xyz-service.yml` contains stable service metadata.
 - `scripts/resolve_context.py` generates `contexts/current/resolved-context.yml`
-  with exact paths, verification commands, and behavior examples.
+  with exact paths and verification commands.
+- The resolver derives from the current task, repo layout, and OpenAPI instead
+  of requiring one metadata YAML per service.
 - Agents read the small task context first, then the generated resolved context.
 
 Context-size proof:
@@ -36,8 +37,8 @@ Model-behavior lesson:
   `decisionReason contains "review"`.
 - The framework now says to check existing endpoint/input/expected-behavior
   coverage before adding another API test.
-- Exact response values come from `service_context.behavior_contract`, service
-  code, or OpenAPI; guessed substrings are not acceptable.
+- Exact response values come from service code or OpenAPI; guessed substrings
+  are not acceptable.
 
 Validation:
 

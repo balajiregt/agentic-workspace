@@ -22,9 +22,9 @@ deployment, and tests for the topology declared in the context YAML.
   test, fixture, or assertion files.
 - Treat `repository_topology` as the source of truth for whether tests and
   deployment assets live in the service repo or separate repos.
-- Treat `service_context.behavior_contract` in resolved context as the source of
-  truth for expected example inputs, outputs, and unsupported validations when
-  present.
+- Treat OpenAPI and service code as the source of truth for expected API
+  behavior. Resolved context points to those files; it should not duplicate the
+  API contract.
 - Treat `work_item.affected_endpoints`, `affected_fields`, and `acceptance_criteria`
   as the behavioral target.
 
@@ -33,9 +33,9 @@ deployment, and tests for the topology declared in the context YAML.
 1. Inspect the context YAML before editing.
 2. If resolved context exists, open the relevant exact target file before
    searching. For API-test edits, open `resolved_files.api_test`.
-3. If `service_context.behavior_contract` is present, use it for expected API
-   values before inventing assertions. For new assertions, confirm exact strings
-   or values from the service/OpenAPI when not listed in the contract.
+3. Use OpenAPI and service code for expected API values before inventing
+   assertions. For new assertions, confirm exact strings or values from those
+   sources.
 4. Inspect only the files needed to confirm the endpoint, DTO, contract, tests,
    and deployment impact.
 5. Prefer existing project patterns over new abstractions.
@@ -77,9 +77,8 @@ deployment, and tests for the topology declared in the context YAML.
 ## Quality Gates
 
 - Service behavior matches acceptance criteria.
-- API assertions use exact values from `service_context.behavior_contract`,
-  service code, or OpenAPI; no guessed substrings are used for expected
-  response fields.
+- API assertions use exact values from service code or OpenAPI; no guessed
+  substrings are used for expected response fields.
 - OpenAPI contract matches response shape.
 - Unit or focused service tests cover behavior changes.
 - RestAssured or service-owned API tests cover the external contract.
