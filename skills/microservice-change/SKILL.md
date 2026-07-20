@@ -13,61 +13,81 @@ deployment, and tests for the topology declared in the context YAML.
 ## Inputs
 
 - Read `/Users/balaji/agentic-workspace/contexts/current/service-context.yml`.
-- Treat `related_repositories.*.local_path` as the source of truth for repo paths.
-- Treat `target_files.*` as the first-choice file map when present. It narrows
+- Read `/Users/balaji/agentic-workspace/contexts/current/resolved-context.yml`
+  when it exists. If it is missing, run `npm run context:resolve`.
+- Treat `resolved_repositories.*` as the source of truth for repo paths when
+  resolved context exists.
+- Treat `resolved_files.*` as the first-choice file map when present. It narrows
   the task from repo-level routing to exact controller, service, OpenAPI, API
   test, fixture, or assertion files.
 - Treat `repository_topology` as the source of truth for whether tests and
   deployment assets live in the service repo or separate repos.
+- Treat `service_context.behavior_contract` in resolved context as the source of
+  truth for expected example inputs, outputs, and unsupported validations when
+  present.
 - Treat `work_item.affected_endpoints`, `affected_fields`, and `acceptance_criteria`
   as the behavioral target.
 
 ## Procedure
 
 1. Inspect the context YAML before editing.
-2. If `target_files` is present, open the relevant exact target file before
-   searching. For API-test edits, open `target_files.api_test`.
-3. Inspect only the files needed to confirm the endpoint, DTO, contract, tests,
+2. If resolved context exists, open the relevant exact target file before
+   searching. For API-test edits, open `resolved_files.api_test`.
+3. If `service_context.behavior_contract` is present, use it for expected API
+   values before inventing assertions. For new assertions, confirm exact strings
+   or values from the service/OpenAPI when not listed in the contract.
+4. Inspect only the files needed to confirm the endpoint, DTO, contract, tests,
    and deployment impact.
-4. Prefer existing project patterns over new abstractions.
-5. If `service_and_tests` is `same-repo`, keep unit, integration, and API tests
+5. Prefer existing project patterns over new abstractions.
+6. If `service_and_tests` is `same-repo`, keep unit, integration, and API tests
    inside the service repo.
-6. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
+7. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
    `qa-steps` and actual service API tests in `qa-projects/<service>-api-tests`.
-7. If the user names a test file or class, validate the exact case-sensitive
+8. If the user names a test file or class, validate the exact case-sensitive
    file path from disk under the YAML-declared test roots. If casing or spelling
    differs, use the existing file and say which prompt name was mapped. If
-   `target_files.api_test` exists, use it as the mapping candidate.
-8. For "add one assertion", "add one more API test", or "modify existing test"
-   requests, edit the
-   existing test file that already covers the endpoint; do not create, rename,
-   append to, or assume files that were not listed from disk.
-9. Keep the repo's existing test framework. In this workspace, API tests are
+   `resolved_files.api_test` exists, use it as the mapping candidate.
+9. Before adding a new API test, inspect the existing test file for equivalent
+   endpoint, fixture/input, and expected behavior coverage. If the exact
+   scenario is already covered, add only a missing assertion to that existing
+   test or report that coverage already exists; do not duplicate the test unless
+   the user explicitly asks for duplicate coverage.
+10. For "add one assertion", "add one more API test", or "modify existing test"
+   requests, edit the existing test file that already covers the endpoint; do
+   not create, rename, append to, or assume files that were not listed from disk.
+   Keep the repo's existing test framework. In this workspace, API tests are
    Java/JUnit/RestAssured under Maven; do not invent TypeScript specs.
-10. If a task asks for a code or test change, use file tools to make the change.
-   Do not respond with a tool-shaped JSON object or patch suggestion as the
-   final result. Do not invent endpoints, base URLs, request bodies, or DTOs;
-   derive test inputs from existing fixtures, service decision rules,
-   controller mappings, OpenAPI, or existing tests.
 11. If a test expects behavior that is not implemented or documented, stop and
    report a QA/product gap instead of silently removing or rewriting the test.
    Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
    actual format validation plus OpenAPI updates; `@NotBlank` only covers
    missing or blank values.
-12. Update the OpenAPI contract when response fields or endpoint behavior changes.
-13. Check deployment assets for ports, probes, env vars, image names, or runtime
+12. If a task asks for a code or test change, use file tools to make the change.
+   Do not respond with a tool-shaped JSON object or patch suggestion as the
+   final result. Do not invent endpoints, base URLs, request bodies, or DTOs;
+   derive test inputs from existing fixtures, service decision rules,
+   controller mappings, OpenAPI, or existing tests.
+13. Update the OpenAPI contract when response fields or endpoint behavior changes.
+14. Check deployment assets for ports, probes, env vars, image names, or runtime
    assumptions affected by the change.
+15. Run verification commands in the YAML order. If the first command starts a
+   long-running service, keep it running while executing the test command in a
+   second terminal/session.
 
 ## Quality Gates
 
 - Service behavior matches acceptance criteria.
+- API assertions use exact values from `service_context.behavior_contract`,
+  service code, or OpenAPI; no guessed substrings are used for expected
+  response fields.
 - OpenAPI contract matches response shape.
 - Unit or focused service tests cover behavior changes.
 - RestAssured or service-owned API tests cover the external contract.
+- Existing equivalent API coverage is reused or enhanced instead of duplicated.
 - Deployment impact is checked and either updated or explicitly reported as no
   change needed.
 - No broad repo scan is used when the YAML points to exact files or folders.
-- `target_files` paths are used before fuzzy file search when present.
+- `resolved_files` paths are used before fuzzy file search when present.
 - No hallucinated paths or test files are used; every edited test file exists
   before modification unless the task explicitly asks for a new test file.
 - No placeholder hosts, invented endpoint paths, invented request bodies, or
@@ -76,6 +96,8 @@ deployment, and tests for the topology declared in the context YAML.
   change.
 - Unsupported test expectations are reported as implementation/OpenAPI gaps
   with options, not hidden by deleting the test.
+- Verification uses the configured API port from the YAML command, not an
+  implicit default port.
 
 ## Example Prompts
 

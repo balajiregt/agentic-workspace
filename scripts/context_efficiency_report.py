@@ -38,6 +38,7 @@ TASK_PROFILES = {
         "description": "Focused context for adding or modifying RestAssured tests for GET /xyz.",
         "files": [
             "contexts/current/service-context.yml",
+            "contexts/current/resolved-context.yml",
             "skills/microservice-change/SKILL.md",
             "projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java",
             "projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
@@ -52,6 +53,7 @@ TASK_PROFILES = {
         "description": "Focused context for adding a new endpoint with service behavior, OpenAPI, tests, and deployment impact check.",
         "files": [
             "contexts/current/service-context.yml",
+            "contexts/current/resolved-context.yml",
             "skills/microservice-change/SKILL.md",
             "projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java",
             "projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/service/CustomerRiskService.java",
@@ -72,6 +74,7 @@ TASK_PROFILES = {
         "description": "Focused context for deciding whether reusable RestAssured helpers belong in qa-steps or only in a service API test.",
         "files": [
             "contexts/current/service-context.yml",
+            "contexts/current/resolved-context.yml",
             "skills/microservice-change/SKILL.md",
             "projects/microservices/qa-steps/pom.xml",
             "projects/microservices/qa-steps/src/main/java/com/agentic/workspace/qa/client/RestClientFactory.java",
@@ -87,6 +90,7 @@ TASK_PROFILES = {
         "files": [
             "AGENTS.md",
             "contexts/current/service-context.yml",
+            "contexts/current/resolved-context.yml",
             "skills/microservice-change/SKILL.md",
             "projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java",
             "projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/service/CustomerRiskService.java",

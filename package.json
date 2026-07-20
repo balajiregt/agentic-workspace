@@ -13,6 +13,7 @@
     "setup:tool-agent-25k": "AGENTIC_PROFILE=tool-agent-experimental-25k bash local-agents/setup.sh",
     "agent:tool-agent-25k": "AGENTIC_PROFILE=tool-agent-experimental-25k bash local-agents/run-agent.sh",
     "context:report": "python3 scripts/context_efficiency_report.py",
+    "context:resolve": "python3 scripts/resolve_context.py",
     "context:api-test": "python3 scripts/context_efficiency_report.py --task-profile api-test-change",
     "context:new-endpoint": "python3 scripts/context_efficiency_report.py --task-profile new-endpoint-change",
     "context:shared-qa": "python3 scripts/context_efficiency_report.py --task-profile shared-qa-utility-change",

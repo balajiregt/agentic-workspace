@@ -56,7 +56,8 @@ class CustomerRiskApiTest {
         .body("customerId", equalTo(MEDIUM_RISK_CUSTOMER))
         .body("eligible", equalTo(true))
         .body("riskCategory", equalTo("MEDIUM"))
-        .body("score", equalTo(57));
+        .body("score", equalTo(57))
+        .body("decisionReason", equalTo("Customer is eligible with standard monitoring."));
 
     response.body("riskCategory", not(emptyOrNullString()));
     hasRequiredField(response, "decisionReason");

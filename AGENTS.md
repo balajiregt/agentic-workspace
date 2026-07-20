@@ -1,13 +1,26 @@
 # Agentic Workspace Instructions
 
-Before any microservice code, API test, OpenAPI, or deployment change, read:
+Before any microservice code, API test, OpenAPI, or deployment change, read the
+small current task context:
 
 ```text
 contexts/current/service-context.yml
 ```
 
-Use `repository_topology` from that YAML before deciding where tests or
-deployment changes belong.
+Then read the generated resolved context when it exists:
+
+```text
+contexts/current/resolved-context.yml
+```
+
+If the resolved context is missing or stale, run:
+
+```text
+npm run context:resolve
+```
+
+Use `repository_topology` from the task or resolved YAML before deciding where
+tests or deployment changes belong.
 
 For service/API/test work, follow:
 
@@ -28,11 +41,14 @@ Context discipline:
 
 - Start from YAML and skills, then open only the files needed for the endpoint,
   field, test, or deployment impact.
-- If `contexts/current/service-context.yml` contains `target_files`, use those
-  exact paths first. For API-test edits, prefer `target_files.api_test` over
-  filename guessing or broad search.
+- Keep `contexts/current/service-context.yml` small and task-specific. Do not
+  bloat it with stable service paths, commands, or response examples.
+- Use `contexts/current/resolved-context.yml` for exact repo paths, resolved
+  files, verification commands, and stable behavior examples.
+- For API-test edits, prefer `resolved_files.api_test` over filename guessing or
+  broad search.
 - Before creating, renaming, or appending to a test file, list existing test
-  files under the path declared by `related_repositories` and choose the
+  files under the path declared by `resolved_repositories` and choose the
   matching existing file.
 - If the user names a test file or class, verify the exact case-sensitive path
   from disk under the YAML-declared test roots. If the prompt's spelling or

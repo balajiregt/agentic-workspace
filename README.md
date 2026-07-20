@@ -14,6 +14,7 @@ agentic-workspace/
   local-agents/       -> lightweight setup/run wrappers for local models
   contexts/
     current/          -> current Jira/service context used by the agent
+    services/         -> stable service metadata used by the resolver
     examples/         -> microservice and monolith context examples
   docs/               -> validation docs and workflow diagrams
   skills/             -> compact reusable agent instructions
@@ -136,13 +137,31 @@ local-agents/run-agent.sh
 ## Central Context
 
 `AGENTS.md` is the repo-level fallback. If a user forgets to say "read the
-service YAML," the agent should still read:
+service YAML," the agent should still read the small current task context:
 
 ```text
 contexts/current/service-context.yml
 ```
 
-Then it should follow `repository_topology` before deciding whether tests live
+Then generate or read the resolved context:
+
+```bash
+npm run context:resolve
+```
+
+```text
+contexts/current/resolved-context.yml
+```
+
+The split is intentional:
+
+```text
+service-context.yml          -> small ticket/task facts
+contexts/services/*.yml      -> stable service metadata
+resolved-context.yml         -> generated exact paths, commands, and examples
+```
+
+Agents should follow `repository_topology` before deciding whether tests live
 inside the service repo or in the split QA project.
 
 Current ticket context lives at:
@@ -151,9 +170,11 @@ Current ticket context lives at:
 /Users/balaji/agentic-workspace/contexts/current/service-context.yml
 ```
 
-Put the current Jira ticket summary, description, acceptance criteria, scope,
-repo paths, affected endpoints, and verification notes there. Repos under
-`projects/` do not need to be modified just to use the local agent framework.
+Put only the current Jira ticket summary, scope, affected endpoints, and quality
+gates there. Do not hand-maintain exact file paths, Maven commands, fixtures, or
+response examples in the current task YAML; those belong in service metadata or
+the generated resolved context. Repos under `projects/` do not need to be
+modified just to use the local agent framework.
 
 Examples live at:
 
@@ -214,6 +235,7 @@ docs/loop-run-log.md
 Run a focused token report for an API test change:
 
 ```bash
+npm run context:resolve
 python3 scripts/context_efficiency_report.py --task-profile api-test-change
 ```
 

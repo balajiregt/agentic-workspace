@@ -99,9 +99,20 @@ It starts Pi from the workspace root and loads:
 ```text
 AGENTS.md
 contexts/current/service-context.yml
+contexts/current/resolved-context.yml
 skills/microservice-change/SKILL.md
 docs/prompts/
 ```
+
+Regenerate the resolved context after changing the current task YAML:
+
+```bash
+npm run context:resolve
+```
+
+The current task YAML should stay small. Stable service facts live in
+`contexts/services/<service>.yml`; exact paths, commands, and behavior examples
+are generated into `contexts/current/resolved-context.yml`.
 
 The prompt templates include a QA gap analysis flow. Use it when a test expects
 behavior that may not exist yet, such as treating

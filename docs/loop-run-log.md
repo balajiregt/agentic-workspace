@@ -3,6 +3,57 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-20 Lean Context Resolver Refactor
+
+Problem:
+
+- `contexts/current/service-context.yml` was becoming too large and hard to
+  maintain.
+- Exact paths, commands, fixtures, and response examples were being added to the
+  task YAML to compensate for local-model mistakes.
+- That made the framework less dynamic and less practical.
+
+Refactor:
+
+- `contexts/current/service-context.yml` now contains only the current task.
+- `contexts/services/xyz-service.yml` contains stable service metadata.
+- `scripts/resolve_context.py` generates `contexts/current/resolved-context.yml`
+  with exact paths, verification commands, and behavior examples.
+- Agents read the small task context first, then the generated resolved context.
+
+Context-size proof:
+
+```text
+Current task context: 28 lines
+Estimated current task tokens: 179
+```
+
+Model-behavior lesson:
+
+- The local model found `resolved_files.api_test`, so generated path context
+  solved the file-discovery problem.
+- It then duplicated an already-covered medium scenario and guessed
+  `decisionReason contains "review"`.
+- The framework now says to check existing endpoint/input/expected-behavior
+  coverage before adding another API test.
+- Exact response values come from `service_context.behavior_contract`, service
+  code, or OpenAPI; guessed substrings are not acceptable.
+
+Validation:
+
+- `npm run context:resolve`
+- `python3 scripts/context_efficiency_report.py --task-profile api-test-change`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
 ## 2026-07-20 Target File Breadcrumb Validation
 
 Prompt scenario:

@@ -1,70 +1,28 @@
 service_name: "xyz-service"
-deployment_repo: "xyz-deployments"
-architecture: "microservice"
-
-repository_topology:
-  service_and_tests: "split-qa"
-  deployment: "separate-repo"
-  notes:
-    - "Use service-owned tests when tests live in the same repo as the endpoint."
-    - "Use split-qa when reusable QA utilities or API suites are maintained separately."
 
 work_item:
   source: "jira"
   key: "ABC-123"
-  summary: "add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is 'medium' "
-  description:
-    "add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is 'medium' "
-  acceptance_criteria:
-    - "xyz-service exposes GET /xyz with customer risk response data"
-    - "OpenAPI contract documents the /xyz endpoint and riskCategory field"
-    - "RestAssured shared utilities live in qa-steps"
-    - "Actual xyz-service API tests live under qa-projects/xyz-service-api-tests"
-    - "Deployment impact is represented in xyz-deployments"
-  change_type: "feature"
-  in_scope:
-    - service_code
-    - openapi_contract
-    - tests
-    - deployment_check
-  out_of_scope: []
+  summary: "add one more api test in CustomerRiskAPitest.java for riskCategory when it is medium"
+  description: "Add or validate API coverage for the medium customer risk category."
+  change_type: "test"
   affected_endpoints:
     - "GET /xyz"
   affected_fields:
     - "riskCategory"
-    - "eligible"
-    - "score"
-  verification:
-    required_commands:
-      - "cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn spring-boot:run"
-      - "cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test"
-    ci_jobs: []
-  notes:
-    - "Maven must be installed locally before running the validation commands."
+  in_scope:
+    - tests
+  out_of_scope:
+    - service_code
+    - openapi_contract
+    - deployment_change
 
-target_files:
-  controller: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java"
-  service: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/service/CustomerRiskService.java"
-  openapi: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml"
-  api_test: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java"
-  shared_fixtures: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps/src/main/java/com/agentic/workspace/qa/fixtures/CustomerFixtures.java"
-  shared_assertions: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps/src/main/java/com/agentic/workspace/qa/assertions/JsonFieldAssertions.java"
-
-related_repositories:
-  service_repo:
-    name: "xyz-service"
-    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
-  deployment_repo:
-    name: "xyz-deployments"
-    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-deployments"
-  shared_qa:
-    qa_steps:
-      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps"
-    qa_projects:
-      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects"
+repository_topology:
+  service_and_tests: "split-qa"
+  deployment: "separate-repo"
 
 quality_gates:
   require_tests_for_behavior_change: true
-  require_openapi_alignment: true
-  require_deployment_impact_check: true
+  require_openapi_alignment: false
+  require_deployment_impact_check: false
   require_hallucination_check: true

@@ -20,6 +20,9 @@ node_modules/
 __pycache__/
 *.py[cod]
 
+# Machine-local resolved context generated from current task and service metadata.
+contexts/current/resolved-context.yml
+
 # Keep the Medium draft local; publish the repo as the reference artifact.
 docs/medium-blog-agentic-workspace.md
 

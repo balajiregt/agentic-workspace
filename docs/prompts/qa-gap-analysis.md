@@ -9,8 +9,10 @@ I added or modified an API test with this expectation:
 <describe the test expectation or paste the failing assertion>
 
 Use AGENTS.md and contexts/current/service-context.yml before inspecting files.
-Inspect the matching controller, service, DTO, OpenAPI, shared QA utilities, and
-API test files only.
+Read contexts/current/resolved-context.yml. If it is missing, run
+`npm run context:resolve`.
+Inspect only the resolved controller, service, OpenAPI, shared QA utilities, and
+API test files.
 
 Do not delete, rename, or rewrite the test just to make the suite pass.
 
