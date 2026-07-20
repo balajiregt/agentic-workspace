@@ -28,6 +28,9 @@ Context discipline:
 
 - Start from YAML and skills, then open only the files needed for the endpoint,
   field, test, or deployment impact.
+- If `contexts/current/service-context.yml` contains `target_files`, use those
+  exact paths first. For API-test edits, prefer `target_files.api_test` over
+  filename guessing or broad search.
 - Before creating, renaming, or appending to a test file, list existing test
   files under the path declared by `related_repositories` and choose the
   matching existing file.

@@ -42,6 +42,14 @@ work_item:
   notes:
     - "Maven must be installed locally before running the validation commands."
 
+target_files:
+  controller: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java"
+  service: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/service/CustomerRiskService.java"
+  openapi: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml"
+  api_test: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java"
+  shared_fixtures: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps/src/main/java/com/agentic/workspace/qa/fixtures/CustomerFixtures.java"
+  shared_assertions: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps/src/main/java/com/agentic/workspace/qa/assertions/JsonFieldAssertions.java"
+
 related_repositories:
   service_repo:
     name: "xyz-service"

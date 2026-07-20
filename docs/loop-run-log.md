@@ -3,6 +3,49 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-20 Target File Breadcrumb Validation
+
+Prompt scenario:
+
+```text
+add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is
+'medium'
+```
+
+Observed failure mode after the first routing guardrail:
+
+- The model searched for `CustomerRiskAPitest.java` under the QA project.
+- It did not map the near-match name to `CustomerRiskApiTest.java`.
+- It then created a placeholder file under `src/test/java/CustomerRiskAPitest.java`
+  with an invented package, base URL, request body, and endpoint.
+
+Framework update:
+
+- `contexts/current/service-context.yml` now includes `target_files`.
+- `target_files.api_test` points directly to the real RestAssured test class.
+- `AGENTS.md`, `skills/microservice-change/SKILL.md`, and
+  `docs/prompts/existing-test-assertion.md` now require target files to be used
+  before fuzzy search.
+
+Expected agent conclusion:
+
+```text
+Use target_files.api_test:
+/Users/balaji/agentic-workspace/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java
+
+Do not create CustomerRiskAPitest.java or any new QA project.
+```
+
+Validation:
+
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
 ## 2026-07-20 Existing Test File Routing Validation
 
 Prompt scenario:

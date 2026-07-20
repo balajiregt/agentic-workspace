@@ -10,6 +10,7 @@ Before editing:
 
 - Read AGENTS.md.
 - Read contexts/current/service-context.yml.
+- If target_files.api_test exists in the YAML, open and edit that exact file.
 - Follow repository_topology and related_repositories.local_path.
 - List existing test files under the QA or service test path declared by the YAML.
 - Verify any user-mentioned test filename/class against the exact

@@ -14,6 +14,9 @@ deployment, and tests for the topology declared in the context YAML.
 
 - Read `/Users/balaji/agentic-workspace/contexts/current/service-context.yml`.
 - Treat `related_repositories.*.local_path` as the source of truth for repo paths.
+- Treat `target_files.*` as the first-choice file map when present. It narrows
+  the task from repo-level routing to exact controller, service, OpenAPI, API
+  test, fixture, or assertion files.
 - Treat `repository_topology` as the source of truth for whether tests and
   deployment assets live in the service repo or separate repos.
 - Treat `work_item.affected_endpoints`, `affected_fields`, and `acceptance_criteria`
@@ -22,28 +25,30 @@ deployment, and tests for the topology declared in the context YAML.
 ## Procedure
 
 1. Inspect the context YAML before editing.
-2. Inspect only the files needed to confirm the endpoint, DTO, contract, tests,
+2. If `target_files` is present, open the relevant exact target file before
+   searching. For API-test edits, open `target_files.api_test`.
+3. Inspect only the files needed to confirm the endpoint, DTO, contract, tests,
    and deployment impact.
-3. Prefer existing project patterns over new abstractions.
-4. If `service_and_tests` is `same-repo`, keep unit, integration, and API tests
+4. Prefer existing project patterns over new abstractions.
+5. If `service_and_tests` is `same-repo`, keep unit, integration, and API tests
    inside the service repo.
-5. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
+6. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
    `qa-steps` and actual service API tests in `qa-projects/<service>-api-tests`.
-6. If the user names a test file or class, validate the exact case-sensitive
+7. If the user names a test file or class, validate the exact case-sensitive
    file path from disk under the YAML-declared test roots. If casing or spelling
-   differs, use the existing file and say which prompt name was mapped.
-7. For "add one assertion", "add one more API test", or "modify existing test"
+   differs, use the existing file and say which prompt name was mapped. If
+   `target_files.api_test` exists, use it as the mapping candidate.
+8. For "add one assertion", "add one more API test", or "modify existing test"
    requests, edit the
    existing test file that already covers the endpoint; do not create, rename,
    append to, or assume files that were not listed from disk.
-8. Keep the repo's existing test framework. In this workspace, API tests are
+9. Keep the repo's existing test framework. In this workspace, API tests are
    Java/JUnit/RestAssured under Maven; do not invent TypeScript specs.
-9. Do not invent endpoints, base URLs, request bodies, or DTOs. Derive test
-   inputs from existing fixtures, service decision rules, controller mappings,
-   OpenAPI, or existing tests.
 10. If a task asks for a code or test change, use file tools to make the change.
    Do not respond with a tool-shaped JSON object or patch suggestion as the
-   final result.
+   final result. Do not invent endpoints, base URLs, request bodies, or DTOs;
+   derive test inputs from existing fixtures, service decision rules,
+   controller mappings, OpenAPI, or existing tests.
 11. If a test expects behavior that is not implemented or documented, stop and
    report a QA/product gap instead of silently removing or rewriting the test.
    Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
@@ -62,6 +67,7 @@ deployment, and tests for the topology declared in the context YAML.
 - Deployment impact is checked and either updated or explicitly reported as no
   change needed.
 - No broad repo scan is used when the YAML points to exact files or folders.
+- `target_files` paths are used before fuzzy file search when present.
 - No hallucinated paths or test files are used; every edited test file exists
   before modification unless the task explicitly asks for a new test file.
 - No placeholder hosts, invented endpoint paths, invented request bodies, or
