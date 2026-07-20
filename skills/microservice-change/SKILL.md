@@ -61,7 +61,10 @@ deployment, and tests for the topology declared in the context YAML.
    report a QA/product gap instead of silently removing or rewriting the test.
    Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
    actual format validation plus OpenAPI updates; `@NotBlank` only covers
-   missing or blank values.
+   missing or blank values. If the user asks to classify whether an expectation
+   is supported, a test bug, or a product/contract gap, do read-only analysis and
+   do not edit tests. Use `derived_validation` from resolved context when
+   present.
 12. If a task asks for a code or test change, use file tools to make the change.
    Do not respond with a tool-shaped JSON object or patch suggestion as the
    final result. Do not invent endpoints, base URLs, request bodies, or DTOs;

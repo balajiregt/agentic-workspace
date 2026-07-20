@@ -53,6 +53,40 @@ def command_with_cd(command: str, cwd: Path) -> str:
     return f"cd {cwd} && {command}"
 
 
+def openapi_query_parameter(openapi: Path, path: str) -> dict[str, Any]:
+    data = read_yaml(openapi)
+    operation = data.get("paths", {}).get(path, {}).get("get", {})
+    for parameter in operation.get("parameters", []):
+        if parameter.get("in") != "query":
+            continue
+        schema = parameter.get("schema", {}) or {}
+        return {
+            "name": parameter.get("name"),
+            "required": bool(parameter.get("required", False)),
+            "schema": schema,
+            "has_pattern": "pattern" in schema,
+            "pattern": schema.get("pattern"),
+            "minLength": schema.get("minLength"),
+        }
+    return {}
+
+
+def source_validation(controller: Path, service_file: Path) -> dict[str, Any]:
+    controller_text = controller.read_text(encoding="utf-8", errors="ignore")
+    service_text = service_file.read_text(encoding="utf-8", errors="ignore")
+    return {
+        "controller_annotations": {
+            "has_not_blank": "@NotBlank" in controller_text,
+            "has_pattern": "@Pattern" in controller_text,
+        },
+        "service_behavior": {
+            "trims_customer_id": ".trim()" in service_text,
+            "uppercases_customer_id": ".toUpperCase()" in service_text,
+            "has_invalid_format_check": "INVALID_ID_FORMAT" in service_text or "@Pattern" in service_text,
+        },
+    }
+
+
 def first_affected_endpoint(task: dict[str, Any]) -> str:
     endpoints = task.get("work_item", {}).get("affected_endpoints", [])
     if not endpoints:
@@ -92,6 +126,8 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
     api_test = find_one(qa_project / "src/test/java", "*Test.java", f'get("{path}")')
     fixtures = find_one(qa_steps / "src/main/java", "*Fixtures.java")
     assertions = find_one(qa_steps / "src/main/java", "*Assertions.java")
+    openapi_query = openapi_query_parameter(openapi, path)
+    source_validation_result = source_validation(controller, service_file)
 
     service_port = int(task.get("local_validation", {}).get("service_port", 8081))
     test_port_property = str(task.get("local_validation", {}).get("test_port_property", "api.port"))
@@ -140,6 +176,15 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
             "api_test": str(api_test),
             "shared_fixtures": str(fixtures),
             "shared_assertions": str(assertions),
+        },
+        "derived_validation": {
+            "query_parameter": openapi_query,
+            "source": source_validation_result,
+            "unsupported_gap_hints": [
+                "A 400 expectation for a nonblank customerId requires explicit service validation and OpenAPI documentation.",
+                "If OpenAPI has minLength but no pattern, format validation is not documented.",
+                "If the controller has @NotBlank but no @Pattern, missing/blank values are validated but arbitrary nonblank format is not.",
+            ],
         },
         "verification": {
             "commands": [service_command, test_command],

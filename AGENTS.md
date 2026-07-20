@@ -69,5 +69,8 @@ Context discipline:
   or rewrite the test just to make the suite pass. Report the gap and the
   concrete options: update service plus OpenAPI, mark the test pending/disabled
   with a reason, or change the test expectation.
+- If the user asks whether an expectation is supported, a test bug, or a
+  product/contract gap, treat the task as read-only analysis unless they
+  explicitly ask to implement the service/contract change.
 - Run the verification commands from the YAML when the change touches behavior.
 - Report changed files, validation commands, and any skipped gates.

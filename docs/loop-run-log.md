@@ -3,6 +3,56 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-20 Point 11 Read-Only Gap Test Failure
+
+Prompt scenario:
+
+```text
+I added a test expectation:
+GET /xyz?customerId=INVALID_ID_FORMAT should return 400 Bad Request.
+
+Tell me whether this expectation is supported behavior, a test bug, or a
+product/contract gap.
+```
+
+Observed local-model failure:
+
+- The model correctly generated/read `contexts/current/resolved-context.yml`.
+- It found `resolved_files.api_test`.
+- It incorrectly edited the API test and replaced the blank-customerId test
+  with an invalid-format test.
+- It did not stop at skill point 11.
+
+Framework update:
+
+- Gap-analysis prompts are now explicitly read-only unless the user asks to
+  implement the service/contract change.
+- `scripts/resolve_context.py` now derives validation hints from OpenAPI and
+  source code:
+  - OpenAPI `customerId` has `minLength: 1` and no `pattern`.
+  - Controller has `@NotBlank` and no `@Pattern`.
+  - Service trims/uppercases customerId and has no invalid-format check.
+- Skill point 11 now tells the agent to use `derived_validation` when present.
+
+Expected agent conclusion:
+
+```text
+This is a product/contract gap. INVALID_ID_FORMAT is nonblank, so current
+service behavior evaluates it. To return 400, add explicit service validation
+and document it in OpenAPI.
+```
+
+Validation:
+
+- `npm run context:resolve`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
 ## 2026-07-20 Lean Context Resolver Refactor
 
 Problem:
