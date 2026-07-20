@@ -4,6 +4,7 @@ import static com.agentic.workspace.qa.assertions.JsonFieldAssertions.hasField;
 import static com.agentic.workspace.qa.assertions.JsonFieldAssertions.hasRequiredField;
 import static com.agentic.workspace.qa.fixtures.CustomerFixtures.HIGH_RISK_CUSTOMER;
 import static com.agentic.workspace.qa.fixtures.CustomerFixtures.LOW_RISK_CUSTOMER;
+import static com.agentic.workspace.qa.fixtures.CustomerFixtures.MEDIUM_RISK_CUSTOMER;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyOrNullString;
@@ -39,6 +40,24 @@ class CustomerRiskApiTest {
     hasField(response, "customerId", LOW_RISK_CUSTOMER);
     hasField(response, "eligible", true);
     hasField(response, "riskCategory", "LOW");
+    response.body("riskCategory", not(emptyOrNullString()));
+    hasRequiredField(response, "decisionReason");
+  }
+
+  @Test
+  @DisplayName("GET /xyz returns medium risk response for review customer")
+  void getCustomerRiskReturnsMediumRiskCustomer() {
+    var response = given(requestSpec)
+        .queryParam("customerId", MEDIUM_RISK_CUSTOMER)
+        .when()
+        .get("/xyz")
+        .then()
+        .statusCode(200)
+        .body("customerId", equalTo(MEDIUM_RISK_CUSTOMER))
+        .body("eligible", equalTo(true))
+        .body("riskCategory", equalTo("MEDIUM"))
+        .body("score", equalTo(57));
+
     response.body("riskCategory", not(emptyOrNullString()));
     hasRequiredField(response, "decisionReason");
   }

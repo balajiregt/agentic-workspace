@@ -12,9 +12,9 @@ repository_topology:
 work_item:
   source: "jira"
   key: "ABC-123"
-  summary: "add one more api test assertion for 'riskCategory', and it is expected to be 'notempty' for 'low & high' "
+  summary: "add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is 'medium' "
   description:
-    "whenever the response is 200, the property is expected to have some response in it."
+    "add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is 'medium' "
   acceptance_criteria:
     - "xyz-service exposes GET /xyz with customer risk response data"
     - "OpenAPI contract documents the /xyz endpoint and riskCategory field"

@@ -3,6 +3,64 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-20 Existing Test File Routing Validation
+
+Prompt scenario:
+
+```text
+add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is
+'medium'
+```
+
+Observed failure mode:
+
+- A local model created `qa-projects/CustomerRiskAPI-api-tests/CustomerRiskAPitest.java`.
+- That path is outside the YAML-declared QA project.
+- The generated test invented `http://api.example.com` and
+  `/riskCategory/{riskCategory}` instead of using `GET /xyz`.
+
+Expected routing:
+
+- Read `AGENTS.md`.
+- Read `contexts/current/service-context.yml`.
+- Search the YAML-declared QA test root.
+- Map the prompt's near-match class name `CustomerRiskAPitest.java` to the real
+  existing file `CustomerRiskApiTest.java`.
+- Add the medium-risk case to the existing RestAssured test file.
+- Use existing fixtures and service rules instead of invented endpoints.
+
+Actual changed file:
+
+- `projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java`
+
+Expected agent conclusion:
+
+```text
+MEDIUM risk is supported behavior. Use MEDIUM_RISK_CUSTOMER / CUST-5000, call
+GET /xyz, and assert riskCategory = MEDIUM in the existing API test.
+```
+
+Framework updates:
+
+- `AGENTS.md` now requires exact case-sensitive filename verification under
+  YAML-declared test roots.
+- `skills/microservice-change/SKILL.md` now treats "add one more API test" like
+  an existing-test edit unless the user explicitly asks for a new file.
+- `docs/prompts/existing-test-assertion.md` now forbids invented endpoints,
+  base URLs, request bodies, and near-match test projects.
+
+Validation:
+
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
 ## 2026-07-19 QA Gap Guardrail Validation
 
 Prompt scenario:

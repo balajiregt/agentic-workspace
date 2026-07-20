@@ -31,9 +31,16 @@ Context discipline:
 - Before creating, renaming, or appending to a test file, list existing test
   files under the path declared by `related_repositories` and choose the
   matching existing file.
+- If the user names a test file or class, verify the exact case-sensitive path
+  from disk under the YAML-declared test roots. If the prompt's spelling or
+  casing differs, map it to the existing file and report that mapping; do not
+  create a new near-match path.
 - Do not invent test frameworks, file extensions, or repo paths. This workspace
   uses Java, JUnit, RestAssured, and Maven for API tests; do not create
   TypeScript test files unless the repo already contains that framework.
+- Do not invent endpoints, base URLs, request bodies, or DTOs. Use the endpoint,
+  fixtures, controller, OpenAPI, and existing test patterns found in the scoped
+  files.
 - Do not use a broad repo dump when the YAML points to exact repos or folders.
 - When the user asks for a code/test change, apply the change with file tools.
   Do not answer with a JSON object that describes an edit; that is only a plan,

@@ -29,21 +29,28 @@ deployment, and tests for the topology declared in the context YAML.
    inside the service repo.
 5. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
    `qa-steps` and actual service API tests in `qa-projects/<service>-api-tests`.
-6. For "add one assertion" or "modify existing test" requests, edit the
+6. If the user names a test file or class, validate the exact case-sensitive
+   file path from disk under the YAML-declared test roots. If casing or spelling
+   differs, use the existing file and say which prompt name was mapped.
+7. For "add one assertion", "add one more API test", or "modify existing test"
+   requests, edit the
    existing test file that already covers the endpoint; do not create, rename,
    append to, or assume files that were not listed from disk.
-7. Keep the repo's existing test framework. In this workspace, API tests are
+8. Keep the repo's existing test framework. In this workspace, API tests are
    Java/JUnit/RestAssured under Maven; do not invent TypeScript specs.
-8. If a task asks for a code or test change, use file tools to make the change.
+9. Do not invent endpoints, base URLs, request bodies, or DTOs. Derive test
+   inputs from existing fixtures, service decision rules, controller mappings,
+   OpenAPI, or existing tests.
+10. If a task asks for a code or test change, use file tools to make the change.
    Do not respond with a tool-shaped JSON object or patch suggestion as the
    final result.
-9. If a test expects behavior that is not implemented or documented, stop and
+11. If a test expects behavior that is not implemented or documented, stop and
    report a QA/product gap instead of silently removing or rewriting the test.
    Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
    actual format validation plus OpenAPI updates; `@NotBlank` only covers
    missing or blank values.
-10. Update the OpenAPI contract when response fields or endpoint behavior changes.
-11. Check deployment assets for ports, probes, env vars, image names, or runtime
+12. Update the OpenAPI contract when response fields or endpoint behavior changes.
+13. Check deployment assets for ports, probes, env vars, image names, or runtime
    assumptions affected by the change.
 
 ## Quality Gates
@@ -57,6 +64,8 @@ deployment, and tests for the topology declared in the context YAML.
 - No broad repo scan is used when the YAML points to exact files or folders.
 - No hallucinated paths or test files are used; every edited test file exists
   before modification unless the task explicitly asks for a new test file.
+- No placeholder hosts, invented endpoint paths, invented request bodies, or
+  made-up API projects are used.
 - No "edit JSON" or pseudo-tool output is returned in place of an actual file
   change.
 - Unsupported test expectations are reported as implementation/OpenAPI gaps
@@ -77,6 +86,11 @@ updates and add only the missing API tests.
 ```text
 For the existing customer risk API test, add one assertion that riskCategory is
 not empty.
+```
+
+```text
+Add one more API test in CustomerRiskApiTest.java for riskCategory when it is
+MEDIUM.
 ```
 
 ```text
