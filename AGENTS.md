@@ -32,8 +32,9 @@ Default routing:
 
 - If `service_and_tests` is `same-repo`, keep service-owned tests inside the
   service repo.
-- If `service_and_tests` is `split-qa`, keep reusable RestAssured utilities in
-  `qa-steps` and actual API tests in `qa-projects/<service>-api-tests`.
+- If `service_and_tests` is `split-qa`, keep reusable API-test utilities in the
+  shared QA project and actual service API tests in the service-specific QA
+  project.
 - If deployment is separate, inspect deployment files only for relevant ports,
   probes, images, env vars, or runtime assumptions.
 
@@ -44,7 +45,7 @@ Context discipline:
 - Keep `contexts/current/service-context.yml` small and task-specific. Do not
   bloat it with stable service paths, commands, or response examples.
 - Use `contexts/current/resolved-context.yml` for exact repo paths, resolved
-  files, verification commands, and stable behavior examples.
+  files, contract/source hints, and verification commands.
 - For API-test edits, prefer `resolved_files.api_test` over filename guessing or
   broad search.
 - Before creating, renaming, or appending to a test file, list existing test
@@ -54,9 +55,8 @@ Context discipline:
   from disk under the YAML-declared test roots. If the prompt's spelling or
   casing differs, map it to the existing file and report that mapping; do not
   create a new near-match path.
-- Do not invent test frameworks, file extensions, or repo paths. This workspace
-  uses Java, JUnit, RestAssured, and Maven for API tests; do not create
-  TypeScript test files unless the repo already contains that framework.
+- Do not invent test frameworks, file extensions, or repo paths. Keep the API
+  testing framework already present in the resolved test project.
 - Do not invent endpoints, base URLs, request bodies, or DTOs. Use the endpoint,
   fixtures, controller, OpenAPI, and existing test patterns found in the scoped
   files.

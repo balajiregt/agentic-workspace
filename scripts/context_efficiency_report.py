@@ -35,7 +35,7 @@ DEFAULT_EXCLUDED_DIRS = {
 
 TASK_PROFILES = {
     "api-test-change": {
-        "description": "Focused context for adding or modifying RestAssured tests for GET /xyz.",
+        "description": "Focused context for adding or modifying API tests for GET /xyz.",
         "files": [
             "contexts/current/service-context.yml",
             "contexts/current/resolved-context.yml",
@@ -71,7 +71,7 @@ TASK_PROFILES = {
         ],
     },
     "shared-qa-utility-change": {
-        "description": "Focused context for deciding whether reusable RestAssured helpers belong in qa-steps or only in a service API test.",
+        "description": "Focused context for deciding whether reusable API-test helpers belong in qa-steps or only in a service API test.",
         "files": [
             "contexts/current/service-context.yml",
             "contexts/current/resolved-context.yml",

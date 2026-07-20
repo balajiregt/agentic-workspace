@@ -40,7 +40,7 @@ Answer in this order:
 Example:
 
 ```text
-I added a test expecting GET /xyz?customerId=INVALID_ID_FORMAT to return 400.
-Run/analyze it and tell me whether this is supported behavior or a
-product/contract gap.
+I added a negative API test that expects 4xx for a request value that currently
+passes the OpenAPI schema. Run/analyze it and tell me whether this is supported
+behavior, a test bug, or a product/contract gap.
 ```

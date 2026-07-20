@@ -74,15 +74,24 @@ def openapi_query_parameter(openapi: Path, path: str) -> dict[str, Any]:
 def source_validation(controller: Path, service_file: Path) -> dict[str, Any]:
     controller_text = controller.read_text(encoding="utf-8", errors="ignore")
     service_text = service_file.read_text(encoding="utf-8", errors="ignore")
+    combined = f"{controller_text}\n{service_text}"
     return {
-        "controller_annotations": {
-            "has_not_blank": "@NotBlank" in controller_text,
-            "has_pattern": "@Pattern" in controller_text,
+        "controller_validation_signals": {
+            "has_required_or_not_blank_annotation": any(
+                token in controller_text for token in ("@NotBlank", "@NotNull", "@NotEmpty")
+            ),
+            "has_pattern_or_regex_annotation": "@Pattern" in controller_text,
+            "has_size_annotation": "@Size" in controller_text,
         },
-        "service_behavior": {
-            "trims_customer_id": ".trim()" in service_text,
-            "uppercases_customer_id": ".toUpperCase()" in service_text,
-            "has_invalid_format_check": "INVALID_ID_FORMAT" in service_text or "@Pattern" in service_text,
+        "implementation_signals": {
+            "normalizes_string_with_trim": ".trim()" in service_text,
+            "normalizes_string_case": ".toUpperCase()" in service_text or ".toLowerCase()" in service_text,
+            "has_explicit_pattern_or_regex_check": any(
+                token in combined for token in ("@Pattern", "Pattern.", ".matches(", "regex")
+            ),
+            "has_enum_or_allowlist_signal": any(
+                token in combined for token in (" enum ", "EnumSet", "contains(", "Set.of(")
+            ),
         },
     }
 
@@ -181,9 +190,9 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
             "query_parameter": openapi_query,
             "source": source_validation_result,
             "unsupported_gap_hints": [
-                "A 400 expectation for a nonblank customerId requires explicit service validation and OpenAPI documentation.",
-                "If OpenAPI has minLength but no pattern, format validation is not documented.",
-                "If the controller has @NotBlank but no @Pattern, missing/blank values are validated but arbitrary nonblank format is not.",
+                "If a negative-test input satisfies the documented OpenAPI schema, a 4xx expectation needs explicit source validation or a contract update.",
+                "If OpenAPI lacks pattern, enum, format, bounds, or other constraints for the field under test, rejection may be undocumented.",
+                "If source lacks a matching validation signal, rejection may be unimplemented even when the test expectation sounds reasonable.",
             ],
         },
         "verification": {

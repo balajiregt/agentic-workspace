@@ -3,6 +3,39 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+## 2026-07-20 Generic API Automation Refactor
+
+Reason:
+
+- The framework should not be shaped around one demo service, field, or negative
+  test value.
+- It should work for API automation teams using different APIs and different
+  API test frameworks.
+
+Refactor:
+
+- Core rules now say "existing API test framework" instead of assuming
+  RestAssured/Java/JUnit.
+- Skill point 11 now describes unsupported behavior generically: if a test
+  expects a response not implemented by source or documented in OpenAPI, report
+  a product/contract gap.
+- Resolver-derived validation hints are generic contract/source signals, not
+  hardcoded `customerId` or `INVALID_ID_FORMAT` rules.
+- Demo-specific details remain only in the sample project and historical proof
+  log entries.
+
+Validation:
+
+- `npm run context:resolve`
+- `python3 -m py_compile scripts/resolve_context.py scripts/context_efficiency_report.py`
+- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
 ## 2026-07-20 Point 11 Read-Only Gap Test Failure
 
 Prompt scenario:

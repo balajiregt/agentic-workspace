@@ -1,6 +1,6 @@
 ---
 name: microservice-change
-description: Make context-aware microservice changes in the agentic workspace across same-repo or split-repo topologies. Use when a task references service-context.yml, Jira-driven service changes, Spring Boot code, OpenAPI alignment, deployment impact checks, service-owned tests, shared QA utilities, or RestAssured API tests under projects/microservices.
+description: Make context-aware microservice changes in the agentic workspace across same-repo or split-repo topologies. Use when a task references service-context.yml, Jira-driven service changes, API code, OpenAPI alignment, deployment impact checks, service-owned tests, shared QA utilities, or API tests under projects/microservices.
 ---
 
 # Microservice Change
@@ -41,8 +41,9 @@ deployment, and tests for the topology declared in the context YAML.
 5. Prefer existing project patterns over new abstractions.
 6. If `service_and_tests` is `same-repo`, keep unit, integration, and API tests
    inside the service repo.
-7. If `service_and_tests` is `split-qa`, keep reusable RestAssured support in
-   `qa-steps` and actual service API tests in `qa-projects/<service>-api-tests`.
+7. If `service_and_tests` is `split-qa`, keep reusable API-test support in the
+   shared QA project and actual service API tests in the service-specific QA
+   project resolved from context.
 8. If the user names a test file or class, validate the exact case-sensitive
    file path from disk under the YAML-declared test roots. If casing or spelling
    differs, use the existing file and say which prompt name was mapped. If
@@ -55,16 +56,17 @@ deployment, and tests for the topology declared in the context YAML.
 10. For "add one assertion", "add one more API test", or "modify existing test"
    requests, edit the existing test file that already covers the endpoint; do
    not create, rename, append to, or assume files that were not listed from disk.
-   Keep the repo's existing test framework. In this workspace, API tests are
-   Java/JUnit/RestAssured under Maven; do not invent TypeScript specs.
+   Keep the repo's existing API test framework; do not introduce a different
+   language, runner, or file type unless the user explicitly asks for a
+   framework migration.
 11. If a test expects behavior that is not implemented or documented, stop and
    report a QA/product gap instead of silently removing or rewriting the test.
-   Example: a `400` expectation for `customerId=INVALID_ID_FORMAT` requires
-   actual format validation plus OpenAPI updates; `@NotBlank` only covers
-   missing or blank values. If the user asks to classify whether an expectation
-   is supported, a test bug, or a product/contract gap, do read-only analysis and
-   do not edit tests. Use `derived_validation` from resolved context when
-   present.
+   Example: a new negative test that expects a 4xx response for an input value
+   allowed by the current contract requires a source/contract change before it
+   can become passing coverage. If the user asks to classify whether an
+   expectation is supported, a test bug, or a product/contract gap, do read-only
+   analysis and do not edit tests. Use `derived_validation` from resolved
+   context when present.
 12. If a task asks for a code or test change, use file tools to make the change.
    Do not respond with a tool-shaped JSON object or patch suggestion as the
    final result. Do not invent endpoints, base URLs, request bodies, or DTOs;
@@ -84,7 +86,7 @@ deployment, and tests for the topology declared in the context YAML.
   substrings are used for expected response fields.
 - OpenAPI contract matches response shape.
 - Unit or focused service tests cover behavior changes.
-- RestAssured or service-owned API tests cover the external contract.
+- API tests cover the external contract using the existing project framework.
 - Existing equivalent API coverage is reused or enhanced instead of duplicated.
 - Deployment impact is checked and either updated or explicitly reported as no
   change needed.
@@ -105,7 +107,7 @@ deployment, and tests for the topology declared in the context YAML.
 
 ```text
 Use the context in contexts/current/service-context.yml. Add a response field to
-GET /xyz, update OpenAPI, and add RestAssured coverage.
+the affected endpoint, update OpenAPI, and add API test coverage.
 ```
 
 ```text
@@ -114,18 +116,18 @@ updates and add only the missing API tests.
 ```
 
 ```text
-For the existing customer risk API test, add one assertion that riskCategory is
-not empty.
+For the existing API test that covers the affected endpoint, add one missing
+assertion for the affected response field.
 ```
 
 ```text
-Add one more API test in CustomerRiskApiTest.java for riskCategory when it is
-MEDIUM.
+Add one more API test for the affected endpoint and response field.
 ```
 
 ```text
-I added an invalid customerId API test. Run it and tell me whether the service
-supports that behavior or whether this is a product/contract gap.
+I added a negative API test expectation. Run a read-only analysis and tell me
+whether the service supports that behavior or whether this is a product/contract
+gap.
 ```
 
 ## Stop Condition

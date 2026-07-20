@@ -118,7 +118,7 @@ Update service code, OpenAPI, tests, and deployment impact only as required by t
 For existing-test edits, use a direct prompt like:
 
 ```text
-For the existing customer risk API test, add one assertion that riskCategory is not empty.
+For the existing API test that covers the affected endpoint, add one assertion for <field>.
 Use AGENTS.md and contexts/current/service-context.yml before editing.
 Do not create, rename, or append to unrelated test files.
 ```
@@ -246,10 +246,10 @@ npm run context:shared-qa
 npm run context:walkthrough
 ```
 
-The latest validation prompt added RestAssured coverage for blank
-`customerId` without naming the split-QA test folder directly. The workspace
-routed the change through the YAML topology and the API test suite passed with
-4 tests, 0 failures.
+The validation prompts exercise common API automation failures: finding the
+right service-specific API test project, avoiding invented endpoints or files,
+and reporting product/contract gaps when a negative test expects behavior not
+implemented by source code or documented in OpenAPI.
 
 ## Agent Skills
 

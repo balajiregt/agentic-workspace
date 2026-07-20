@@ -27,7 +27,7 @@ Before editing:
 
 Do not create, rename, or append to unrelated test files. Do not invent
 frameworks, paths, DTOs, methods, endpoints, base URLs, request bodies, or
-expected response text. Use the repo's existing Java, JUnit, RestAssured, Maven,
-fixtures, controller, service code, and OpenAPI patterns.
+expected response text. Use the repo's existing API test framework, fixtures or
+test data helpers, controller, service code, and OpenAPI patterns.
 Apply the file edit with tools, then run the relevant verification command and
 report changed files plus test result.

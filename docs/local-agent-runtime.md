@@ -115,9 +115,9 @@ the repo layout, OpenAPI, and service code; exact paths and commands are
 generated into `contexts/current/resolved-context.yml`.
 
 The prompt templates include a QA gap analysis flow. Use it when a test expects
-behavior that may not exist yet, such as treating
-`customerId=INVALID_ID_FORMAT` as `400 Bad Request`. The agent should report
-whether this is supported by service code and OpenAPI, a test bug, or a
+behavior that may not exist yet, such as a new negative test expecting `4xx`
+for an input that still satisfies the current OpenAPI schema. The agent should
+report whether this is supported by service code and OpenAPI, a test bug, or a
 product/contract gap. It should not delete the test just to make the suite pass.
 
 ## Prompt
@@ -125,7 +125,7 @@ product/contract gap. It should not delete the test just to make the suite pass.
 Use the project prompt template inside Pi:
 
 ```text
-/existing-test-assertion riskCategory is not empty for the customer risk response
+/existing-test-assertion <field or response assertion for the affected endpoint>
 ```
 
 ## Metrics
