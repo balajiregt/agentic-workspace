@@ -1,9 +1,15 @@
 # Agentic Workspace
 
-This repository is a portable workspace pattern for local coding-agent work. It
-does not vendor model binaries or llama.cpp builds. Instead, it keeps the
-runtime wrappers, context files, skills, validation projects, and docs that a
-local agent should use.
+This repository is a portable agentic workspace pattern for QA/API automation.
+It helps coding agents add or modify API tests, inspect OpenAPI and service
+behavior, reuse shared test utilities, and report product/contract gaps instead
+of blindly forcing tests to pass.
+
+The included runtime validates the workflow with local agents on a small
+machine, but the same context, skill, and verification pattern can be adopted by
+cloud coding agents too. The repo does not vendor model binaries or llama.cpp
+builds; it keeps the wrappers, context files, skills, validation projects, and
+docs that an agent should use.
 
 ```text
 agentic-workspace/
