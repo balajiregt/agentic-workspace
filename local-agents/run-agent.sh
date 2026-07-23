@@ -176,9 +176,9 @@ Metrics dashboard:
   open http://localhost:8765
 
 Suggested prompt:
-For the existing customer risk API test, add one assertion that riskCategory is not empty.
-Use AGENTS.md and contexts/current/service-context.yml before editing.
-Do not create, rename, or append to unrelated test files.
+Use AGENTS.md, contexts/current/service-context.yml, and resolved context.
+Make the requested API test change or report the product/contract gap.
+Do not invent endpoints, paths, frameworks, or test files.
 
 EOF
 

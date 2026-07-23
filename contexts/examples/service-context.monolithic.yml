@@ -25,7 +25,7 @@ work_item:
 related_repositories:
   application_repo:
     name: "monolith-abc"
-    local_path: "/Users/balaji/agentic-workspace/projects/monolithic/monolith-abc"
+    repo_path: "projects/monolithic/monolith-abc"
 
 quality_gates:
   require_tests_for_behavior_change: true

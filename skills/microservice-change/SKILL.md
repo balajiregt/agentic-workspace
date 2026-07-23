@@ -12,9 +12,9 @@ deployment, and tests for the topology declared in the context YAML.
 
 ## Inputs
 
-- Read `/Users/balaji/agentic-workspace/contexts/current/service-context.yml`.
-- Read `/Users/balaji/agentic-workspace/contexts/current/resolved-context.yml`
-  when it exists. If it is missing, run `npm run context:resolve`.
+- Read `contexts/current/service-context.yml` from the workspace root.
+- Read `contexts/current/resolved-context.yml` when it exists. If it is missing,
+  run `npm run context:resolve`.
 - Treat `resolved_repositories.*` as the source of truth for repo paths when
   resolved context exists.
 - Treat `resolved_files.*` as the first-choice file map when present. It narrows

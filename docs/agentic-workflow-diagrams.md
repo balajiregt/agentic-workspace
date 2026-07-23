@@ -74,7 +74,8 @@ sequenceDiagram
   User->>Agent: Request service change
   Agent->>Skill: Load stable workflow rules
   Agent->>YAML: Read dynamic ticket context
-  YAML-->>Agent: Endpoint, fields, topology, repo paths
+  YAML-->>Agent: Endpoint, fields, topology
+  Agent->>Repo: Generate/read resolved paths
   Agent->>Repo: Read only relevant files
   Agent->>Repo: Edit code, contract, tests, deployment if needed
   Agent->>Tests: Run required commands
@@ -84,4 +85,3 @@ sequenceDiagram
 
 The efficiency claim is simple: keep the YAML and skills small, then let the
 agent open files only after the task context points to them.
-

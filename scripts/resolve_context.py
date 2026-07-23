@@ -14,6 +14,9 @@ except ImportError as exc:  # pragma: no cover - local setup guard
     raise SystemExit("PyYAML is required for context resolution: python3 -m pip install pyyaml") from exc
 
 
+DEFAULT_WORKSPACE = Path(__file__).resolve().parents[1]
+
+
 def read_yaml(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle) or {}
@@ -49,7 +52,7 @@ def find_one(root: Path, pattern: str, contains: str | None = None) -> Path:
     return matches[0]
 
 
-def command_with_cd(command: str, cwd: Path) -> str:
+def command_with_cd(command: str, cwd: str) -> str:
     return f"cd {cwd} && {command}"
 
 
@@ -142,11 +145,11 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
     test_port_property = str(task.get("local_validation", {}).get("test_port_property", "api.port"))
     service_command = command_with_cd(
         f"mvn spring-boot:run -Dspring-boot.run.arguments=--server.port={service_port}",
-        service_repo,
+        rel(service_repo, workspace),
     )
     test_command = command_with_cd(
         f"mvn -pl qa-projects/{service_name}-api-tests -am test -D{test_port_property}={service_port}",
-        microservices_root,
+        rel(microservices_root, workspace),
     )
 
     return {
@@ -168,23 +171,23 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
             "api": {
                 "endpoint": endpoint,
                 "path": path,
-                "contract_source": str(openapi),
+                "contract_source": rel(openapi, workspace),
             },
         },
         "resolved_repositories": {
-            "microservices_root": str(microservices_root),
-            "service_repo": str(service_repo),
-            "deployment_repo": str(deployment_repo),
-            "qa_steps": str(qa_steps),
-            "qa_project": str(qa_project),
+            "microservices_root": rel(microservices_root, workspace),
+            "service_repo": rel(service_repo, workspace),
+            "deployment_repo": rel(deployment_repo, workspace),
+            "qa_steps": rel(qa_steps, workspace),
+            "qa_project": rel(qa_project, workspace),
         },
         "resolved_files": {
-            "controller": str(controller),
-            "service": str(service_file),
-            "openapi": str(openapi),
-            "api_test": str(api_test),
-            "shared_fixtures": str(fixtures),
-            "shared_assertions": str(assertions),
+            "controller": rel(controller, workspace),
+            "service": rel(service_file, workspace),
+            "openapi": rel(openapi, workspace),
+            "api_test": rel(api_test, workspace),
+            "shared_fixtures": rel(fixtures, workspace),
+            "shared_assertions": rel(assertions, workspace),
         },
         "derived_validation": {
             "query_parameter": openapi_query,
@@ -207,7 +210,11 @@ def build_resolved(workspace: Path, task: dict[str, Any]) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--workspace", default="/Users/balaji/agentic-workspace")
+    parser.add_argument(
+        "--workspace",
+        default=str(DEFAULT_WORKSPACE),
+        help="Agentic workspace root. Defaults to this script's parent repo.",
+    )
     parser.add_argument("--context", default="contexts/current/service-context.yml")
     parser.add_argument("--output", default="contexts/current/resolved-context.yml")
     args = parser.parse_args()

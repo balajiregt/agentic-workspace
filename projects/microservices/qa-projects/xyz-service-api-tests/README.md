@@ -5,14 +5,14 @@ RestAssured tests for `xyz-service`.
 Start the service first:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
+cd projects/microservices/xyz-service
 mvn spring-boot:run
 ```
 
 Run the API tests from another terminal:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices
+cd projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```
 

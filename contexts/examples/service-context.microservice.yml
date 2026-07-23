@@ -18,7 +18,7 @@ work_item:
   in_scope:
     - service_code
     - openapi_contract
-    - gauge_tests
+    - api_tests
   out_of_scope: []
   affected_endpoints:
     - "GET /xyz"
@@ -28,19 +28,6 @@ work_item:
     required_commands: []
     ci_jobs: []
   notes: []
-
-related_repositories:
-  service_repo:
-    name: "xyz-service"
-    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
-  deployment_repo:
-    name: "xyz-deployments"
-    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-deployments"
-  shared_qa:
-    qa_steps:
-      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-steps"
-    qa_projects:
-      local_path: "/Users/balaji/agentic-workspace/projects/microservices/qa-projects"
 
 quality_gates:
   require_tests_for_behavior_change: true

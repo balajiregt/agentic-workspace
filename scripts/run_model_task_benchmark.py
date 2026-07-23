@@ -12,6 +12,8 @@ from urllib import request
 
 from context_efficiency_report import TASK_PROFILES
 
+DEFAULT_WORKSPACE = Path(__file__).resolve().parents[1]
+
 
 PROMPTS = {
     "new-endpoint-change": "docs/prompts/new-endpoint-change-prompt.md",
@@ -82,7 +84,7 @@ def call_model(base_url: str, prompt: str, max_tokens: int) -> dict[str, object]
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--workspace", default="/Users/balaji/agentic-workspace")
+    parser.add_argument("--workspace", default=str(DEFAULT_WORKSPACE))
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--task-profile", choices=sorted(PROMPTS), required=True)
     parser.add_argument("--max-tokens", type=int, default=384)

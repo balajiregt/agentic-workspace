@@ -29,13 +29,13 @@ can be run before and after the workspace grows.
 ## Run the Context Report
 
 ```bash
-python3 /Users/balaji/agentic-workspace/scripts/context_efficiency_report.py
+python3 scripts/context_efficiency_report.py
 ```
 
 JSON output for charts:
 
 ```bash
-python3 /Users/balaji/agentic-workspace/scripts/context_efficiency_report.py --format json
+python3 scripts/context_efficiency_report.py --format json
 ```
 
 Focused API-test-change output:
@@ -63,27 +63,28 @@ task context     = workflow context + only files needed for the endpoint/test ch
 Current focused API-test-change proof:
 
 ```text
-Central context tokens: 594
-Central context plus skills tokens: 1754
-Full microservices corpus tokens: 5077
-Task profile tokens (api-test-change): 3001
-Central context compression ratio: 8.55x
-Task profile compression ratio: 1.69x
+Central context tokens: 174
+Central context plus skills tokens: 2386
+Full microservices corpus tokens: 5309
+Task profile tokens (api-test-change): 4810
+Central context compression ratio: 30.51x
+Task profile compression ratio: 1.10x
 ```
 
-The task profile is larger than the YAML because it includes the actual code,
-contract, shared RestAssured helpers, and API test file needed for the change.
-It is still bounded by the context route instead of loading every microservice
-file up front.
+The task profile is larger than the task YAML because it includes resolved
+context, actual code, contract, shared API-test helpers, and the existing API
+test file needed for the change. The key claim is that the human-maintained
+task context remains small, while the agent can expand into exact files only
+when needed.
 
 Current task-profile sizing:
 
 | Task profile | Estimated tokens | Local 4096 ctx action |
 | --- | ---: | --- |
-| `shared-qa-utility-change` | 2988 | Fits if output stays focused |
-| `business-flow-walkthrough` | 3470 | Fits as read-only explanation |
-| `api-test-change` | 3001 | Fits if scoped to existing tests |
-| `new-endpoint-change` | 4128 | Split into service/contract, tests, deployment passes |
+| `api-test-change` | 4810 | Use resolved context plus scoped file reads |
+| `shared-qa-utility-change` | run locally | Use staged reads when needed |
+| `business-flow-walkthrough` | run locally | Read-only explanation |
+| `new-endpoint-change` | run locally | Split into service/contract, tests, deployment passes |
 
 The validated local edit profile intentionally keeps `contextWindow=4096`.
 When a task profile exceeds that budget, the scalable approach is staged
@@ -94,21 +95,21 @@ execution, not loading a larger unvalidated local profile.
 If Maven is installed:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices
+cd projects/microservices
 mvn -pl xyz-service,qa-steps -am test
 ```
 
 Start the service:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
+cd projects/microservices/xyz-service
 mvn spring-boot:run
 ```
 
 Run the API tests in another terminal:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices
+cd projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```
 

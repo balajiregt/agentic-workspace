@@ -12,7 +12,7 @@ YAML control plane and reads exact local paths only when needed.
 
 ## Inputs
 
-- Workspace root: `/Users/balaji/agentic-workspace`
+- Workspace root: current repository root.
 - Context file: `contexts/current/service-context.yml`
 - Corpus root: `projects/microservices`
 - Script: `scripts/context_efficiency_report.py`
@@ -22,19 +22,19 @@ YAML control plane and reads exact local paths only when needed.
 1. Run the context efficiency script.
 2. Capture central context tokens, corpus tokens, tokens saved, corpus
    percentage, and compression ratio.
-3. If validating the full workflow, run the service/unit tests and the
-   RestAssured API tests.
+3. If validating the full workflow, run the service/unit tests and API tests
+   for the demo or target project.
 4. For 8 GB MacBook Air claims, report bounded-context behavior rather than
    promising raw speed.
 
 ## Commands
 
 ```bash
-python3 /Users/balaji/agentic-workspace/scripts/context_efficiency_report.py
+python3 scripts/context_efficiency_report.py
 ```
 
 ```bash
-python3 /Users/balaji/agentic-workspace/scripts/context_efficiency_report.py --format json
+python3 scripts/context_efficiency_report.py --format json
 ```
 
 ## Metrics To Report

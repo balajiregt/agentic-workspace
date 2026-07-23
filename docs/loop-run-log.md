@@ -3,6 +3,10 @@
 This log records proof that an agentic workspace change followed the expected
 context-routing loop.
 
+Treat this file as historical validation evidence. The active operating rules
+are `AGENTS.md`, `contexts/current/service-context.yml`,
+`contexts/current/resolved-context.yml`, and the relevant `skills/*/SKILL.md`.
+
 ## 2026-07-20 Generic API Automation Refactor
 
 Reason:
@@ -28,7 +32,7 @@ Validation:
 
 - `npm run context:resolve`
 - `python3 -m py_compile scripts/resolve_context.py scripts/context_efficiency_report.py`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
 
 Validation result:
 
@@ -78,7 +82,7 @@ and document it in OpenAPI.
 Validation:
 
 - `npm run context:resolve`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
 
 Validation result:
 
@@ -127,9 +131,9 @@ Validation:
 
 - `npm run context:resolve`
 - `python3 scripts/context_efficiency_report.py --task-profile api-test-change`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
-- `cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
 
 Validation result:
 
@@ -166,14 +170,14 @@ Expected agent conclusion:
 
 ```text
 Use target_files.api_test:
-/Users/balaji/agentic-workspace/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java
+<workspace-root>/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java
 
 Do not create CustomerRiskAPitest.java or any new QA project.
 ```
 
 Validation:
 
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
 
 Validation result:
 
@@ -229,8 +233,8 @@ Framework updates:
 
 Validation:
 
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
 
 Validation result:
 
@@ -282,8 +286,8 @@ Framework updates:
 
 Validation:
 
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
 
 Validation result:
 
@@ -343,7 +347,7 @@ Validation:
 - `python3 -m py_compile scripts/context_efficiency_report.py local-agents/render-pi-models.py`
 - `python3 scripts/context_efficiency_report.py --task-profile api-test-change`
 - `curl http://localhost:8080/actuator/health`
-- `cd /Users/balaji/agentic-workspace/projects/microservices && /tmp/agentic-workspace-tools/apache-maven-3.9.9/bin/mvn -pl qa-projects/xyz-service-api-tests -am test`
+- `cd <workspace-root>/projects/microservices && /tmp/agentic-workspace-tools/apache-maven-3.9.9/bin/mvn -pl qa-projects/xyz-service-api-tests -am test`
 
 Validation result:
 

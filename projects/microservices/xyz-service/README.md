@@ -14,7 +14,7 @@ external dependencies.
 ## Run Locally
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
+cd projects/microservices/xyz-service
 mvn spring-boot:run
 ```
 

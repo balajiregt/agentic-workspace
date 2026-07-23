@@ -70,9 +70,9 @@ npm run setup:tool-agent-25k
 npm run agent:tool-agent-25k
 ```
 
-The launcher starts Pi from `/Users/balaji/agentic-workspace` by default so it
-can discover `AGENTS.md`, `contexts/current/service-context.yml`, `skills/`,
-and sibling service/QA/deployment folders before editing.
+The launcher starts Pi from this workspace root by default so it can discover
+`AGENTS.md`, `contexts/current/service-context.yml`, `skills/`, and sibling
+service/QA/deployment folders before editing.
 
 To intentionally run against another repo:
 
@@ -110,7 +110,7 @@ If it prints `Connection refused`, wait for the agent terminal to show
 Prompt the agent with the central context file:
 
 ```text
-Use the Jira context in /Users/balaji/agentic-workspace/contexts/current/service-context.yml.
+Use the Jira context in contexts/current/service-context.yml.
 Follow repository_topology before deciding where tests or deployment changes belong.
 Update service code, OpenAPI, tests, and deployment impact only as required by the context.
 ```
@@ -166,7 +166,7 @@ inside the service repo or in the split QA project.
 Current ticket context lives at:
 
 ```text
-/Users/balaji/agentic-workspace/contexts/current/service-context.yml
+contexts/current/service-context.yml
 ```
 
 Put only the current Jira ticket summary, scope, affected endpoints, and quality
@@ -178,9 +178,9 @@ repo layout and treats OpenAPI/service code as the behavior source. Repos under
 Examples live at:
 
 ```text
-/Users/balaji/agentic-workspace/contexts/examples/service-context.microservice.yml
-/Users/balaji/agentic-workspace/contexts/examples/service-context.service-owned-tests.yml
-/Users/balaji/agentic-workspace/contexts/examples/service-context.monolithic.yml
+contexts/examples/service-context.microservice.yml
+contexts/examples/service-context.service-owned-tests.yml
+contexts/examples/service-context.monolithic.yml
 ```
 
 ## Microservice Validation Slice
@@ -206,14 +206,14 @@ contexts/examples/service-context.service-owned-tests.yml
 Run the service:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service
+cd projects/microservices/xyz-service
 mvn spring-boot:run
 ```
 
 Run the RestAssured API tests:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices
+cd projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```
 

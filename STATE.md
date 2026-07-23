@@ -29,6 +29,6 @@ Implication:
 Current validation command:
 
 ```bash
-cd /Users/balaji/agentic-workspace/projects/microservices
+cd projects/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```

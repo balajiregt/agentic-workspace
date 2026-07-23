@@ -33,6 +33,8 @@ DEFAULT_EXCLUDED_DIRS = {
     "__pycache__",
 }
 
+DEFAULT_WORKSPACE = Path(__file__).resolve().parents[1]
+
 TASK_PROFILES = {
     "api-test-change": {
         "description": "Focused context for adding or modifying API tests for GET /xyz.",
@@ -124,10 +126,17 @@ def iter_files(root: Path, suffixes: set[str]) -> Iterable[Path]:
             yield path
 
 
-def file_stats(path: Path) -> dict[str, object]:
+def display_path(path: Path, workspace: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(workspace.resolve()))
+    except ValueError:
+        return str(path)
+
+
+def file_stats(path: Path, workspace: Path) -> dict[str, object]:
     text = path.read_text(encoding="utf-8", errors="ignore")
     return {
-        "path": str(path),
+        "path": display_path(path, workspace),
         "bytes": len(text.encode("utf-8")),
         "estimated_tokens": estimate_tokens(text),
         "lines": text.count("\n") + (1 if text else 0),
@@ -156,9 +165,9 @@ def task_profile_stats(workspace: Path, profile_name: str | None) -> dict[str, o
     for relative_path in profile["files"]:
         path = workspace / relative_path
         if path.exists():
-            files.append(file_stats(path))
+            files.append(file_stats(path, workspace))
         else:
-            missing.append(str(path))
+            missing.append(relative_path)
 
     return {
         "name": profile_name,
@@ -182,9 +191,15 @@ def build_report(
     skills_root: Path,
     task_profile: str | None = None,
 ) -> dict[str, object]:
-    context = file_stats(context_file)
-    workspace_files = [file_stats(path) for path in iter_files(microservices_root, DEFAULT_INCLUDE_SUFFIXES)]
-    skill_files = [file_stats(path) for path in sorted(skills_root.glob("*/SKILL.md"))]
+    context = file_stats(context_file, workspace)
+    workspace_files = [
+        file_stats(path, workspace)
+        for path in iter_files(microservices_root, DEFAULT_INCLUDE_SUFFIXES)
+    ]
+    skill_files = [
+        file_stats(path, workspace)
+        for path in sorted(skills_root.glob("*/SKILL.md"))
+    ]
     workspace_totals = totals(workspace_files)
     skill_totals = totals(skill_files)
 
@@ -194,10 +209,10 @@ def build_report(
     task = task_profile_stats(workspace, task_profile)
 
     report = {
-        "workspace": str(workspace),
-        "context_file": str(context_file),
-        "microservices_root": str(microservices_root),
-        "skills_root": str(skills_root),
+        "workspace": ".",
+        "context_file": display_path(context_file, workspace),
+        "microservices_root": display_path(microservices_root, workspace),
+        "skills_root": display_path(skills_root, workspace),
         "metric_note": "Token counts are approximate and intended for relative comparison.",
         "central_context": context,
         "workspace_skills": {
@@ -346,7 +361,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--workspace",
-        default="/Users/balaji/agentic-workspace",
+        default=str(DEFAULT_WORKSPACE),
         help="Agentic workspace root.",
     )
     parser.add_argument(

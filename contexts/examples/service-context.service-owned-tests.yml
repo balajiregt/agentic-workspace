@@ -29,7 +29,7 @@ work_item:
     - "riskCategory"
   verification:
     required_commands:
-      - "cd /Users/balaji/agentic-workspace/projects/microservices/xyz-service && mvn test"
+      - "cd projects/microservices/xyz-service && mvn test"
     ci_jobs: []
   notes:
     - "Prefer this topology when the team keeps service code and tests together."
@@ -37,7 +37,6 @@ work_item:
 related_repositories:
   service_repo:
     name: "xyz-service"
-    local_path: "/Users/balaji/agentic-workspace/projects/microservices/xyz-service"
     test_locations:
       unit_tests: "src/test/java"
       api_tests: "src/test/java or api-tests"

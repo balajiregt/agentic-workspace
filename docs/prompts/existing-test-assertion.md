@@ -16,7 +16,8 @@ Before editing:
 - Use resolved_files.openapi and resolved_files.service for exact expected
   values before adding assertions.
 - Follow repository_topology and resolved_repositories from the resolved context.
-- List existing test files under the QA or service test path declared by the YAML.
+- List existing test files under the QA or service test path from resolved
+  context.
 - Verify any user-mentioned test filename/class against the exact
   case-sensitive file path on disk. If the prompt uses a near-match name, map it
   to the real existing file and report that mapping.

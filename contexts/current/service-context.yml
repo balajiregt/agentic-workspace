@@ -3,7 +3,7 @@ service_name: "xyz-service"
 work_item:
   source: "jira"
   key: "ABC-123"
-  summary: "add one more api test in CustomerRiskAPitest.java for riskCategory when it is medium"
+  summary: "Add API coverage for the medium customer risk category response"
   description: "Add or validate API coverage for the medium customer risk category."
   change_type: "test"
   affected_endpoints:
