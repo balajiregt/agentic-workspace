@@ -1,9 +1,9 @@
 # Agentic Workspace
 
-This repository is a portable agentic workspace pattern for QA/API automation.
-It helps coding agents add or modify API tests, inspect OpenAPI and service
-behavior, reuse shared test utilities, and report product/contract gaps instead
-of blindly forcing tests to pass.
+This repository is a portable agentic workspace pattern for QA/API and UI
+automation. It helps coding agents add or modify API tests, inspect OpenAPI and
+service behavior, reuse shared test utilities, route Playwright UI work, and
+report product/contract gaps instead of blindly forcing tests to pass.
 
 The included runtime validates the workflow with local agents on a small
 machine, but the same context, skill, and verification pattern can be adopted by
@@ -26,6 +26,7 @@ agentic-workspace/
   projects/
     microservices/    -> Spring Boot service/deployment repos
     monolithic/       -> monolithic application repos
+    ui-automation/    -> isolated Playwright UI automation projects
   scripts/            -> context efficiency utilities
 ```
 
@@ -169,6 +170,26 @@ resolved-context.yml         -> generated exact paths and commands
 Agents should follow `repository_topology` before deciding whether tests live
 inside the service repo or in the split QA project.
 
+For Playwright/UI automation tasks, agents should use the separate UI context:
+
+```text
+contexts/current/ui-context.yml
+```
+
+Then generate or read:
+
+```bash
+npm run context:ui:resolve
+```
+
+```text
+contexts/current/resolved-ui-context.yml
+```
+
+This keeps RestAssured API automation and Playwright UI automation in one
+workspace while preserving separate frameworks, dependencies, and verification
+commands.
+
 Current ticket context lives at:
 
 ```text
@@ -256,6 +277,38 @@ The validation prompts exercise common API automation failures: finding the
 right service-specific API test project, avoiding invented endpoints or files,
 and reporting product/contract gaps when a negative test expects behavior not
 implemented by source code or documented in OpenAPI.
+
+## Playwright UI Automation Slice
+
+The workspace also includes an isolated role-aware Playwright validation slice:
+
+```text
+projects/ui-automation/
+  role-aware-mockserver/               -> Playwright tests, demo app, and Koa mockserver
+```
+
+Install and run it without adding Node dependencies to the workspace root:
+
+```bash
+npm --prefix projects/ui-automation/role-aware-mockserver install
+npx --prefix projects/ui-automation/role-aware-mockserver playwright install chromium
+npm run ui:test
+```
+
+Focused UI runs:
+
+```bash
+npm run ui:test:roles
+npm run ui:test:legacy-interception
+```
+
+Agents should follow:
+
+```text
+skills/playwright-ui-change/SKILL.md
+```
+
+for Playwright, browser-flow, role-aware mockserver, or UI automation changes.
 
 ## Agent Skills
 

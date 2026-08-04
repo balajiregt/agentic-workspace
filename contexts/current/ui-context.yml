@@ -1,0 +1,38 @@
+ui_project_name: "role-aware-mockserver"
+
+work_item:
+  source: "local"
+  key: "UI-ROLE-001"
+  summary: "Validate role-aware Playwright automation with a mockserver-backed UI"
+  description: "Adopt the role-aware Playwright and mockserver slice as isolated UI automation inside the agentic workspace."
+  change_type: "test-framework"
+  affected_flows:
+    - "role-aware operations console"
+  affected_roles:
+    - "admin"
+    - "viewer"
+    - "vip"
+  in_scope:
+    - ui_tests
+    - mockserver
+    - demo_app
+  out_of_scope:
+    - restassured_api_tests
+    - maven_parent
+    - service_openapi_contract
+
+repository_topology:
+  workspace: "combined-agentic-workspace"
+  api_framework: "isolated-restassured"
+  ui_framework: "isolated-playwright"
+
+runtime:
+  app_port: 5173
+  mockserver_port: 3333
+  app_url: "http://127.0.0.1:5173"
+  mockserver_url: "http://127.0.0.1:3333"
+
+quality_gates:
+  require_role_matrix_tests: true
+  require_mockserver_owned_behavior: true
+  require_api_framework_isolation: true

@@ -7,6 +7,71 @@ Treat this file as historical validation evidence. The active operating rules
 are `AGENTS.md`, `contexts/current/service-context.yml`,
 `contexts/current/resolved-context.yml`, and the relevant `skills/*/SKILL.md`.
 
+## 2026-08-02 Isolated Playwright UI Automation Slice
+
+Reason:
+
+- The workspace needed to adopt the existing role-aware Playwright and
+  mockserver framework without mixing it into the Maven/RestAssured API
+  automation slice.
+- Future agents need separate context routing for API changes and UI/browser
+  automation changes.
+
+Implementation:
+
+- Added `projects/ui-automation/role-aware-mockserver` as an isolated
+  Playwright, Koa mockserver, and demo app project.
+- Added `contexts/current/ui-context.yml`,
+  `scripts/resolve_ui_context.py`, and
+  `skills/playwright-ui-change/SKILL.md`.
+- Updated `AGENTS.md`, `README.md`, `.gitignore`, and root `package.json`
+  scripts so UI automation uses `npm --prefix` wrappers and keeps Playwright
+  dependencies out of the workspace root.
+
+Validation:
+
+- `npm run context:resolve`
+- `npm run context:ui:resolve`
+- `python3 -m py_compile scripts/resolve_context.py scripts/resolve_ui_context.py scripts/context_efficiency_report.py local-agents/check-tool-calls.py`
+- `npm run context:report`
+- `npm --prefix projects/ui-automation/role-aware-mockserver install`
+- `npx --prefix projects/ui-automation/role-aware-mockserver playwright install chromium`
+- `npm run ui:test`
+- `npm run ui:test:roles`
+- `npm run ui:test:legacy-interception`
+- `cd projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
+- `cd projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+UI full suite: 21 passed
+UI role suite: 18 passed
+UI legacy interception suite: 3 passed
+API suite: Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Context report: central context 174 tokens, 30.51x compression ratio
+Python compile checks: PASS
+```
+
+Local model validation:
+
+- `npm run agent:doctor`
+
+Result:
+
+```text
+TOOL_CALL_CHECK=ERROR server request failed: HTTP Error 404
+```
+
+Interpretation:
+
+- Port `8080` was occupied by a Java process, not the expected
+  OpenAI-compatible llama.cpp model server.
+- The framework implementation is verified, but local model structured
+  tool-call validation must be rerun after starting the local agent runtime with
+  `npm run agent:tool-agent` or an equivalent profile and confirming it serves
+  `http://localhost:8080/v1`.
+
 ## 2026-07-20 Generic API Automation Refactor
 
 Reason:
