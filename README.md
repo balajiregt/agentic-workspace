@@ -369,8 +369,13 @@ Build or serve only the dashboard:
 
 ```bash
 npm run dashboard:build
+npm run dashboard:negative
 npm run dashboard:serve -- --port 8765
 ```
+
+`dashboard:negative` creates a separate synthetic artifact under
+`artifacts/qa-dashboard-negative/` for validating how failure, gap, duplicate,
+and stale-graph states are displayed before merging dashboard changes.
 
 Run the graph views in a container for non-IDE stakeholders:
 

@@ -569,6 +569,10 @@ def render_dashboard(data: dict[str, Any]) -> str:
     api_commands = "".join(f"<li>{html.escape(command)}</li>" for command in api_impacted["commands"])
     ui_commands = "".join(f"<li>{html.escape(command)}</li>" for command in ui_impacted["commands"])
     ui_files = "".join(f"<li>{html.escape(path or 'missing')}</li>" for path in ui_impacted["testFiles"])
+    playwright_failures = ""
+    if ui["failedTests"]:
+        failure_items = "".join(f"<li>{html.escape(str(item))}</li>" for item in ui["failedTests"])
+        playwright_failures = f"<h3>Failed Playwright tests</h3><ul>{failure_items}</ul>"
     confidence = data["confidence"]
     confidence_class = "good" if confidence["status"] == "strong" else "warn" if confidence["status"] == "watch" else "bad"
     confidence_reasons = "".join(f"<li>{html.escape(reason)}</li>" for reason in confidence["reasons"])
@@ -685,6 +689,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
       ul {{ margin: 0; padding-left: 18px; }} li {{ color: var(--muted); font-size: 13px; line-height: 1.45; margin: 4px 0; overflow-wrap: anywhere; }}
       table {{ border-collapse: collapse; width: 100%; }} th, td {{ border-bottom: 1px solid var(--line); font-size: 13px; padding: 9px 6px; text-align: left; vertical-align: top; }} th {{ color: var(--muted); font-size: 12px; text-transform: uppercase; }}
       pre {{ background: #0f172a; border-radius: 8px; color: #e2e8f0; font-size: 12px; line-height: 1.45; margin: 0; max-height: 360px; overflow: auto; padding: 12px; }}
+      .notice {{ background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; color: #9a3412; font-size: 13px; font-weight: 700; padding: 12px 14px; }}
       @media (max-width: 980px) {{ header {{ flex-direction: column; }} .grid, .two {{ grid-template-columns: 1fr; }} }}
     </style>
   </head>
@@ -697,6 +702,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
         </div>
         <div class="links"><a href="http://127.0.0.1:8766/">Test-impact graph</a><a href="http://127.0.0.1:8767/graph.html">Graphify graph</a></div>
       </header>
+      {f'<section class="notice">{html.escape(str(data["validationMode"]))}</section>' if data.get("validationMode") else ''}
       <section class="grid">
         <div class="card metric"><span>API health</span><strong>{api["status"]}</strong><p class="muted">{api["tests"]} tests, {api["failures"]} failures</p></div>
         <div class="card metric"><span>Playwright health</span><strong>{ui["status"]}</strong><p class="muted">{len(ui["failedTests"])} failed tests in last run</p></div>
@@ -735,7 +741,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
       </section>
       <section class="grid two">
         <div class="card"><h2>API Mapping</h2><p><strong>{html.escape(str(api_ticket.get("key", "API ticket")))}</strong> · {html.escape(str(api_ticket.get("summary", "")))}</p><p class="muted">Endpoint: {html.escape(str(api_impacted.get("endpoint")))}</p><p class="muted">Test file: {html.escape(str(api_impacted.get("testFile")))}</p><h3>Verification</h3><ul>{api_commands}</ul></div>
-        <div class="card"><h2>Playwright Mapping</h2><p><strong>{html.escape(str(ui_ticket.get("key", "UI ticket")))}</strong> · {html.escape(str(ui_ticket.get("summary", "")))}</p><p class="muted">Flow: {html.escape(str(ui_impacted.get("flow")))}</p><p class="muted">Roles: {html.escape(", ".join(ui_impacted.get("roles", [])))}</p><h3>Mapped specs</h3><ul>{ui_files}</ul><h3>Verification</h3><ul>{ui_commands}</ul></div>
+        <div class="card"><h2>Playwright Mapping</h2><p><strong>{html.escape(str(ui_ticket.get("key", "UI ticket")))}</strong> · {html.escape(str(ui_ticket.get("summary", "")))}</p><p class="muted">Flow: {html.escape(str(ui_impacted.get("flow")))}</p><p class="muted">Roles: {html.escape(", ".join(ui_impacted.get("roles", [])))}</p><h3>Mapped specs</h3><ul>{ui_files}</ul><h3>Verification</h3><ul>{ui_commands}</ul>{playwright_failures}</div>
       </section>
       <section class="grid two">
         <div class="card">

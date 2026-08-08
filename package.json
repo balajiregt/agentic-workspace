@@ -23,6 +23,7 @@
     "graph:test": "python3 scripts/build_test_graph.py",
     "graph:serve": "python3 scripts/build_test_graph.py --serve",
     "dashboard:build": "python3 scripts/build_qa_dashboard.py",
+    "dashboard:negative": "python3 scripts/build_qa_dashboard_negative.py",
     "dashboard:serve": "python3 scripts/build_qa_dashboard.py --serve",
     "graphify:setup": "python3 scripts/graphify_local.py setup",
     "graphify:build": "python3 scripts/graphify_local.py build",
