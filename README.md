@@ -92,12 +92,15 @@ another terminal:
 
 ```bash
 npm run metrics:8gb
-open http://localhost:8765
+open http://localhost:8764
 ```
 
 It shows prompt tokens, output tokens, total tokens, configured context window,
 configured max output tokens, active slot usage, model name, and raw token
 metrics from llama.cpp.
+
+The token metrics dashboard uses port `8764` so the QA intelligence dashboard
+can own port `8765`.
 
 Before trusting a local model for file edits, check whether the server returns
 structured tool calls:
@@ -309,6 +312,114 @@ skills/playwright-ui-change/SKILL.md
 ```
 
 for Playwright, browser-flow, role-aware mockserver, or UI automation changes.
+
+## Graph-Based Test Intelligence
+
+The workspace uses a lightweight built-in graph for deterministic API/UI test
+routing:
+
+```bash
+npm run graph:build
+npm run graph:serve -- --port 8766
+```
+
+This generates an ignored local viewer under:
+
+```text
+artifacts/test-graph/
+```
+
+The built-in graph is intentionally small. It reads the resolved API and UI
+contexts and shows relationships such as:
+
+```text
+endpoint -> controller -> service -> OpenAPI -> RestAssured test
+UI flow -> Playwright spec -> helper -> mockserver route -> role
+```
+
+Use it for impact analysis and verification planning: "which tests and commands
+are related to this ticket?"
+
+Duplicate prevention remains instruction-first. Agents must inspect resolved
+tests and classify coverage as already covered, missing assertion, new
+scenario, or product/mockserver gap before creating another test. Similarity
+tools can provide signals later, but they should not replace that decision
+rule.
+
+Graphify is a good optional exploration layer for a broader workspace knowledge
+graph across code, docs, configs, OpenAPI, and skills. Treat Graphify output as
+supporting context for broad questions, not as the source of truth for test
+routing. If used locally, keep its generated output ignored and separate from
+the built-in test graph.
+
+Run Graphify locally without a global install:
+
+```bash
+npm run graphify:build
+npm run graphify:serve -- --port 8767
+```
+
+Launch both graph views together:
+
+```bash
+npm run graphs:serve
+```
+
+Build or serve only the dashboard:
+
+```bash
+npm run dashboard:build
+npm run dashboard:serve -- --port 8765
+```
+
+Run the graph views in a container for non-IDE stakeholders:
+
+```bash
+npm run graphs:docker:build
+npm run graphs:docker:up
+```
+
+Docker Desktop or another Docker daemon must be running before using the
+container commands.
+
+Default URLs:
+
+```text
+QA dashboard:      http://127.0.0.1:8765/
+Test-impact graph: http://127.0.0.1:8766/
+Graphify graph:    http://127.0.0.1:8767/graph.html
+```
+
+In real ticket work, the agent should use the graph layer as supporting
+evidence, not as a replacement for resolved context:
+
+```text
+ticket/context -> resolved API/UI context -> duplicate coverage check
+  -> built-in graph for impacted tests/commands
+  -> optional Graphify for broad repo exploration
+  -> edit only the needed test/assertion/gap report
+  -> run focused verification
+```
+
+The QA dashboard is a lightweight static view for non-IDE stakeholders and
+agents. It uses CSS-only bars and stacked strips, with no charting dependency.
+It summarizes impacted API/UI tests, pass/fail status from available test
+reports, graph node counts, stale graph status, release confidence,
+changed-file based test recommendations, deterministic coverage gaps,
+duplicate/overlap candidates, duplicate-prevention evidence from the loop log,
+test mix, quality signals, and runtime usage readiness.
+
+For larger suites, the dashboard keeps high-volume sections bounded by default.
+Tables render the top 10 rows first, include a local search box, show current
+match counts, and provide a lightweight Show all toggle. This keeps the first
+screen readable even when the workspace grows to hundreds of API and
+Playwright tests.
+
+Runtime usage metrics are optional. If an export is present at
+`artifacts/usage-metrics/usage.json`, the dashboard can correlate the active
+endpoint and UI flow with real-world usage. Without that export, it shows the
+inputs still needed: API gateway/service counts by endpoint, UI analytics by
+flow and role, and production-like error counts.
 
 ## Agent Skills
 

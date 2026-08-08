@@ -1,0 +1,13 @@
+services:
+  graph-views:
+    build:
+      context: .
+      dockerfile: Dockerfile.graphs
+    ports:
+      - "8765:8765"
+      - "8766:8766"
+      - "8767:8767"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      GRAPHIFY_BIN: "/usr/local/bin/graphify"
+    command: ["python3", "scripts/serve_graph_views.py", "--host", "0.0.0.0"]

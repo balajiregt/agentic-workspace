@@ -134,8 +134,11 @@ Optional dashboard:
 
 ```bash
 npm run metrics:8gb
-open http://localhost:8765
+open http://localhost:8764
 ```
+
+This dashboard uses port `8764`; the QA intelligence dashboard uses port
+`8765`.
 
 ## Cleanup
 

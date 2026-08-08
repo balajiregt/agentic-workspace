@@ -429,7 +429,7 @@ class Handler(BaseHTTPRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=8764)
     parser.add_argument("--llama-url", default="http://localhost:8080")
     parser.add_argument("--pi-models", default=str(Path.home() / ".pi/agent/models.json"))
     args = parser.parse_args()

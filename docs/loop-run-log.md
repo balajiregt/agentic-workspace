@@ -72,6 +72,87 @@ Interpretation:
   `npm run agent:tool-agent` or an equivalent profile and confirming it serves
   `http://localhost:8080/v1`.
 
+## 2026-08-05 Graph-Based Test Intelligence Direction
+
+Decision:
+
+- Use the built-in graph as the first-class deterministic test-routing graph.
+- Keep duplicate prevention instruction-first in the API and Playwright skills.
+- Treat Graphify as an optional broad workspace knowledge-graph exploration
+  layer, not as the primary duplicate-detection mechanism.
+
+Implementation:
+
+- Added `scripts/build_test_graph.py`.
+- Added `scripts/graphify_local.py` to build/serve a local Graphify view without
+  a global CLI install.
+- Added `scripts/serve_graph_views.py` to launch the built-in test graph and
+  Graphify view together.
+- Added `scripts/build_qa_dashboard.py` to generate a static stakeholder
+  dashboard from contexts, graph artifacts, test reports, and loop evidence.
+- Expanded the dashboard with release confidence, git changed-file impact
+  recommendations, deterministic coverage/gap signals, duplicate/overlap
+  candidates, and runtime usage readiness.
+- Added CSS-only bars and stacked test-mix visuals so stakeholders can scan
+  quality, coverage, duplicate, graph freshness, and impact signals without a
+  heavy charting dependency.
+- Added lightweight table search, row counts, top-10 default caps, and Show all
+  toggles so the dashboard remains usable when API and Playwright suites grow
+  to hundreds of tests.
+- Added `Dockerfile.graphs` and `docker-compose.graphs.yml` so the graph views
+  can run in a container for non-IDE users.
+- Added root scripts:
+  - `npm run graph:build`
+  - `npm run graph:test`
+  - `npm run graph:serve -- --port 8766`
+  - `npm run dashboard:build`
+  - `npm run dashboard:serve -- --port 8765`
+  - `npm run graphify:build`
+  - `npm run graphify:serve -- --port 8767`
+  - `npm run graphs:serve`
+  - `npm run graphs:docker:build`
+  - `npm run graphs:docker:up`
+- Added `artifacts/` to `.gitignore` for generated graph JSON, HTML, and
+  screenshots.
+- Expanded `skills/playwright-ui-change/SKILL.md` with duplicate coverage,
+  page-object, locator, fixture, storage-state, session-storage, network, and
+  assertion rules.
+
+Validation:
+
+- `npm run context:resolve`
+- `npm run context:ui:resolve`
+- `python3 -m py_compile scripts/build_test_graph.py`
+- `python3 -m py_compile scripts/build_qa_dashboard.py`
+- `npm run graph:test`
+- `npm run dashboard:build`
+- `python3 -m py_compile scripts/graphify_local.py scripts/serve_graph_views.py`
+- `npm run graphify:build`
+- Browser smoke test against `http://127.0.0.1:8766/`
+- Browser smoke test against `http://127.0.0.1:8765/`
+- Browser smoke test against `http://127.0.0.1:8767/graph.html`
+- `npm run graphs:docker:build`
+
+Validation result:
+
+```text
+Graph nodes: 45
+Graph edges: 74
+Dashboard smoke test: rendered Agentic QA Dashboard
+Browser smoke test: rendered 45 SVG nodes and 74 SVG edges
+Graphify local code-only graph: 350 nodes and 582 edges across 30 communities
+Docker graph image: build passed
+Docker dashboard: API pass, Playwright pass, 45/74 test graph, 350/30 Graphify, stale=false
+Dashboard insight model: confidence strong, no deterministic coverage gaps,
+duplicate candidates classified as coverage siblings, runtime usage export
+marked pending
+Dashboard visual model: CSS-only quality bars, test-mix stack, duplicate signal
+bars, and impact focus bars rendered
+Dashboard scale model: searchable capped tables and Show all toggles rendered
+Docker graph container: test graph rendered 45 SVG nodes and 74 SVG edges
+Docker graph container: Graphify canvas view loaded
+```
+
 ## 2026-07-20 Generic API Automation Refactor
 
 Reason:
