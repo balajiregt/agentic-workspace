@@ -37,8 +37,10 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
     data["testHealth"]["api"]["failures"] += api_suite["failures"]
     data["testHealth"]["api"]["status"] = "fail"
 
-    data["testHealth"]["playwright"]["status"] = "fail"
-    data["testHealth"]["playwright"]["failedTests"] = [
+    ui_health = data["testHealth"].setdefault("ui", data["testHealth"].get("playwright", {}))
+    data["testHealth"].pop("playwright", None)
+    ui_health["status"] = "fail"
+    ui_health["failedTests"] = [
         "role-ui.spec.ts › viewer cannot access admin-only action",
         "feature-flags.spec.ts › downstream workspace error banner",
     ]
@@ -61,7 +63,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
         "Role viewer is not mapped to a role coverage edge for the review approval flow.",
         "Role reviewer is in synthetic ticket intent but is missing from the resolved UI role matrix.",
         "Flow review approval is not present in the resolved active UI mapping.",
-        "Playwright spec is outside resolved active mapping: projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+        "UI test spec is outside resolved active mapping: projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
         "API test class is outside resolved active mapping: projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
     ]
     data["coverage"]["orphanTestCases"] = [
@@ -118,7 +120,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
                 "source": "synthetic ui-context affected_roles",
                 "status": "gap",
                 "evidence": "Role has no coverage edge for the review approval flow.",
-                "nextAction": "Add role-aware Playwright coverage or mark out of scope.",
+                "nextAction": "Add role-aware UI automation coverage or mark out of scope.",
             },
             {
                 "area": "UI role",
@@ -232,7 +234,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
             ],
         },
         {
-            "area": "Playwright UI",
+            "area": "UI automation",
             "priority": "high",
             "reason": "Synthetic review-flow and reviewer role are outside resolved active UI mapping.",
             "files": [
@@ -262,7 +264,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
         "status": "risk",
         "reasons": [
             "API health is not passing.",
-            "Playwright health is not passing.",
+            "UI automation health is not passing.",
             "Graphify graph is stale against the current commit.",
             "8 coverage and mapping gap signal(s) found.",
             "1 high-similarity duplicate candidate needs review.",
@@ -279,7 +281,7 @@ def write_outputs(root: Path, output_dir: Path) -> None:
     (output_dir / "index.html").write_text(render_dashboard(data), encoding="utf-8")
     print(f"Wrote {output_dir / 'dashboard.json'}")
     print(f"Wrote {output_dir / 'index.html'}")
-    print("Negative scenario: synthetic failures=api+playwright, gaps=8, orphanTests=2, nearDuplicate=1, graphStale=true")
+    print("Negative scenario: synthetic failures=api+ui, gaps=8, orphanTests=2, nearDuplicate=1, graphStale=true")
 
 
 def main() -> None:

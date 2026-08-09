@@ -31,6 +31,7 @@ contexts/current/resolved-ui-context.yml
 
 # Keep the Medium draft local; publish the repo as the reference artifact.
 docs/medium-blog-agentic-workspace.md
+docs/blog-agentic-workspace-v2.md
 
 # Older standalone PoC repo retained locally, not part of this workspace commit.
 projects/copilot-sprint-metrics-starter/

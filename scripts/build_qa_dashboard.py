@@ -68,7 +68,7 @@ def parse_surefire(root: Path) -> list[dict[str, Any]]:
     return results
 
 
-def summarize_playwright(root: Path) -> dict[str, Any]:
+def summarize_ui_automation(root: Path) -> dict[str, Any]:
     report = root / "projects/ui-automation/role-aware-mockserver/playwright/playwright-report/index.html"
     last_run = root / "projects/ui-automation/role-aware-mockserver/test-results/.last-run.json"
     last = read_json(last_run)
@@ -78,6 +78,7 @@ def summarize_playwright(root: Path) -> dict[str, Any]:
         "reportExists": report.is_file(),
         "lastRunPath": str(last_run.relative_to(root)),
         "lastRunExists": last_run.is_file(),
+        "framework": "Playwright",
         "status": "fail" if failed else "pass" if last_run.is_file() else "unknown",
         "failedTests": failed,
     }
@@ -239,9 +240,9 @@ def impacted_recommendations(api: dict[str, Any], ui: dict[str, Any], files: lis
     if ui_hits:
         recommendations.append(
             recommendation(
-                "Playwright UI",
+                "UI automation",
                 "high",
-                "UI app, mockserver, Playwright config, helpers, page objects, or specs changed.",
+                "UI app, mock services, automation config, helpers, page objects, or specs changed.",
                 [
                     ui_files.get("role_test", ""),
                     ui_files.get("feature_flag_test", ""),
@@ -313,7 +314,7 @@ def coverage_insights(api: dict[str, Any], ui: dict[str, Any], graph: dict[str, 
     for path in inventory["api"]["unmappedFiles"]:
         gaps.append(f"API test file is outside resolved active mapping: {path}")
     for path in inventory["ui"]["unmappedFiles"]:
-        gaps.append(f"Playwright spec is outside resolved active mapping: {path}")
+        gaps.append(f"UI test spec is outside resolved active mapping: {path}")
     return {
         "endpointCoverage": [{"endpoint": api_endpoint, "covered": endpoint_covered}],
         "roleCoverage": role_coverage,
@@ -392,7 +393,7 @@ def usage_metrics(root: Path, api: dict[str, Any], ui: dict[str, Any]) -> dict[s
             "summary": "No runtime usage export found yet.",
             "requiredInputs": [
                 "API gateway or service access counts by endpoint",
-                "UI analytics or mockserver access counts by flow and role",
+                "UI analytics, browser automation, or mock-service access counts by flow and actor",
                 "Recent production-like error counts by endpoint or flow",
             ],
             "hotspots": [],
@@ -423,7 +424,7 @@ def confidence_score(api_health: dict[str, Any], ui_health: dict[str, Any], grap
         reasons.append("API health is not passing.")
     if ui_health["status"] != "pass":
         score -= 20
-        reasons.append("Playwright health is not passing.")
+        reasons.append("UI automation health is not passing.")
     if graphs["stale"]:
         score -= 12
         reasons.append("Graphify graph is stale against the current commit.")
@@ -485,7 +486,7 @@ def build_dashboard(root: Path) -> dict[str, Any]:
         "failures": api_failures,
         "status": "pass" if surefire and api_failures == 0 else "fail" if api_failures else "unknown",
     }
-    ui_health = summarize_playwright(root)
+    ui_health = summarize_ui_automation(root)
     return {
         "generatedAt": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
         "ticket": {
@@ -495,7 +496,7 @@ def build_dashboard(root: Path) -> dict[str, Any]:
         "graphs": graphs,
         "testHealth": {
             "api": api_health,
-            "playwright": ui_health,
+            "ui": ui_health,
         },
         "impacted": {
             "api": {
@@ -548,7 +549,7 @@ def pill_class(status: str) -> str:
 def render_dashboard(data: dict[str, Any]) -> str:
     payload = json.dumps(data, indent=2)
     api = data["testHealth"]["api"]
-    ui = data["testHealth"]["playwright"]
+    ui = data["testHealth"].get("ui", data["testHealth"].get("playwright", {}))
     test_graph = data["graphs"]["testImpact"]
     graphify = data["graphs"]["graphify"]
     api_ticket = data["ticket"]["api"]
@@ -569,10 +570,10 @@ def render_dashboard(data: dict[str, Any]) -> str:
     api_commands = "".join(f"<li>{html.escape(command)}</li>" for command in api_impacted["commands"])
     ui_commands = "".join(f"<li>{html.escape(command)}</li>" for command in ui_impacted["commands"])
     ui_files = "".join(f"<li>{html.escape(path or 'missing')}</li>" for path in ui_impacted["testFiles"])
-    playwright_failures = ""
+    ui_failures = ""
     if ui["failedTests"]:
         failure_items = "".join(f"<li>{html.escape(str(item))}</li>" for item in ui["failedTests"])
-        playwright_failures = f"<h3>Failed Playwright tests</h3><ul>{failure_items}</ul>"
+        ui_failures = f"<h3>Failed UI tests</h3><ul>{failure_items}</ul>"
     confidence = data["confidence"]
     confidence_class = "good" if confidence["status"] == "strong" else "warn" if confidence["status"] == "watch" else "bad"
     confidence_reasons = "".join(f"<li>{html.escape(reason)}</li>" for reason in confidence["reasons"])
@@ -649,7 +650,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
     quality_bars = [
         ("Release confidence", confidence_percent, confidence_class, str(confidence["score"])),
         ("API health", api_status_percent, pill_class(api["status"]), api["status"]),
-        ("Playwright health", ui_status_percent, pill_class(ui["status"]), ui["status"]),
+        ("UI automation health", ui_status_percent, pill_class(ui["status"]), ui["status"]),
         ("Mapped coverage", coverage_percent, "good" if coverage_percent == 100 else "warn", f"{visuals['coverage']['covered']}/{visuals['coverage']['total']}"),
         ("Duplicate safety", duplicate_clear_percent, "good" if duplicate_clear_percent == 100 else "warn", f"{data['duplicates']['nearDuplicateCount']} risk"),
         ("Graph freshness", graph_fresh_percent, stale_class, stale),
@@ -734,7 +735,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
       {f'<section class="notice">{html.escape(str(data["validationMode"]))}</section>' if data.get("validationMode") else ''}
       <section class="grid">
         <div class="card metric"><span>API health</span><strong>{api["status"]}</strong><p class="muted">{api["tests"]} tests, {api["failures"]} failures</p></div>
-        <div class="card metric"><span>Playwright health</span><strong>{ui["status"]}</strong><p class="muted">{len(ui["failedTests"])} failed tests in last run</p></div>
+        <div class="card metric"><span>UI automation health</span><strong>{ui["status"]}</strong><p class="muted">{len(ui["failedTests"])} failed tests in last run</p></div>
         <div class="card metric"><span>Test graph</span><strong>{test_graph["nodes"]}/{test_graph["edges"]}</strong><p class="muted">nodes / relationships</p></div>
         <div class="card metric"><span>Graphify</span><strong>{graphify["nodes"]}/{graphify["communities"]}</strong><p class="muted">nodes / communities · <span class="pill {stale_class}">{stale}</span></p></div>
       </section>
@@ -769,8 +770,8 @@ def render_dashboard(data: dict[str, Any]) -> str:
         </div>
       </section>
       <section class="grid two">
-        <div class="card"><h2>API Mapping</h2><p><strong>{html.escape(str(api_ticket.get("key", "API ticket")))}</strong> · {html.escape(str(api_ticket.get("summary", "")))}</p><p class="muted">Endpoint: {html.escape(str(api_impacted.get("endpoint")))}</p><p class="muted">Test file: {html.escape(str(api_impacted.get("testFile")))}</p><h3>Verification</h3><ul>{api_commands}</ul></div>
-        <div class="card"><h2>Playwright Mapping</h2><p><strong>{html.escape(str(ui_ticket.get("key", "UI ticket")))}</strong> · {html.escape(str(ui_ticket.get("summary", "")))}</p><p class="muted">Flow: {html.escape(str(ui_impacted.get("flow")))}</p><p class="muted">Roles: {html.escape(", ".join(ui_impacted.get("roles", [])))}</p><h3>Mapped specs</h3><ul>{ui_files}</ul><h3>Verification</h3><ul>{ui_commands}</ul>{playwright_failures}</div>
+        <div class="card"><h2>API Work Item Mapping</h2><p><strong>{html.escape(str(api_ticket.get("key", "API ticket")))}</strong> · {html.escape(str(api_ticket.get("summary", "")))}</p><p class="muted">Endpoint: {html.escape(str(api_impacted.get("endpoint")))}</p><p class="muted">Test file: {html.escape(str(api_impacted.get("testFile")))}</p><h3>Verification</h3><ul>{api_commands}</ul></div>
+        <div class="card"><h2>UI Work Item Mapping</h2><p><strong>{html.escape(str(ui_ticket.get("key", "UI ticket")))}</strong> · {html.escape(str(ui_ticket.get("summary", "")))}</p><p class="muted">Flow: {html.escape(str(ui_impacted.get("flow")))}</p><p class="muted">Actors/Roles: {html.escape(", ".join(ui_impacted.get("roles", [])))}</p><h3>Mapped UI tests</h3><ul>{ui_files}</ul><h3>Verification</h3><ul>{ui_commands}</ul>{ui_failures}</div>
       </section>
       <section class="grid two">
         <div class="card">
