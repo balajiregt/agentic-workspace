@@ -595,6 +595,35 @@ def render_dashboard(data: dict[str, Any]) -> str:
     )
     gap_items = "".join(f"<li>{html.escape(item)}</li>" for item in data["coverage"]["gaps"])
     gap_items = gap_items or "<li>No deterministic coverage gaps found in the active graph.</li>"
+    negative_evidence_section = ""
+    negative_evidence = data.get("negativeEvidence", {})
+    mapping_rows = "".join(
+        f"<tr data-row><td>{html.escape(str(item.get('area', '')))}</td><td>{html.escape(str(item.get('intent', '')))}<p class=\"muted\">Source: {html.escape(str(item.get('source', '')))}</p></td><td><span class=\"pill {pill_class('pass' if item.get('status') == 'mapped' else 'fail' if item.get('status') == 'gap' else 'unknown')}\">{html.escape(str(item.get('status', 'review')))}</span></td><td>{html.escape(str(item.get('evidence', '')))}</td><td>{html.escape(str(item.get('nextAction', '')))}</td></tr>"
+        for item in negative_evidence.get("mappingAudit", [])
+    )
+    scenario_rows = "".join(
+        f"<tr data-row><td>{html.escape(str(item.get('scenario', '')))}</td><td>{html.escape(str(item.get('injectedCondition', '')))}</td><td>{html.escape(str(item.get('dashboardSignal', '')))}</td><td>{html.escape(str(item.get('debugQuestion', '')))}</td></tr>"
+        for item in negative_evidence.get("scenarios", [])
+    )
+    if mapping_rows or scenario_rows:
+        mapping_table = (
+            f"<h3>Mapping audit</h3><div class=\"table-tools\"><input type=\"search\" placeholder=\"Search mapping evidence\" data-table-filter=\"mapping-audit-table\"><span class=\"count\" data-table-count=\"mapping-audit-table\"></span><button type=\"button\" data-table-toggle=\"mapping-audit-table\">Show all</button></div><div class=\"table-wrap\"><table id=\"mapping-audit-table\" data-table-limit=\"{limit}\"><thead><tr><th>Area</th><th>Intent</th><th>Status</th><th>Evidence</th><th>Next action</th></tr></thead><tbody>{mapping_rows}</tbody></table></div>"
+            if mapping_rows
+            else ""
+        )
+        scenario_table = (
+            f"<h3>Scenario checks</h3><div class=\"table-tools\"><input type=\"search\" placeholder=\"Search negative scenarios\" data-table-filter=\"negative-scenario-table\"><span class=\"count\" data-table-count=\"negative-scenario-table\"></span><button type=\"button\" data-table-toggle=\"negative-scenario-table\">Show all</button></div><div class=\"table-wrap\"><table id=\"negative-scenario-table\" data-table-limit=\"{limit}\"><thead><tr><th>Scenario</th><th>Injected condition</th><th>Dashboard signal</th><th>Debug question</th></tr></thead><tbody>{scenario_rows}</tbody></table></div>"
+            if scenario_rows
+            else ""
+        )
+        negative_evidence_section = f"""
+      <section class="card">
+        <h2>Negative Scenario Evidence</h2>
+        <p class="muted">Synthetic checks for missing mapping, missing coverage, orphan tests, duplicate risk, and stale graph behavior. This section validates whether the dashboard explains the risk clearly.</p>
+        {mapping_table}
+        {scenario_table}
+      </section>
+"""
     duplicate_candidate_rows = "".join(
         f"<tr data-row><td>{html.escape(item['left'])}<p class=\"muted\">{html.escape(str(item.get('leftPath', '')))}</p></td><td>{html.escape(item['right'])}<p class=\"muted\">{html.escape(str(item.get('rightPath', '')))}</p></td><td>{item['score']}</td><td><span class=\"pill {'bad' if item['signal'] == 'near-duplicate review' else 'warn'}\">{html.escape(item['signal'])}</span><p class=\"muted\">Shared: {html.escape(', '.join(item['sharedTerms']))}</p></td></tr>"
         for item in data["duplicates"]["candidates"]
@@ -759,6 +788,7 @@ def render_dashboard(data: dict[str, Any]) -> str:
           <h3>Gap signals</h3><ul>{gap_items}</ul>
         </div>
       </section>
+      {negative_evidence_section}
       <section class="grid two">
         <div class="card"><h2>API Test Health</h2><div class="table-tools"><input type="search" placeholder="Search API suites" data-table-filter="api-health-table"><span class="count" data-table-count="api-health-table"></span><button type="button" data-table-toggle="api-health-table">Show all</button></div><div class="table-wrap"><table id="api-health-table" data-table-limit="{limit}"><thead><tr><th>Suite</th><th>Tests</th><th>Failures</th><th>Skipped</th><th>Status</th></tr></thead><tbody>{api_rows}</tbody></table></div></div>
         <div class="card"><h2>Duplicate-Prevention Evidence</h2><div class="table-tools"><input type="search" placeholder="Search loop evidence" data-table-filter="evidence-table"><span class="count" data-table-count="evidence-table"></span><button type="button" data-table-toggle="evidence-table">Show all</button></div><div class="table-wrap"><table id="evidence-table" data-table-limit="{limit}"><thead><tr><th>Loop log entry</th><th>Signal</th></tr></thead><tbody>{duplicate_rows}</tbody></table></div></div>

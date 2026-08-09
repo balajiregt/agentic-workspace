@@ -46,16 +46,23 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
     data["coverage"]["endpointCoverage"] = [
         {"endpoint": "GET /xyz", "covered": True},
         {"endpoint": "POST /xyz/review", "covered": False},
+        {"endpoint": "PATCH /xyz/{customerId}/decision", "covered": False},
     ]
     data["coverage"]["roleCoverage"] = [
         {"role": "admin", "covered": True},
         {"role": "viewer", "covered": False},
         {"role": "vip", "covered": True},
+        {"role": "reviewer", "covered": False},
     ]
     data["coverage"]["gaps"] = [
         "Endpoint POST /xyz/review has no mapped API test case.",
+        "Endpoint PATCH /xyz/{customerId}/decision is present in synthetic intent but has no mapped test-case verification edge.",
+        "Field reviewDecision is in synthetic ticket intent but has no assertion evidence.",
         "Role viewer is not mapped to a role coverage edge for the review approval flow.",
+        "Role reviewer is in synthetic ticket intent but is missing from the resolved UI role matrix.",
+        "Flow review approval is not present in the resolved active UI mapping.",
         "Playwright spec is outside resolved active mapping: projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+        "API test class is outside resolved active mapping: projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
     ]
     data["coverage"]["orphanTestCases"] = [
         {
@@ -63,8 +70,132 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
             "label": "review flow saves draft without mapped story or endpoint",
             "layer": "ui",
             "path": "projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+        },
+        {
+            "id": "synthetic-orphan-api-decision-test",
+            "label": "PATCH /xyz decision accepts review approval without mapped endpoint",
+            "layer": "api",
+            "path": "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
         }
     ]
+    data["negativeEvidence"] = {
+        "mappingAudit": [
+            {
+                "area": "API endpoint",
+                "intent": "POST /xyz/review",
+                "source": "synthetic work item affected_endpoints",
+                "status": "gap",
+                "evidence": "No test-case verification edge exists in the test graph.",
+                "nextAction": "Add or map an API test, then rebuild context and graph.",
+            },
+            {
+                "area": "API endpoint",
+                "intent": "PATCH /xyz/{customerId}/decision",
+                "source": "synthetic work item affected_endpoints",
+                "status": "gap",
+                "evidence": "Endpoint appears in intent but not in mapped dashboard coverage.",
+                "nextAction": "Confirm contract scope; add RestAssured coverage if in scope.",
+            },
+            {
+                "area": "API field",
+                "intent": "reviewDecision",
+                "source": "synthetic work item affected_fields",
+                "status": "gap",
+                "evidence": "No assertion evidence is linked to this field.",
+                "nextAction": "Add assertion mapping or document product/contract gap.",
+            },
+            {
+                "area": "UI flow",
+                "intent": "review approval",
+                "source": "synthetic ui-context affected_flows",
+                "status": "gap",
+                "evidence": "Flow is missing from resolved active UI mapping.",
+                "nextAction": "Update ui-context.yml and regenerate resolved UI context.",
+            },
+            {
+                "area": "UI role",
+                "intent": "viewer",
+                "source": "synthetic ui-context affected_roles",
+                "status": "gap",
+                "evidence": "Role has no coverage edge for the review approval flow.",
+                "nextAction": "Add role-aware Playwright coverage or mark out of scope.",
+            },
+            {
+                "area": "UI role",
+                "intent": "reviewer",
+                "source": "synthetic ui-context affected_roles",
+                "status": "gap",
+                "evidence": "Role is missing from the resolved role matrix.",
+                "nextAction": "Add role fixture/session-storage coverage if this role is real.",
+            },
+            {
+                "area": "UI spec",
+                "intent": "review-flow.spec.ts",
+                "source": "test inventory",
+                "status": "gap",
+                "evidence": "Spec exists outside resolved active mapping.",
+                "nextAction": "Map it to the work item or remove stale/unowned test.",
+            },
+            {
+                "area": "API duplicate",
+                "intent": "medium risk review customer",
+                "source": "duplicate candidate scan",
+                "status": "review",
+                "evidence": "Two API tests share high semantic overlap with score 0.92.",
+                "nextAction": "Decide whether this is a duplicate or a deliberate coverage variant.",
+            },
+        ],
+        "scenarios": [
+            {
+                "scenario": "Missing endpoint mapping",
+                "injectedCondition": "Ticket intent contains POST /xyz/review but graph has no verifying test edge.",
+                "dashboardSignal": "Coverage table marks endpoint as gap; confidence reason mentions coverage gaps.",
+                "debugQuestion": "Do we need a new API test, or is the endpoint out of scope?",
+            },
+            {
+                "scenario": "Missing field assertion",
+                "injectedCondition": "Ticket intent contains reviewDecision but no assertion evidence is linked.",
+                "dashboardSignal": "Negative evidence table marks API field as gap.",
+                "debugQuestion": "Are we validating the exact changed field or only the HTTP status?",
+            },
+            {
+                "scenario": "Missing role mapping",
+                "injectedCondition": "viewer/reviewer roles are in intent but missing coverage edges or resolved role matrix.",
+                "dashboardSignal": "Coverage table marks roles as gap; mapping audit shows next action.",
+                "debugQuestion": "Does the role matrix match the business access rule?",
+            },
+            {
+                "scenario": "Unmapped UI flow",
+                "injectedCondition": "review approval flow exists in test intent but is absent from resolved active UI mapping.",
+                "dashboardSignal": "Gap signals list the missing flow and orphan spec.",
+                "debugQuestion": "Should ui-context.yml be updated before the agent writes tests?",
+            },
+            {
+                "scenario": "Orphan test file",
+                "injectedCondition": "review-flow.spec.ts and duplicate API candidate are outside resolved active mapping.",
+                "dashboardSignal": "Gap signals identify the exact file paths.",
+                "debugQuestion": "Is this useful automation, stale code, or a test in the wrong slice?",
+            },
+            {
+                "scenario": "Duplicate-risk candidate",
+                "injectedCondition": "Two API test names overlap strongly without clear contrast intent.",
+                "dashboardSignal": "Duplicate table shows near-duplicate review with score 0.92.",
+                "debugQuestion": "Can we reuse/extend an existing test instead of adding another one?",
+            },
+            {
+                "scenario": "Coverage sibling guard",
+                "injectedCondition": "Positive/negative role and validation tests are similar but intentionally contrast behavior.",
+                "dashboardSignal": "Duplicate table labels them coverage sibling, not near duplicate.",
+                "debugQuestion": "Is the similarity expected because the tests cover opposite outcomes?",
+            },
+            {
+                "scenario": "Stale graph evidence",
+                "injectedCondition": "Graphify commit is set to synthetic-old-commit.",
+                "dashboardSignal": "Graph freshness is stale and release confidence drops.",
+                "debugQuestion": "Should graph/context be rebuilt before trusting impact and duplicate signals?",
+            },
+        ],
+    }
 
     duplicate_risk = {
         "left": "GET /xyz returns medium risk response for review customer",
@@ -91,7 +222,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
         {
             "area": "API",
             "priority": "high",
-            "reason": "Synthetic contract change introduces POST /xyz/review without mapped API coverage.",
+            "reason": "Synthetic contract change introduces review endpoints and fields without mapped API coverage.",
             "files": [
                 "projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
                 "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java",
@@ -103,7 +234,7 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
         {
             "area": "Playwright UI",
             "priority": "high",
-            "reason": "Synthetic review-flow spec is outside resolved active mapping and needs UI context review.",
+            "reason": "Synthetic review-flow and reviewer role are outside resolved active UI mapping.",
             "files": [
                 "projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
                 "projects/ui-automation/role-aware-mockserver/playwright/pages/operations-console.page.ts",
@@ -127,14 +258,15 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
     data["visuals"]["duplicateSignal"] = {"clearPercent": 75}
 
     data["confidence"] = {
-        "score": 36,
+        "score": 28,
         "status": "risk",
         "reasons": [
             "API health is not passing.",
             "Playwright health is not passing.",
             "Graphify graph is stale against the current commit.",
-            "3 coverage gap signal(s) found.",
+            "8 coverage and mapping gap signal(s) found.",
             "1 high-similarity duplicate candidate needs review.",
+            "2 orphan test case(s) are outside active mapping.",
         ],
     }
     return data
@@ -147,7 +279,7 @@ def write_outputs(root: Path, output_dir: Path) -> None:
     (output_dir / "index.html").write_text(render_dashboard(data), encoding="utf-8")
     print(f"Wrote {output_dir / 'dashboard.json'}")
     print(f"Wrote {output_dir / 'index.html'}")
-    print("Negative scenario: synthetic failures=api+playwright, gaps=3, nearDuplicate=1, graphStale=true")
+    print("Negative scenario: synthetic failures=api+playwright, gaps=8, orphanTests=2, nearDuplicate=1, graphStale=true")
 
 
 def main() -> None:
