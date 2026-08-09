@@ -91,6 +91,11 @@ input {
   padding: 9px 13px;
 }
 
+.compact {
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
 .notice,
 .status-panel {
   background: #fff7ed;
@@ -339,6 +344,82 @@ li {
   overflow: hidden;
 }
 
+.graph-heading {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.graph-heading h2 {
+  margin-bottom: 0;
+}
+
+.graph-tools {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  margin-bottom: 12px;
+}
+
+.graph-tools label {
+  display: grid;
+  gap: 5px;
+}
+
+.graph-tools label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.graph-tools input {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  min-height: 38px;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.graph-tools input:focus {
+  border-color: var(--blue);
+  outline: 2px solid #bfdbfe;
+}
+
+.search-results {
+  align-content: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 38px;
+  padding-top: 21px;
+}
+
+.result-chip {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  max-width: 280px;
+  min-height: 30px;
+  overflow: hidden;
+  padding: 5px 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-chip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 .graph-svg {
   display: block;
   height: min(620px, 62vh);
@@ -356,6 +437,11 @@ li {
   stroke-width: 1.5;
 }
 
+.graph-node.selected {
+  stroke: #172033;
+  stroke-width: 3;
+}
+
 .graph-label {
   fill: #334155;
   font-size: 11px;
@@ -367,6 +453,45 @@ li {
   border-top: 1px solid var(--line);
   min-height: 76px;
   padding: 12px;
+}
+
+.inspector-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.connected-list {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  list-style: none;
+  margin-top: 12px;
+  max-height: 172px;
+  overflow: auto;
+  padding: 0;
+}
+
+.connected-list li {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  margin: 0;
+  padding: 8px;
+}
+
+.connected-list strong,
+.connected-list span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.connected-list span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 3px;
 }
 
 .html-frame {
@@ -397,7 +522,12 @@ li {
 
   .upload-grid,
   .grid,
-  .two {
+  .two,
+  .graph-tools {
     grid-template-columns: 1fr;
+  }
+
+  .search-results {
+    padding-top: 0;
   }
 }

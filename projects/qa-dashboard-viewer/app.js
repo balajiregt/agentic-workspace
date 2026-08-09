@@ -11,6 +11,10 @@ const state = {
     graphify: "",
     htmlPreview: "",
   },
+  graphUi: {
+    testGraph: { query: "", focusNodeId: "" },
+    graphify: { query: "", focusNodeId: "" },
+  },
 };
 
 const demoDashboard = {
@@ -256,13 +260,15 @@ function renderDuplicates() {
 
 function normalizeGraph(data, type) {
   if (!data || typeof data !== "object") return { nodes: [], edges: [] };
-  const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+  const nodes = Array.isArray(data.nodes) ? data.nodes.filter((node) => node && node.id != null).map((node) => ({ ...node, id: String(node.id) })) : [];
   const rawEdges = Array.isArray(data.edges) ? data.edges : Array.isArray(data.links) ? data.links : [];
-  const edges = rawEdges.map((edge) => ({
-    source: typeof edge.source === "object" ? edge.source.id : edge.source,
-    target: typeof edge.target === "object" ? edge.target.id : edge.target,
-    label: edge.label || edge.kind || "",
-  }));
+  const edges = rawEdges
+    .map((edge) => ({
+      source: String(typeof edge.source === "object" ? edge.source.id : edge.source),
+      target: String(typeof edge.target === "object" ? edge.target.id : edge.target),
+      label: edge.label || edge.kind || "",
+    }))
+    .filter((edge) => edge.source && edge.target && edge.source !== "undefined" && edge.target !== "undefined");
   return { nodes, edges, type };
 }
 
@@ -276,17 +282,94 @@ function colorFor(node, index) {
   return palette[Math.abs(key) % palette.length];
 }
 
+function graphNodeText(node) {
+  return [
+    node.id,
+    node.label,
+    node.kind,
+    node.layer,
+    node.path,
+    node.source_file,
+    node.detail,
+    node.file_type,
+    node.community_name,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function graphNodeTitle(node) {
+  return String(node.label || node.id);
+}
+
+function buildAdjacency(graph, nodeById) {
+  const adjacency = new Map();
+  const connectedEdges = [];
+  for (const node of graph.nodes) adjacency.set(node.id, new Set());
+  for (const edge of graph.edges) {
+    if (!nodeById.has(edge.source) || !nodeById.has(edge.target)) continue;
+    adjacency.get(edge.source).add(edge.target);
+    adjacency.get(edge.target).add(edge.source);
+    connectedEdges.push(edge);
+  }
+  return { adjacency, connectedEdges };
+}
+
+function graphSearchResults(graph, query) {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return [];
+  return graph.nodes.filter((node) => graphNodeText(node).includes(normalized)).slice(0, 12);
+}
+
+function graphInspectorHtml(node, neighbors, incidentEdges) {
+  const neighborRows = neighbors.slice(0, 30).map((neighbor) => {
+    const edge = incidentEdges.find((item) => item.source === neighbor.id || item.target === neighbor.id) || {};
+    return `<li><strong>${esc(graphNodeTitle(neighbor))}</strong><span>${esc(neighbor.kind || neighbor.layer || neighbor.file_type || edge.label || "related")}</span></li>`;
+  });
+  return `
+    <strong>${esc(graphNodeTitle(node))}</strong>
+    <p class="muted">${esc([node.kind, node.layer, node.file_type, node.community_name].filter(Boolean).join(" · "))}</p>
+    <p class="muted">${esc(node.path || node.source_file || node.detail || "")}</p>
+    <div class="inspector-meta">
+      <span class="pill good">${neighbors.length} connected node${neighbors.length === 1 ? "" : "s"}</span>
+      <span class="pill warn">${incidentEdges.length} relationship${incidentEdges.length === 1 ? "" : "s"}</span>
+    </div>
+    ${neighborRows.length ? `<ul class="connected-list">${neighborRows.join("")}</ul>` : '<p class="muted">No direct connections found for this node.</p>'}
+  `;
+}
+
 function renderGraph(containerId, graph, title) {
   const container = byId(containerId);
   if (!graph.nodes.length) {
     container.innerHTML = `<div class="empty">Upload ${esc(title)} JSON to view the graph.</div>`;
     return;
   }
+  const ui = state.graphUi[containerId] || { query: "", focusNodeId: "" };
+  const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
+  const { adjacency, connectedEdges } = buildAdjacency(graph, nodeById);
+  if (ui.focusNodeId && !nodeById.has(ui.focusNodeId)) ui.focusNodeId = "";
+  const matches = graphSearchResults(graph, ui.query);
+  const visibleIds = new Set();
+  let renderMode = "overview";
+  if (ui.focusNodeId) {
+    renderMode = "connected";
+    visibleIds.add(ui.focusNodeId);
+    for (const id of adjacency.get(ui.focusNodeId) || []) visibleIds.add(id);
+  } else if (ui.query.trim()) {
+    renderMode = "search";
+    for (const match of matches) {
+      visibleIds.add(match.id);
+      for (const id of adjacency.get(match.id) || []) visibleIds.add(id);
+    }
+  }
   const width = 1180;
   const height = 560;
-  const nodes = graph.nodes.slice(0, 180);
+  const hasActiveFilter = ui.focusNodeId || ui.query.trim();
+  const visibleNodes = hasActiveFilter ? graph.nodes.filter((node) => visibleIds.has(node.id)) : graph.nodes;
+  const nodes = visibleNodes.slice(0, 180);
   const nodeIds = new Set(nodes.map((node) => node.id));
-  const edges = graph.edges.filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target)).slice(0, 360);
+  const edges = connectedEdges.filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target)).slice(0, 360);
   const groups = [...new Set(nodes.map((node) => node.layer || node.community_name || node.file_type || "graph"))];
   const positioned = nodes.map((node, index) => {
     const group = groups.indexOf(node.layer || node.community_name || node.file_type || "graph");
@@ -314,34 +397,81 @@ function renderGraph(containerId, graph, title) {
   const nodeMarkup = positioned
     .map((node, index) => `
       <g data-node="${esc(node.id)}">
-        <circle class="graph-node" cx="${node.x}" cy="${node.y}" r="${node.kind === "test_case" ? 8 : 6}" fill="${colorFor(node, index)}"></circle>
+        <circle class="graph-node ${node.id === ui.focusNodeId ? "selected" : ""}" cx="${node.x}" cy="${node.y}" r="${node.kind === "test_case" ? 8 : 6}" fill="${colorFor(node, index)}"></circle>
         ${index < labelCap && (nodes.length <= 80 || (degree.get(node.id) || 0) > 1) ? `<text class="graph-label" x="${node.x + 9}" y="${node.y + 4}">${esc(String(node.label || node.id).slice(0, 28))}</text>` : ""}
       </g>
     `)
     .join("");
+  const resultMarkup = ui.query.trim()
+    ? matches.length
+      ? matches
+          .map((node) => `<button class="result-chip" type="button" data-search-result="${esc(node.id)}">${esc(graphNodeTitle(node).slice(0, 54))}</button>`)
+          .join("")
+      : '<span class="muted">No matching nodes found.</span>'
+    : '<span class="muted">Search by spec, test, endpoint, role, helper, path, or node id.</span>';
+  const focusedNode = ui.focusNodeId ? nodeById.get(ui.focusNodeId) : null;
+  const focusedNeighbors = focusedNode ? [...(adjacency.get(focusedNode.id) || [])].map((id) => nodeById.get(id)).filter(Boolean) : [];
+  const focusedEdges = focusedNode ? connectedEdges.filter((edge) => edge.source === focusedNode.id || edge.target === focusedNode.id) : [];
+  const nodeDetail = hasActiveFilter ? `${nodes.length} shown in ${renderMode} view` : `${Math.max(0, graph.nodes.length - nodes.length)} hidden after cap`;
+  const edgeDetail = hasActiveFilter ? `${edges.length} shown in ${renderMode} view` : `${Math.max(0, graph.edges.length - edges.length)} hidden after cap`;
   container.innerHTML = `
     <section class="grid">
-      ${metric("Nodes", graph.nodes.length, `${Math.max(0, graph.nodes.length - nodes.length)} hidden after cap`)}
-      ${metric("Edges", graph.edges.length, `${Math.max(0, graph.edges.length - edges.length)} hidden after cap`)}
+      ${metric("Nodes", graph.nodes.length, nodeDetail)}
+      ${metric("Edges", graph.edges.length, edgeDetail)}
       ${metric("Groups", groups.length, "layers / communities")}
-      ${metric("Render mode", "static", "client-side SVG")}
+      ${metric("Render mode", renderMode, renderMode === "connected" ? "selected node neighborhood" : "client-side SVG")}
     </section>
     <section class="card">
-      <h2>${esc(title)}</h2>
+      <div class="graph-heading">
+        <h2>${esc(title)}</h2>
+        <button class="secondary compact" type="button" data-clear-graph>Clear Focus</button>
+      </div>
+      <div class="graph-tools">
+        <label>
+          <span>Search test/spec</span>
+          <input type="search" value="${esc(ui.query)}" placeholder="Example: role-aware-mockserver spec" data-graph-search>
+        </label>
+        <div class="search-results">${resultMarkup}</div>
+      </div>
       <div class="graph-shell">
         <svg class="graph-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}">${edgeMarkup}${nodeMarkup}</svg>
-        <div class="inspector" id="${containerId}Inspector">Select a node to inspect details.</div>
+        <div class="inspector" id="${containerId}Inspector">${focusedNode ? graphInspectorHtml(focusedNode, focusedNeighbors, focusedEdges) : "Select a node to inspect details and show only its connected nodes."}</div>
       </div>
     </section>
   `;
+  container.querySelector("[data-graph-search]").addEventListener("input", (event) => {
+    const nextQuery = event.target.value;
+    state.graphUi[containerId].query = nextQuery;
+    state.graphUi[containerId].focusNodeId = "";
+    renderGraph(containerId, graph, title);
+    const input = container.querySelector("[data-graph-search]");
+    input.focus();
+    input.setSelectionRange(nextQuery.length, nextQuery.length);
+  });
+  container.querySelector("[data-graph-search]").addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    const first = graphSearchResults(graph, state.graphUi[containerId].query)[0];
+    if (!first) return;
+    state.graphUi[containerId].focusNodeId = first.id;
+    renderGraph(containerId, graph, title);
+  });
+  container.querySelector("[data-clear-graph]").addEventListener("click", () => {
+    state.graphUi[containerId].query = "";
+    state.graphUi[containerId].focusNodeId = "";
+    renderGraph(containerId, graph, title);
+  });
+  container.querySelectorAll("[data-search-result]").forEach((el) => {
+    el.addEventListener("click", () => {
+      state.graphUi[containerId].focusNodeId = el.dataset.searchResult;
+      renderGraph(containerId, graph, title);
+    });
+  });
   container.querySelectorAll("[data-node]").forEach((el) => {
     el.addEventListener("click", () => {
       const node = lookup.get(el.dataset.node);
-      byId(`${containerId}Inspector`).innerHTML = `
-        <strong>${esc(node.label || node.id)}</strong>
-        <p class="muted">${esc(node.kind || node.file_type || node.community_name || "")}</p>
-        <p class="muted">${esc(node.path || node.source_file || node.detail || "")}</p>
-      `;
+      state.graphUi[containerId].focusNodeId = node.id;
+      renderGraph(containerId, graph, title);
     });
   });
 }
