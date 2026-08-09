@@ -104,10 +104,44 @@ skills/microservice-change/SKILL.md
 docs/prompts/
 ```
 
+The default agent slice is API. To route the same local model to the UI
+automation context, use:
+
+```bash
+npm run agent:tool-agent:ui
+```
+
+UI slice startup loads:
+
+```text
+AGENTS.md
+contexts/current/ui-context.yml
+contexts/current/resolved-ui-context.yml
+skills/playwright-ui-change/SKILL.md
+docs/prompts/
+```
+
+Explicit API/UI commands:
+
+```bash
+npm run agent:tool-agent:api
+npm run agent:tool-agent:ui
+npm run agent:tool-agent-long:ui
+```
+
+If a service already occupies port `8080`, keep that service running and use an
+alternate llama.cpp port:
+
+```bash
+AGENTIC_LLAMA_PORT=8088 npm run agent:tool-agent:ui
+python3 local-agents/check-tool-calls.py --base-url http://localhost:8088/v1 --model local-model
+```
+
 Regenerate the resolved context after changing the current task YAML:
 
 ```bash
 npm run context:resolve
+npm run context:ui:resolve
 ```
 
 The current task YAML should stay small. Stable service facts live in

@@ -5,6 +5,7 @@ LOCAL_AGENTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${LOCAL_AGENTS_DIR}/.." && pwd)"
 TARGET_REPO="${1:-${ROOT_DIR}}"
 PROFILE="${AGENTIC_PROFILE:-tool-agent}"
+AGENT_SLICE="${AGENTIC_AGENT_SLICE:-api}"
 PROFILE_JSON="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["profiles"][sys.argv[2]][sys.argv[3]])' "${LOCAL_AGENTS_DIR}/config/model-profiles.json" "${PROFILE}" modelRef 2>/dev/null || true)"
 
 if [[ -z "${PROFILE_JSON}" ]]; then
@@ -23,7 +24,6 @@ REQUIRE_TOOL_CALLS="${AGENTIC_REQUIRE_TOOL_CALLS:-1}"
 BASE_URL="http://localhost:${PORT}"
 LOG_FILE="${TMPDIR:-/tmp}/agentic-workspace-llama-${PORT}.log"
 PI_MODELS_TARGET="${HOME}/.pi/agent/models.json"
-PI_SKILL_PATH="${ROOT_DIR}/skills/microservice-change"
 PI_PROMPTS_PATH="${ROOT_DIR}/docs/prompts"
 PI_ARGS=(--approve --tools read,bash,edit,write,grep,find,ls)
 NPM_PREFIX="$(npm config get prefix 2>/dev/null || true)"
@@ -38,6 +38,34 @@ if [[ ! -d "${TARGET_REPO}" ]]; then
   echo "Target repo does not exist: ${TARGET_REPO}" >&2
   exit 1
 fi
+
+case "${AGENT_SLICE}" in
+  api)
+    PI_SKILL_PATH="${ROOT_DIR}/skills/microservice-change"
+    SLICE_CONTEXTS=(
+      "contexts/current/service-context.yml"
+      "contexts/current/resolved-context.yml"
+    )
+    SUGGESTED_PROMPT="Use AGENTS.md, contexts/current/service-context.yml, and resolved API context.
+Make the requested API test change or report the product/contract gap.
+Do not invent endpoints, paths, frameworks, or test files."
+    ;;
+  ui|playwright)
+    AGENT_SLICE="ui"
+    PI_SKILL_PATH="${ROOT_DIR}/skills/playwright-ui-change"
+    SLICE_CONTEXTS=(
+      "contexts/current/ui-context.yml"
+      "contexts/current/resolved-ui-context.yml"
+    )
+    SUGGESTED_PROMPT="Use AGENTS.md, contexts/current/ui-context.yml, resolved UI context, and the playwright-ui-change skill.
+Make the requested UI automation change or report the product/mockserver/coverage gap.
+Keep UI automation under projects/ui-automation and do not edit Maven/RestAssured API projects."
+    ;;
+  *)
+    echo "Unknown AGENTIC_AGENT_SLICE '${AGENT_SLICE}'. Use api or ui." >&2
+    exit 1
+    ;;
+esac
 
 if command -v llama-server >/dev/null 2>&1; then
   LLAMA_SERVER_CMD=(llama-server -hf "${MODEL_REF}" --alias local-model --port "${PORT}" --ctx-size "${CONTEXT_WINDOW}" --parallel "${PARALLEL_SLOTS}" --metrics --tools "${LLAMA_TOOLS}")
@@ -163,6 +191,7 @@ trap cleanup EXIT
 
 cat <<EOF
 ==> Starting Pi in ${TARGET_REPO}
+Agent slice: ${AGENT_SLICE}
 Profile: ${PROFILE}
 Model: ${MODEL_REF}
 Context window: ${CONTEXT_WINDOW}
@@ -171,14 +200,14 @@ Parallel slots: ${PARALLEL_SLOTS}
 llama.cpp tools: ${LLAMA_TOOLS}
 Pi binary: ${PI_BIN}
 Pi options: ${PI_ARGS[*]}
+Slice contexts:
+$(printf '  %s\n' "${SLICE_CONTEXTS[@]}")
 Metrics dashboard:
   npm run metrics:8gb
   open http://localhost:8765
 
 Suggested prompt:
-Use AGENTS.md, contexts/current/service-context.yml, and resolved context.
-Make the requested API test change or report the product/contract gap.
-Do not invent endpoints, paths, frameworks, or test files.
+${SUGGESTED_PROMPT}
 
 EOF
 
