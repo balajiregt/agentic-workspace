@@ -426,6 +426,43 @@ endpoint and UI flow with real-world usage. Without that export, it shows the
 inputs still needed: API gateway/service counts by endpoint, UI analytics by
 flow and role, and production-like error counts.
 
+### Static QA Metrics Viewer
+
+The workspace also includes a lightweight browser-only artifact viewer:
+
+```bash
+npm run viewer:dev
+```
+
+Open:
+
+```text
+http://127.0.0.1:8790
+```
+
+The viewer is designed for a free/static Netlify deployment. Business users can
+open the URL and upload generated artifacts such as:
+
+```text
+artifacts/qa-dashboard/dashboard.json
+artifacts/qa-dashboard-negative/dashboard.json
+artifacts/test-graph/test-graph.json
+graphify-out/graph.json
+```
+
+Files are parsed locally in the browser. There is no backend upload, no
+database, and no artifact storage. The viewer also supports sandboxed preview
+of generated HTML files such as dashboard `index.html` and Graphify
+`graph.html`.
+
+Netlify settings for a new project:
+
+```text
+Base directory: projects/qa-dashboard-viewer
+Build command: npm run build
+Publish directory: .
+```
+
 ## Agent Skills
 
 Workspace-local skills use a compact Karpathy-style Markdown format:

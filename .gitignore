@@ -1,6 +1,8 @@
 .DS_Store
 .idea/
 *.iml
+.netlify/
+projects/**/.netlify/
 
 # Local reference symlink.
 context-starter

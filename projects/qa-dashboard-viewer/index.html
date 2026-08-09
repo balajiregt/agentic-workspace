@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agentic QA Metrics Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Static client-side artifact viewer</p>
+          <h1>Agentic QA Metrics Viewer</h1>
+          <p class="lede">Upload generated dashboard and graph artifacts to inspect QA health, coverage gaps, duplicate signals, and test mappings without an IDE.</p>
+        </div>
+        <button id="loadDemo" class="secondary" type="button">Load Demo</button>
+      </header>
+
+      <section class="notice">
+        Files are processed locally in your browser. Nothing is uploaded or stored by this viewer. Max file size: <strong>5 MB</strong>.
+      </section>
+
+      <section class="upload-grid">
+        <label class="dropzone" for="dashboardFile">
+          <span>Dashboard JSON</span>
+          <strong>dashboard.json</strong>
+          <small>QA health, coverage, duplicate and confidence metrics</small>
+          <input id="dashboardFile" type="file" accept=".json,application/json">
+        </label>
+        <label class="dropzone" for="testGraphFile">
+          <span>Test-Impact Graph</span>
+          <strong>test-graph.json</strong>
+          <small>API/UI test mapping nodes and relationships</small>
+          <input id="testGraphFile" type="file" accept=".json,application/json">
+        </label>
+        <label class="dropzone" for="graphifyFile">
+          <span>Graphify Graph</span>
+          <strong>graph.json</strong>
+          <small>Broader code/community graph exploration</small>
+          <input id="graphifyFile" type="file" accept=".json,application/json">
+        </label>
+        <label class="dropzone" for="htmlFile">
+          <span>HTML Preview</span>
+          <strong>index.html / graph.html</strong>
+          <small>Optional sandboxed generated dashboard or graph preview</small>
+          <input id="htmlFile" type="file" accept=".html,text/html">
+        </label>
+      </section>
+
+      <section id="statusPanel" class="status-panel" aria-live="polite"></section>
+
+      <nav class="tabs" aria-label="Viewer sections">
+        <button class="tab active" type="button" data-tab="overview">Overview</button>
+        <button class="tab" type="button" data-tab="coverage">Coverage</button>
+        <button class="tab" type="button" data-tab="duplicates">Duplicates</button>
+        <button class="tab" type="button" data-tab="testGraph">Test Graph</button>
+        <button class="tab" type="button" data-tab="graphify">Graphify</button>
+        <button class="tab" type="button" data-tab="preview">HTML Preview</button>
+      </nav>
+
+      <section id="overview" class="panel active"></section>
+      <section id="coverage" class="panel"></section>
+      <section id="duplicates" class="panel"></section>
+      <section id="testGraph" class="panel"></section>
+      <section id="graphify" class="panel"></section>
+      <section id="preview" class="panel"></section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
