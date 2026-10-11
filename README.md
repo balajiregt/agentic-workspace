@@ -476,3 +476,7 @@ docs/karpathy-style-skill-format.md
 docs/agentic-workflow-diagrams.md
 docs/local-agent-runtime.md
 ```
+
+## Controlled benchmark instrumentation
+
+See [benchmark protocol and validation](benchmarks/README.md) for reproducible synthetic tasks, measured evidence, missing metrics and claim limitations.

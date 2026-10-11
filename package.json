@@ -47,6 +47,9 @@
     "models:profiles": "cat local-agents/config/model-profiles.json",
     "models:tool-agent": "AGENTIC_PROFILE=tool-agent python3 local-agents/render-pi-models.py --profile tool-agent --output /tmp/agentic-pi-models-tool-agent.json && cat /tmp/agentic-pi-models-tool-agent.json",
     "models:tool-agent-long": "AGENTIC_PROFILE=tool-agent-long python3 local-agents/render-pi-models.py --profile tool-agent-long --output /tmp/agentic-pi-models-tool-agent-long.json && cat /tmp/agentic-pi-models-tool-agent-long.json",
-    "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md"
+    "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md",
+    "benchmark:collect": "node benchmarks/trials.mjs collect",
+    "benchmark:summary": "node benchmarks/trials.mjs summary",
+    "benchmark:test": "node --test benchmarks/*.test.mjs"
   }
 }

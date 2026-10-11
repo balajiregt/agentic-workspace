@@ -37,3 +37,5 @@ docs/blog-agentic-workspace-v2.md
 
 # Older standalone PoC repo retained locally, not part of this workspace commit.
 projects/copilot-sprint-metrics-starter/
+
+benchmark-results/
