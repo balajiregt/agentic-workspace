@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "api",
-  "updatedAt": "2026-10-11T14:51:01.775686+00:00",
+  "updatedAt": "2026-10-11T15:47:18.813145+00:00",
   "run": {
     "project": "api",
     "title": "Agentic API",
@@ -121,11 +121,11 @@
     "evidence": [
       {
         "file": "api-oracle.json",
-        "sha256": "214d6b0bae16ee3f039b805f53088a90a8dd1c3823a8755615bae1c09e7e4fcf",
-        "fileModifiedAt": "2026-10-11T14:51:00.787994+00:00"
+        "sha256": "01208c9aaa2168b0ec4f5c4d8bf9fe1bd256e521ec1230e6dd109a5a4c24f689",
+        "fileModifiedAt": "2026-10-11T15:47:17.895637+00:00"
       }
     ],
-    "runAt": "2026-10-11T14:50:33.187624+00:00",
+    "runAt": "2026-10-11T15:47:04.903659+00:00",
     "timeBasis": "benchmark attempt start",
     "agentTrials": {
       "liveTrials": 0,
@@ -136,15 +136,15 @@
     },
     "status": "passed",
     "integrity": "verified",
-    "runId": "f58deb6545b4b81d",
+    "runId": "79e19b8c138d36a2",
     "execution": {
-      "startedAt": "2026-10-11T14:50:33.187624+00:00",
-      "finishedAt": "2026-10-11T14:51:00.931704+00:00",
+      "startedAt": "2026-10-11T15:47:04.903659+00:00",
+      "finishedAt": "2026-10-11T15:47:18.022217+00:00",
       "exitCode": 0,
-      "revision": "4fd603d63c03302a52512a71e7158fc06ca7531a",
+      "revision": "05307710c9568182507faedbceec5f2ce1c22c9f",
       "dirtySource": false
     },
-    "revision": "4fd603d63c03302a52512a71e7158fc06ca7531a",
+    "revision": "05307710c9568182507faedbceec5f2ce1c22c9f",
     "dirtySource": false
   },
   "history": [
@@ -436,6 +436,151 @@
         "dirtySource": false
       },
       "revision": "4fd603d63c03302a52512a71e7158fc06ca7531a",
+      "dirtySource": false
+    },
+    {
+      "project": "api",
+      "title": "Agentic API",
+      "repository": "https://github.com/balajiregt/agentic-workspace",
+      "protocol": "https://github.com/balajiregt/agentic-workspace/blob/main/benchmarks/README.md",
+      "checks": [
+        {
+          "name": "Expected JUnit source",
+          "ok": true,
+          "detail": "Exact fixed API suite required"
+        },
+        {
+          "name": "JUnit source: TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml",
+          "ok": true,
+          "detail": "XML hash checked locally; XML not published"
+        },
+        {
+          "name": "Oracle has test evidence",
+          "ok": true,
+          "detail": "Empty evidence cannot pass"
+        },
+        {
+          "name": "Trial records consistent",
+          "ok": true,
+          "detail": "Duplicate pairs or malformed records do not qualify"
+        },
+        {
+          "name": "No expected-failure oracles",
+          "ok": true,
+          "detail": "Expected failures cannot qualify as successful oracle evidence"
+        },
+        {
+          "name": "No oracle retries",
+          "ok": true,
+          "detail": "Retry counts checked where browser/JUnit results are supplied"
+        },
+        {
+          "name": "Evidence matches the fixed benchmark protocol",
+          "ok": true,
+          "detail": "Case identities and counts checked against the versioned synthetic protocol"
+        },
+        {
+          "name": "Evidence belongs to this attempt",
+          "ok": true,
+          "detail": "All required source files were regenerated during this run"
+        }
+      ],
+      "metrics": [
+        {
+          "label": "Passed API cases",
+          "value": 5,
+          "unit": " / 5",
+          "note": ""
+        },
+        {
+          "label": "Paired live-agent trials",
+          "value": 0,
+          "unit": "",
+          "note": ""
+        },
+        {
+          "label": "Scripted collector checks",
+          "value": 0,
+          "unit": "",
+          "note": ""
+        },
+        {
+          "label": "Human corrections",
+          "value": null,
+          "unit": "",
+          "note": ""
+        },
+        {
+          "label": "AI cost",
+          "value": null,
+          "unit": "",
+          "note": ""
+        }
+      ],
+      "limitations": [
+        "Synthetic sample API; no production result.",
+        "Timestamp is file provenance, not measured agent elapsed time.",
+        "Agent comparisons require matched task, model/version and target groups; scripted validation is separate."
+      ],
+      "cases": [
+        {
+          "name": "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsHighRiskCustomer",
+          "status": "passed",
+          "attempts": 1,
+          "expectedStatus": "passed"
+        },
+        {
+          "name": "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsMediumRiskCustomer",
+          "status": "passed",
+          "attempts": 1,
+          "expectedStatus": "passed"
+        },
+        {
+          "name": "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsMissingCustomerId",
+          "status": "passed",
+          "attempts": 1,
+          "expectedStatus": "passed"
+        },
+        {
+          "name": "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsLowRiskCustomer",
+          "status": "passed",
+          "attempts": 1,
+          "expectedStatus": "passed"
+        },
+        {
+          "name": "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsBlankCustomerId",
+          "status": "passed",
+          "attempts": 1,
+          "expectedStatus": "passed"
+        }
+      ],
+      "evidence": [
+        {
+          "file": "api-oracle.json",
+          "sha256": "01208c9aaa2168b0ec4f5c4d8bf9fe1bd256e521ec1230e6dd109a5a4c24f689",
+          "fileModifiedAt": "2026-10-11T15:47:17.895637+00:00"
+        }
+      ],
+      "runAt": "2026-10-11T15:47:04.903659+00:00",
+      "timeBasis": "benchmark attempt start",
+      "agentTrials": {
+        "liveTrials": 0,
+        "scriptedValidations": 0,
+        "pairedRepeats": 0,
+        "groups": [],
+        "invalidRecords": 0
+      },
+      "status": "passed",
+      "integrity": "verified",
+      "runId": "79e19b8c138d36a2",
+      "execution": {
+        "startedAt": "2026-10-11T15:47:04.903659+00:00",
+        "finishedAt": "2026-10-11T15:47:18.022217+00:00",
+        "exitCode": 0,
+        "revision": "05307710c9568182507faedbceec5f2ce1c22c9f",
+        "dirtySource": false
+      },
+      "revision": "05307710c9568182507faedbceec5f2ce1c22c9f",
       "dirtySource": false
     }
   ]
