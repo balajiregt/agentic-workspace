@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "project": "api",
+  "campaignId": "58852fdc96b3e21d",
+  "protocol": "one-response-mutation-v1",
+  "runtime": "llama.cpp",
+  "createdAt": "2026-10-11T15:33:20.095876+00:00",
+  "updatedAt": "2026-10-11T15:52:10.668154+00:00",
+  "model": "Gemma 4 E2B IT QAT UD-Q4_K_XL",
+  "modelVersion": "GGUF SHA256 e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+  "reasoning": "server default; content-only",
+  "cliVersion": "version: 10050 (b15ca938a)",
+  "sourceRevision": "4fd603d63c03302a52512a71e7158fc06ca7531a",
+  "targetSha256": "d25ea6dababe7a37a1f464594b3a66027ba205fb4ba8a9359363a0c5d5d45f3d",
+  "planSha256": "58852fdc96b3e21d006dd836535f1e45e1ce967ccecd4e5c7253b3852e17f1dc",
+  "plannedTrials": 6,
+  "pairedRepeats": 3,
+  "arms": {
+    "baseline": {
+      "trials": 3,
+      "evaluated": 3,
+      "correct": 0,
+      "qualityPassed": 0,
+      "qualityTotal": 24,
+      "medianGenerationMs": 138087,
+      "medianEvaluationMs": 30118,
+      "medianHumanCorrectionMs": null,
+      "usageObserved": 3,
+      "totalInputTokens": 4074,
+      "totalOutputTokens": 6805,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "medianGenerationTokensPerSecond": 17.398725913346855,
+      "apiFeeUSD": 0
+    },
+    "framework": {
+      "trials": 3,
+      "evaluated": 2,
+      "correct": 0,
+      "qualityPassed": 0,
+      "qualityTotal": 24,
+      "medianGenerationMs": 170002,
+      "medianEvaluationMs": 32431.5,
+      "medianHumanCorrectionMs": null,
+      "usageObserved": 2,
+      "totalInputTokens": null,
+      "totalOutputTokens": null,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "medianGenerationTokensPerSecond": 14.953967618336442,
+      "apiFeeUSD": 0
+    }
+  },
+  "rows": [
+    {
+      "arm": "baseline",
+      "repeat": 1,
+      "startedAt": "2026-10-11T15:33:20.674893+00:00",
+      "finishedAt": "2026-10-11T15:35:38.759891+00:00",
+      "failureKind": "build-or-runner-error",
+      "operationalStatus": "evaluated",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": false,
+      "generationMs": 138087,
+      "evaluationMs": 97463,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": 1358,
+      "cachedInputTokens": 0,
+      "outputTokens": 2123,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": 17.398725913346855,
+      "promptSha256": "e4a83499c6c54947821bc706cd0d9f4ffc63a5a0d99368bd2b287626cafc5312",
+      "responseSha256": "5a8b36922f062adccc4cca1474a5b4ba755c857ff98e139ea0d9ca9d63326179",
+      "eventsSha256": "aaa9dfc3eb9b1ee3925fe7ef172ea7c4976fd46ff27ff94ac14581c8d934d579",
+      "evaluationSha256": "26bf2d0d71ca87e2eb6a919099767991929ef9628d5a2e65068d6a9a3cb9ebcf",
+      "checks": [
+        {
+          "name": "healthy",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-low-category",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-medium-score",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-high-eligibility",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-customer-id",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-decision-reason",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-missing",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-blank",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        }
+      ]
+    },
+    {
+      "arm": "framework",
+      "repeat": 1,
+      "startedAt": "2026-10-11T15:35:38.763756+00:00",
+      "finishedAt": "2026-10-11T15:38:40.114016+00:00",
+      "failureKind": "generation-timeout",
+      "operationalStatus": "generation-failed",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": true,
+      "generationMs": 181359,
+      "evaluationMs": null,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": null,
+      "cachedInputTokens": null,
+      "outputTokens": null,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": null,
+      "promptSha256": "372fcdf931119b144ae781120bab31508e863c4b90e767928b9033c541a45442",
+      "responseSha256": null,
+      "eventsSha256": "5a31dbbc254c967c625947f365a6ce2b1fa3729ca6ad4d20c3b40abd0cab6be6",
+      "evaluationSha256": null,
+      "checks": []
+    },
+    {
+      "arm": "framework",
+      "repeat": 2,
+      "startedAt": "2026-10-11T15:41:56.117866+00:00",
+      "finishedAt": "2026-10-11T15:44:38.882319+00:00",
+      "failureKind": "build-or-runner-error",
+      "operationalStatus": "evaluated",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": false,
+      "generationMs": 162766,
+      "evaluationMs": 41946,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": 2069,
+      "cachedInputTokens": 0,
+      "outputTokens": 2180,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": 15.173699674145496,
+      "promptSha256": "372fcdf931119b144ae781120bab31508e863c4b90e767928b9033c541a45442",
+      "responseSha256": "537de9b6dc7c99a3b0e08293a7e6cab8d526e2762292ad56a4937e8a20cc07f9",
+      "eventsSha256": "84d5efde2d932e659e77b31c5724eba370aa90dd9020fe43f456ced13628c20b",
+      "evaluationSha256": "01adeed51624b01135c1f4182a9c892cd8d6441f875dc1cd620f8b0c874aafbf",
+      "checks": [
+        {
+          "name": "healthy",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-low-category",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-medium-score",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-high-eligibility",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-customer-id",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-decision-reason",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-missing",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-blank",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        }
+      ]
+    },
+    {
+      "arm": "baseline",
+      "repeat": 2,
+      "startedAt": "2026-10-11T15:44:38.885945+00:00",
+      "finishedAt": "2026-10-11T15:46:36.450459+00:00",
+      "failureKind": "build-or-runner-error",
+      "operationalStatus": "evaluated",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": false,
+      "generationMs": 117566,
+      "evaluationMs": 30118,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": 1358,
+      "cachedInputTokens": 0,
+      "outputTokens": 1824,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": 17.052165744246402,
+      "promptSha256": "e4a83499c6c54947821bc706cd0d9f4ffc63a5a0d99368bd2b287626cafc5312",
+      "responseSha256": "91ebace5757d064de3bfaa4491b9cf95008b65aeb628112da4f921c1436f0360",
+      "eventsSha256": "5b6a950213c9fcac8bb60239725c14aeb253f000a98b33e21c17fcd912e29309",
+      "evaluationSha256": "50b8c796a6286f49e88d6d6803940def1342ecee9009fe9f2e6b4a71950022e6",
+      "checks": [
+        {
+          "name": "healthy",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-low-category",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-medium-score",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-high-eligibility",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-customer-id",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-decision-reason",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-missing",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-blank",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        }
+      ]
+    },
+    {
+      "arm": "baseline",
+      "repeat": 3,
+      "startedAt": "2026-10-11T15:46:36.453847+00:00",
+      "finishedAt": "2026-10-11T15:49:20.667686+00:00",
+      "failureKind": "build-or-runner-error",
+      "operationalStatus": "evaluated",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": false,
+      "generationMs": 164216,
+      "evaluationMs": 22819,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": 1358,
+      "cachedInputTokens": 0,
+      "outputTokens": 2858,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": 18.545557694574597,
+      "promptSha256": "e4a83499c6c54947821bc706cd0d9f4ffc63a5a0d99368bd2b287626cafc5312",
+      "responseSha256": "687167b81dcfed457f5102634d7b3bd25552fbed32205ba43f5f18ccb6496fa9",
+      "eventsSha256": "fed9e4fe09b719f0119c354698710a8493930b0420944c4a8f98adc0ecb67442",
+      "evaluationSha256": "f7a4f9dc82abab96a4b4f0462b70e9f22ac2c8065485b9c620ef32cee6a2a7e5",
+      "checks": [
+        {
+          "name": "healthy",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-low-category",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-medium-score",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-high-eligibility",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-customer-id",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-decision-reason",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-missing",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-blank",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        }
+      ]
+    },
+    {
+      "arm": "framework",
+      "repeat": 3,
+      "startedAt": "2026-10-11T15:49:20.671889+00:00",
+      "finishedAt": "2026-10-11T15:52:10.668154+00:00",
+      "failureKind": "build-or-runner-error",
+      "operationalStatus": "evaluated",
+      "correct": false,
+      "qualityPassed": 0,
+      "qualityTotal": 8,
+      "timedOut": false,
+      "generationMs": 170002,
+      "evaluationMs": 22917,
+      "humanCorrectionMs": null,
+      "incorrectChanges": null,
+      "inputTokens": 2069,
+      "cachedInputTokens": 0,
+      "outputTokens": 2251,
+      "apiEquivalentUSD": null,
+      "actualCostUSD": null,
+      "apiFeeUSD": 0,
+      "generationTokensPerSecond": 14.734235562527388,
+      "promptSha256": "372fcdf931119b144ae781120bab31508e863c4b90e767928b9033c541a45442",
+      "responseSha256": "65dce7e56275863ce817c6ea9fdc682c35447b820f68e55bfb94e0ab013678b5",
+      "eventsSha256": "3805ab5b44ae1183b3719e93a7acaef1b9d573563b7adf7dd238e7eb91482c78",
+      "evaluationSha256": "f1ba62671fc8aac4ef6f0205b154a00ac9007ec0d2869aea4b3a956c8ec09ce0",
+      "checks": [
+        {
+          "name": "healthy",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-low-category",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-medium-score",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-high-eligibility",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-customer-id",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "wrong-decision-reason",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-missing",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        },
+        {
+          "name": "accept-blank",
+          "passed": false,
+          "outcome": "not-executed",
+          "injectedResponses": 0
+        }
+      ]
+    }
+  ],
+  "pricing": null,
+  "limitations": [
+    "One task per application; three repeats per arm, descriptive pilot only.",
+    "Tests are generated in one response with tools disabled; full planning, capture, repair and review workflows were not measured.",
+    "The framework condition adds existing helpers and conventions; context size differs intentionally.",
+    "Generated tests run unchanged against the real sample app via controlled fault injection. Synthetic faults are not production defects.",
+    "Human correction effort and incorrect changes require a human review; neither is inferred from automatic checks.",
+    "Timeouts stay in the denominator; attempt durations are right-censored at the 180-second client deadline, not completed generation latency.",
+    "Local llama.cpp inference with the workspace Gemma model; Pi tool execution and the complete local agent loop were not tested.",
+    "Identical API task text and fault checks to the cloud pilot; provider wrappers, tokenizer and model differ, so this is not an isolated hardware comparison.",
+    "Existing 8192-token server; one slot; max output 4096; temperature 0.2; seed matches each repeat; cache_prompt=false. No model reload or hardware isolation.",
+    "No external inference API fee for these loopback requests. Electricity, hardware depreciation, subscription allocation and total operating cost are unmeasured."
+  ],
+  "localRuntime": {
+    "modelFileSha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+    "modelSnapshot": "66a399f68ddd113b06dff02fca9523e55465d11d",
+    "contextWindow": 8192,
+    "maxOutputTokens": 4096,
+    "temperature": 0.2,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "parallelSlots": 1,
+    "cachePrompt": false,
+    "hardware": "Apple M1",
+    "memoryBytes": 8589934592,
+    "serverDefaultsSha256": "761b8fac11588ae53429b34ff6533d26e3e96288168f1f6081ac40a3497c2bcc"
+  }
+}
