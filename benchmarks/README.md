@@ -24,3 +24,27 @@ The shared CRM tasks can also use the companion Playwright harness demo and orac
 Local validation 2026-10-11: all five existing RestAssured API cases passed against the isolated sample service; collector and JUnit adapter checks passed. This validates the oracle and instrumentation, not agent performance.
 
 See [automatic dashboard publication](AUTOMATIC-PUBLICATION.md) for the canonical runner, CI, privacy controls and retry behaviour.
+
+## Controlled baseline / framework generation trials
+
+The first live pilot uses the existing sample app, three repeats per condition, the same model settings, and an independent healthy-app + fault-injection evaluation of unchanged generated tests. This is a context-assisted generation experiment, not the complete autonomous workflow. Human correction effort remains unmeasured; standard API-equivalent cost is an estimate, not billed spend.
+
+[Protocol, runner and limitations](https://github.com/balajiregt/framework-benchmark-dashboard/blob/main/trials/README.md) · [Live charts and evidence](https://framework-benchmarks-balaji.netlify.app/#controlled-trials)
+
+Run from this checkout after installing the documented prerequisites:
+
+```sh
+npm run benchmark:trials -- --dashboard /path/to/framework-benchmark-dashboard --peer /path/to/other-app-repo --campaign /path/to/private-campaign
+```
+
+Use the API checkout as peer from Playwright, or Playwright as peer from API. The campaign directory must be outside all source checkouts. The command prepares/resumes 12 calls, evaluates them and publishes both result feeds automatically. Use `--no-publish` for local-only work. A future run reads new results without dashboard deployment. These model calls are explicit local runs, not automatically triggered by every source push. Existing `npm run benchmark` continues to run only the original browser/API execution benchmark.
+
+### Local model trials
+
+The workspace's Pi + llama.cpp setup is also benchmarked as a separate **local generation** track. The first run reuses the installed Gemma 4 E2B QAT model and existing 8192-token server. It uses the same API prompt pairs and fault checks as the cloud pilot, with three seeds per condition. Pi's tool/edit loop is outside this first protocol. Local output throughput and wall time are measured; electricity and total operating cost remain unknown. Instructions are in the [local trial protocol](https://github.com/balajiregt/framework-benchmark-dashboard/blob/main/trials/README.md#local-llamacpp--gemma-api-track). Results automatically publish to `benchmark-results/local-trials.json` and appear in the dashboard's Local Gemma tab.
+
+```sh
+npm run benchmark:trials:local -- --dashboard /path/to/framework-benchmark-dashboard --cloud-campaign /path/to/private-cloud-campaign --campaign /path/to/private-local-campaign
+```
+
+This command retains failed attempts and stops on provider errors for inspection. It publishes accounted-for campaigns automatically after generation and independent grading finish.
