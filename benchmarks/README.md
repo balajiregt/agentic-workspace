@@ -22,3 +22,5 @@ Normalize its exact Surefire report using `python3 benchmarks/junit_to_report.py
 The shared CRM tasks can also use the companion Playwright harness demo and oracle; this repository does not import UI dependencies into Maven. Use the same target/oracle snapshots when comparing those tasks across workflows.
 
 Local validation 2026-10-11: all five existing RestAssured API cases passed against the isolated sample service; collector and JUnit adapter checks passed. This validates the oracle and instrumentation, not agent performance.
+
+See [automatic dashboard publication](AUTOMATIC-PUBLICATION.md) for the canonical runner, CI, privacy controls and retry behaviour.

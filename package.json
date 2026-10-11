@@ -50,6 +50,9 @@
     "docs:models": "sed -n '1,220p' docs/local-agent-runtime.md",
     "benchmark:collect": "node benchmarks/trials.mjs collect",
     "benchmark:summary": "node benchmarks/trials.mjs summary",
-    "benchmark:test": "node --test benchmarks/*.test.mjs"
+    "benchmark:test": "node --test benchmarks/*.test.mjs",
+    "benchmark": "python3 benchmarks/dashboard/run.py",
+    "benchmark:publish": "python3 benchmarks/dashboard/publish.py",
+    "postbenchmark:collect": "python3 benchmarks/dashboard/publish.py --refresh-trials"
   }
 }

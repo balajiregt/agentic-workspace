@@ -39,3 +39,7 @@ docs/blog-agentic-workspace-v2.md
 projects/copilot-sprint-metrics-starter/
 
 benchmark-results/
+
+# Private benchmark execution and publication state
+benchmark-results/
+benchmarks/dashboard/__pycache__/

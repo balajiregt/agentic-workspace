@@ -1,0 +1,19 @@
+{
+  "steps": [
+    [
+      "python3",
+      "benchmarks/dashboard/api-suite.py"
+    ]
+  ],
+  "outputs": [
+    "benchmark-results/api-oracle.json"
+  ],
+  "project": "api",
+  "expectedCases": [
+    "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsBlankCustomerId",
+    "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsMissingCustomerId",
+    "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsHighRiskCustomer",
+    "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsLowRiskCustomer",
+    "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsMediumRiskCustomer"
+  ]
+}
