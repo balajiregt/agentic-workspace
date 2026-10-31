@@ -16,7 +16,7 @@ from typing import Any
 WORKSPACE = Path(__file__).resolve().parents[1]
 DEFAULT_VENV = WORKSPACE / "artifacts/tools/graphify-venv"
 DEFAULT_OUTPUT = WORKSPACE / "graphify-out"
-GRAPHIFY_VERSION = "0.9.33"
+GRAPHIFY_VERSION = "0.9.70"
 
 
 def run(command: list[str], cwd: Path = WORKSPACE) -> None:
@@ -33,15 +33,27 @@ def ensure_graphify(venv_dir: Path) -> Path:
     if graphify_bin:
         graphify = Path(graphify_bin)
         if graphify.exists():
+            result = subprocess.run([str(graphify), "--version"], capture_output=True, text=True, check=True)
+            if GRAPHIFY_VERSION not in result.stdout:
+                raise SystemExit(f"GRAPHIFY_BIN must provide the reviewed Graphify {GRAPHIFY_VERSION} release.")
             return graphify
     graphify = venv_bin(venv_dir, "graphify")
     if graphify.exists():
-        return graphify
+        result = subprocess.run(
+            [str(venv_bin(venv_dir, "python")), "-c", "from importlib.metadata import version; print(version('graphifyy'))"],
+            capture_output=True, text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip() == GRAPHIFY_VERSION:
+            return graphify
     venv_dir.parent.mkdir(parents=True, exist_ok=True)
     venv.EnvBuilder(with_pip=True).create(venv_dir)
     python = venv_bin(venv_dir, "python")
-    run([str(python), "-m", "pip", "install", "--upgrade", "pip"])
-    run([str(python), "-m", "pip", "install", f"graphifyy=={GRAPHIFY_VERSION}"])
+    os.environ.setdefault("PYYAML_FORCE_LIBYAML", "0")
+    run([str(python), "-m", "pip", "install", "--require-hashes", "--only-binary=:all:",
+         "-r", str(WORKSPACE / "scripts/requirements-python-build.lock")])
+    run([str(python), "-m", "pip", "install", "--no-build-isolation", "--require-hashes", "--only-binary=:all:",
+         "--no-binary=PyYAML,tree-sitter",
+         "-r", str(WORKSPACE / "scripts/requirements-graphify.lock")])
     return graphify
 
 
