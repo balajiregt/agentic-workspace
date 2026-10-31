@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directories:
+      - /projects/ui-automation/role-aware-mockserver
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+  - package-ecosystem: maven
+    directories:
+      - /projects/microservices
+      - /projects/microservices/xyz-service
+      - /projects/microservices/qa-steps
+      - /projects/microservices/qa-projects/xyz-service-api-tests
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+  - package-ecosystem: pip
+    directories:
+      - /scripts
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3

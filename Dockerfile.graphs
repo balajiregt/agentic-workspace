@@ -1,12 +1,20 @@
-FROM python:3.12-slim
+FROM python:3.15.2-slim-trixie@sha256:c4158543ecb725b99e57d129dfd43d761d4c43e4577b5e23326aabb223cf7f4e AS wheels
+ENV PYYAML_FORCE_LIBYAML=0
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev && rm -rf /var/lib/apt/lists/*
+COPY scripts/requirements-python-build.lock scripts/requirements-graphify.lock /tmp/
+RUN python -m pip install --require-hashes --only-binary=:all: -r /tmp/requirements-python-build.lock \
+    && python -m pip wheel --no-build-isolation --require-hashes --only-binary=:all: \
+       --no-binary=PyYAML,tree-sitter --wheel-dir /wheelhouse -r /tmp/requirements-graphify.lock
+
+FROM python:3.15.2-slim-trixie@sha256:c4158543ecb725b99e57d129dfd43d761d4c43e4577b5e23326aabb223cf7f4e
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /workspace
 
-RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir PyYAML graphifyy==0.9.33
+COPY --from=wheels /wheelhouse /wheelhouse
+RUN python -m pip install --no-cache-dir --no-index /wheelhouse/*.whl && rm -rf /wheelhouse
 
 COPY . /workspace
 
