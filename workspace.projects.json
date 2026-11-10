@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "core",
+      "name": "Workspace core",
+      "path": ".",
+      "category": "foundation",
+      "purpose": "Shared instructions, skills, context tooling, documentation, and launchers"
+    },
+    {
+      "id": "agent-dashboard",
+      "name": "01 Agent flows",
+      "path": "projects/agent-dashboard",
+      "category": "application",
+      "purpose": "Agenttrail Map for workspace ownership/file activity and Kitchen for available agent activity"
+    },
+    {
+      "id": "playwright-framework",
+      "name": "02 Playwright Agent",
+      "path": "qa-projects/Playwright Agentic Framework",
+      "category": "qa",
+      "purpose": "One product for Playwright test authoring, acceptance assessment and behavioral mutation verification; evaluator lives in quality/."
+    },
+    {
+      "id": "role-aware-ui",
+      "name": "04 Role-aware UI automation",
+      "path": "qa-projects/ui-automation/role-aware-mockserver",
+      "category": "qa",
+      "purpose": "Single Git-backed Role-Aware Mockserver checkout: demo app, mockserver and Playwright UI tests."
+    },
+    {
+      "id": "microservices",
+      "name": "05 API services and RestAssured",
+      "path": "projects/microservices",
+      "category": "service",
+      "purpose": "Spring Boot, contracts, deployment assets, shared QA and API tests"
+    },
+    {
+      "id": "kafka",
+      "name": "06 Kafka testing lab",
+      "path": "projects/kafka-test-project",
+      "category": "service",
+      "purpose": "Kafka and integration-test experiments; independent Git repository"
+    },
+    {
+      "id": "benchmarks",
+      "name": "08 Shared agent benchmarks",
+      "path": "evaluation/benchmarks",
+      "category": "benchmark",
+      "purpose": "Shared controlled trials and evidence collection; results belong to their owning projects."
+    },
+    {
+      "id": "playwright-template",
+      "name": "09 Playwright template",
+      "path": "qa-projects/playwright_pom_fixtures_modular_framework_template",
+      "category": "template",
+      "purpose": "Reusable Playwright framework template"
+    },
+    {
+      "id": "framework-benchmark-dashboard",
+      "name": "11 Framework benchmark platform",
+      "path": "projects/framework-benchmark-dashboard",
+      "category": "application",
+      "purpose": "Independent platform repository with the reusable publishing contract and skill."
+    }
+  ],
+  "groups": [
+    {
+      "id": "applications",
+      "name": "01 Applications and services",
+      "path": "projects",
+      "purpose": "Runnable applications, services and integration labs"
+    },
+    {
+      "id": "qa",
+      "name": "02 QA frameworks",
+      "path": "qa-projects",
+      "purpose": "Playwright Agent, the role-aware UI project and a reusable starter template"
+    },
+    {
+      "id": "evaluation",
+      "name": "03 Evaluation",
+      "path": "evaluation",
+      "purpose": "Shared controlled trials and evidence collection"
+    },
+    {
+      "id": "agents",
+      "name": "04 Agent system",
+      "path": "agent-system",
+      "purpose": "Canonical skills and owned templates, local inference and context starter"
+    },
+    {
+      "id": "knowledge",
+      "name": "05 Knowledge",
+      "path": "knowledge",
+      "purpose": "Workspace documentation and passive upstream reference material"
+    },
+    {
+      "id": "tooling",
+      "name": "06 Workspace tooling",
+      "path": "tooling",
+      "purpose": "Shared scripts and their regression tests"
+    },
+    {
+      "id": "outputs",
+      "name": "07 Generated outputs",
+      "path": "artifacts",
+      "purpose": "Ignored reports, generated graphs, downloads and migration records"
+    }
+  ]
+}

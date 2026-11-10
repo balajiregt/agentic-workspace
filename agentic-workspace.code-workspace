@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "name": "Workspace core",
+      "path": "."
+    },
+    {
+      "name": "01 Applications and services",
+      "path": "projects"
+    },
+    {
+      "name": "02 QA frameworks",
+      "path": "qa-projects"
+    },
+    {
+      "name": "03 Evaluation",
+      "path": "evaluation"
+    },
+    {
+      "name": "04 Agent system",
+      "path": "agent-system"
+    },
+    {
+      "name": "05 Knowledge",
+      "path": "knowledge"
+    },
+    {
+      "name": "06 Workspace tooling",
+      "path": "tooling"
+    },
+    {
+      "name": "07 Generated outputs",
+      "path": "artifacts"
+    }
+  ],
+  "settings": {
+    "task.quickOpen.history": 10
+  }
+}

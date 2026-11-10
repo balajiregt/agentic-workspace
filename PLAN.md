@@ -1,0 +1,46 @@
+# Agentic workspace ownership
+
+Component ownership comes from workspace.projects.json. The checkboxes below describe only this Agenttrail Map installation, with source and execution evidence. Components without tasks make no implementation-completion claim.
+
+## Workspace core {#core}
+files: [AGENTS.md, README.md, workspace.projects.json, package.json, .agents/**, agent-system/**, tooling/**, knowledge/docs/**]
+links: [agent-dashboard, playwright-framework, role-aware-ui, microservices, kafka, benchmarks, playwright-template, framework-benchmark-dashboard]
+
+## 01 Agent flows {#agent-dashboard}
+files: [projects/agent-dashboard/**]
+links: [core]
+
+- [x] Install pinned Agenttrail Map 0.2.0 {#map-install-package}
+  tech: projects/agent-dashboard/package.json and package-lock.json; npm install completed with lifecycle scripts disabled and zero audit findings.
+- [x] Add isolated Map launch, status and stop controls {#map-install-launch}
+  tech: projects/agent-dashboard/scripts/map-server.mjs and manage.mjs; startup and workspace identity verified on port 5330, eight manager/adapter tests passed.
+- [x] Verify the rendered Map and managed stop/restart behavior {#map-install-verification}
+  tech: Readiness and identity passed on port 5330; nine components rendered in browser; managed stop/restart passed, and reuse retained the same running PID.
+
+## 02 Playwright Agent {#playwright-framework}
+files: [qa-projects/Playwright Agentic Framework/**]
+links: [core]
+
+## 04 Role-aware UI automation {#role-aware-ui}
+files: [qa-projects/ui-automation/role-aware-mockserver/**]
+links: [core]
+
+## 05 API services and RestAssured {#microservices}
+files: [projects/microservices/**]
+links: [core]
+
+## 06 Kafka testing lab {#kafka}
+files: [projects/kafka-test-project/**]
+links: [core]
+
+## 08 Shared agent benchmarks {#benchmarks}
+files: [evaluation/benchmarks/**]
+links: [core]
+
+## 09 Playwright template {#playwright-template}
+files: [qa-projects/playwright_pom_fixtures_modular_framework_template/**]
+links: [core]
+
+## 11 Framework benchmark platform {#framework-benchmark-dashboard}
+files: [projects/framework-benchmark-dashboard/**]
+links: [core]

@@ -1,0 +1,61 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import http from 'node:http';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { adaptMapSource, ownershipPlan } from '../scripts/map-adapter.mjs';
+import { dashboardUrl, hasProjects, loadConfiguration, ownedCommand, probe } from '../scripts/lib.mjs';
+
+const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+test('pinned adapter confines state, hides recovery/runtime paths and refuses automatic port fallback', async t => {
+  const source = await fs.readFile(path.join(projectRoot, 'node_modules/agenttrail/bin/agenttrail.mjs'), 'utf8');
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'map-adapter-'));
+  t.after(() => fs.rm(dir, {recursive:true,force:true}));
+  const planPath = path.join(dir, 'ownership.md'), stateDir = path.join(dir, 'state');
+  const adapted = adaptMapSource(source, {binDir:path.join(projectRoot,'node_modules/agenttrail/bin'),stateDir,planPath});
+  assert.ok(adapted.includes(`const planPath = ${JSON.stringify(planPath)}`));
+  assert.doesNotMatch(adapted, /path.join\(os.homedir\(\), '\.agenttrail'/);
+  assert.match(adapted, /app: 'agenttrail-map'.*repoPath: repo/);
+  assert.match(adapted, /listenWithFallback\(0\)/);
+  const ignore = adapted.split('\n').find(line => line.startsWith('const IGNORE ='));
+  assert.match(ignore, /artifacts/);assert.match(ignore,/runtime/);assert.match(ignore,/auth/);
+  const file = path.join(dir,'map.mjs');await fs.writeFile(file,adapted);
+  const parsed = spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
+  assert.equal(parsed.status,0,parsed.stderr);
+  assert.throws(()=>adaptMapSource(source+'\n',{stateDir,planPath,binDir:dir}),/source changed/);
+});
+test('generated ownership uses registered projects without inventing task completion',()=>{
+  const registry={projects:[{id:'core',name:'Workspace',path:'.'},{id:'playwright',name:'Playwright Agent',path:'qa-projects/Playwright Agentic Framework'}]};
+  const plan=ownershipPlan(registry);
+  assert.match(plan,/\{#playwright\}/);assert.match(plan,/files: \[qa-projects\/Playwright Agentic Framework\/\*\*\]/);
+  assert.doesNotMatch(plan,/^- \[[ x~!]\]/m);
+  assert.throws(()=>ownershipPlan({projects:[...registry.projects,{id:'escape',name:'Escape',path:'../outside'}]}),/project path/);
+  assert.throws(()=>ownershipPlan({projects:[...registry.projects,registry.projects[1]]}),/project identity/);
+});
+test('Map configuration observes the workspace on a separate port',async t=>{
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'map-config-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  await fs.mkdir(path.join(root,'dashboard'));
+  await fs.writeFile(path.join(root,'workspace.projects.json'),JSON.stringify({projects:[{id:'core',path:'.'}]}));
+  const file=path.join(root,'dashboard/dashboard.config.json');
+  await fs.writeFile(file,JSON.stringify({port:4780,mapPort:5330,watchProjects:['core']}));
+  assert.deepEqual(await loadConfiguration(root,path.join(root,'dashboard'),'map'),{port:5330,roots:[await fs.realpath(root)]});
+  assert.equal(dashboardUrl(5330,root,false,'map'),'http://127.0.0.1:5330/');
+  await fs.writeFile(file,JSON.stringify({port:4780,mapPort:4780,watchProjects:['core']}));
+  await assert.rejects(loadConfiguration(root,path.join(root,'dashboard'),'map'),/port/);
+});
+test('Map readiness requires its identity and the selected workspace, with distinct process ownership',async t=>{
+  let state={app:'another-service'};
+  const server=http.createServer((req,res)=>{res.setHeader('content-type','application/json');res.end(JSON.stringify(state));});
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const port=server.address().port;
+  await assert.rejects(probe(port,'map'),/occupied/);
+  state={app:'agenttrail-map',repoPath:'/workspace'};
+  assert.equal(hasProjects(await probe(port,'map'),['/workspace']),true);
+  assert.equal(hasProjects(await probe(port,'map'),['/different']),false);
+  await assert.rejects(probe(port),/occupied/);
+  assert.equal(ownedCommand('node /project/scripts/map-server.mjs','/project/scripts/server.mjs'),false);
+  assert.equal(ownedCommand('node /project/scripts/map-server.mjs','/project/scripts/map-server.mjs'),true);
+});

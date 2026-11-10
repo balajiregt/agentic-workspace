@@ -5,15 +5,15 @@
 projects/**/.netlify/
 
 # Local reference symlink.
-context-starter
+agent-system/context-starter
 
 # Local runtime downloads/builds stay out of Git.
-local-agents/models/
-local-agents/cache/
-local-agents/.cache/
-local-agents/llama.cpp/
-local-agents/node_modules/
-local-agents/*.log
+agent-system/local-agents/models/
+agent-system/local-agents/cache/
+agent-system/local-agents/.cache/
+agent-system/local-agents/llama.cpp/
+agent-system/local-agents/node_modules/
+agent-system/local-agents/*.log
 
 # Generated build/test artifacts.
 target/
@@ -22,18 +22,32 @@ artifacts/
 node_modules/
 __pycache__/
 *.py[cod]
-projects/ui-automation/**/playwright-report/
-projects/ui-automation/**/test-results/
-graphify-out/
+qa-projects/ui-automation/**/playwright-report/
+qa-projects/ui-automation/**/test-results/
+artifacts/graphify-out/
 *.tar
 
-# Machine-local resolved context generated from current task and service metadata.
-contexts/current/resolved-context.yml
-contexts/current/resolved-ui-context.yml
-
 # Keep the Medium draft local; publish the repo as the reference artifact.
-docs/medium-blog-agentic-workspace.md
-docs/blog-agentic-workspace-v2.md
+knowledge/docs/medium-blog-agentic-workspace.md
+knowledge/docs/blog-agentic-workspace-v2.md
 
 # Older standalone PoC repo retained locally, not part of this workspace commit.
 projects/copilot-sprint-metrics-starter/
+
+benchmark-results/
+evaluation/benchmarks/dashboard/__pycache__/
+
+# The single canonical UI project retains its independent Git history.
+/qa-projects/ui-automation/role-aware-mockserver/
+
+# Project-owned task inputs and generated context. Keep only sanitised examples.
+projects/microservices/contexts/tasks/*
+!projects/microservices/contexts/tasks/ABC-123.yml
+**/contexts/.resolved/
+**/contexts/tasks/.resolved/
+
+# Independent nested Git repositories keep their own history.
+/qa-projects/Playwright Agentic Framework/
+/qa-projects/playwright_pom_fixtures_modular_framework_template/
+/projects/kafka-test-project/
+/projects/framework-benchmark-dashboard/

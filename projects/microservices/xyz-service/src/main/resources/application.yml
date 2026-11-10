@@ -3,6 +3,7 @@ spring:
     name: xyz-service
 
 server:
+  address: 127.0.0.1
   port: 8080
 
 management:

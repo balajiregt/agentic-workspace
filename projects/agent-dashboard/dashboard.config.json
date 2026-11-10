@@ -1,0 +1,11 @@
+{
+  "port": 4780,
+  "watchProjects": [
+    "core",
+    "playwright-framework",
+    "role-aware-ui",
+    "microservices",
+    "kafka"
+  ],
+  "mapPort": 5330
+}

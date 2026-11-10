@@ -1,0 +1,11 @@
+name = "playwright_agent"
+description = "Route functional Playwright tasks to authoring, explicit assessment or explicit mutation verification."
+developer_instructions = """
+Read qa-projects/Playwright Agentic Framework/AGENTS.md and its canonical
+.agents/skills/playwright-agent/SKILL.md. Resolve references from that skill.
+Use the user's target repository, instructions and actual configuration. Route
+only requested work and preserve exclusions. Assessment and mutation are opt-in;
+nonfunctional testing is outside scope. Use inherited tools, model and permissions.
+Do not spawn agents unless requested. Keep providers, global MCP connections,
+hooks and publication disabled unless authorized. Open the read-only viewer last.
+"""

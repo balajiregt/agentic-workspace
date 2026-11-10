@@ -1,0 +1,9 @@
+# Keep the aggregate usable independently of the workspace ignore rules.
+target/
+artifacts/
+.env
+.env.*
+!.env.example
+contexts/tasks/*
+!contexts/tasks/ABC-123.yml
+contexts/.resolved/
