@@ -12,9 +12,9 @@ that every nested project's instructions have been loaded.
 
 | Project | Local entrypoint | Context, evaluation and knowledge |
 | --- | --- | --- |
-| Playwright Agent | [AGENTS.md](../../qa-projects/Playwright%20Agentic%20Framework/AGENTS.md) | Existing `contexts/` maps/captures and ignored `contexts/tasks/` requirements; internal `quality/` evaluators, mutation runner and reports; project `docs/` |
-| Role-aware mockserver | [AGENTS.md](../../qa-projects/ui-automation/role-aware-mockserver/AGENTS.md) | `contexts/tasks/`; existing Playwright tests and `benchmarks/`; project `docs/` |
-| Microservices | [AGENTS.md](../../projects/microservices/AGENTS.md) | `contexts/tasks/`; existing service and RestAssured Maven modules; module READMEs and aggregate `docs/` |
+| Playwright Agent | [AGENTS.md](../../qa/playwright-agent/AGENTS.md) | Existing `contexts/` maps/captures and ignored `contexts/tasks/` requirements; internal `quality/` evaluators, mutation runner and reports; project `docs/` |
+| Role-aware mockserver | [AGENTS.md](../../qa/ui-automation/role-aware-mockserver/AGENTS.md) | `contexts/tasks/`; existing Playwright tests and `benchmarks/`; project `docs/` |
+| Microservices | [AGENTS.md](../../services/microservices/AGENTS.md) | `contexts/tasks/`; existing service and RestAssured Maven modules; module READMEs and aggregate `docs/` |
 
 Root `AGENTS.md` supplies common boundaries. Shared skills describe reusable
 procedures; they do not own a project's business rules. Root `knowledge/` holds
@@ -34,8 +34,8 @@ into it. Keep downloaded private requirements ignored as well.
 From the workspace root, select that task explicitly:
 
 ```sh
-npm run context:resolve -- --context projects/microservices/contexts/tasks/ABC-123.yml
-npm run context:ui:resolve -- --context qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
+npm run context:resolve -- --context services/microservices/contexts/tasks/ABC-123.yml
+npm run context:ui:resolve -- --context qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
 ```
 
 Replace the example filename with the real task. Paths passed to `--context`

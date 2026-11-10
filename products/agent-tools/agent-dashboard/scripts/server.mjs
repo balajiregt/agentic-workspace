@@ -6,7 +6,7 @@ import { startOffice } from '../node_modules/agenttrail-kitchen/src/server.mjs';
 import { loadConfiguration } from './lib.mjs';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const workspaceRoot = path.resolve(projectRoot, '../..');
+const workspaceRoot = path.resolve(projectRoot, '../../..');
 const config = await loadConfiguration(workspaceRoot, projectRoot);
 const stateDir = path.join(projectRoot, '.runtime');
 const office = await startOffice({ roots: config.roots, home: os.homedir(), stateDir, port: config.port });

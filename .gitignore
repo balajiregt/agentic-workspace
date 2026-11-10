@@ -22,8 +22,8 @@ artifacts/
 node_modules/
 __pycache__/
 *.py[cod]
-qa-projects/ui-automation/**/playwright-report/
-qa-projects/ui-automation/**/test-results/
+qa/ui-automation/**/playwright-report/
+qa/ui-automation/**/test-results/
 artifacts/graphify-out/
 *.tar
 
@@ -38,16 +38,19 @@ benchmark-results/
 evaluation/benchmarks/dashboard/__pycache__/
 
 # The single canonical UI project retains its independent Git history.
-/qa-projects/ui-automation/role-aware-mockserver/
+/qa/ui-automation/role-aware-mockserver/
 
 # Project-owned task inputs and generated context. Keep only sanitised examples.
-projects/microservices/contexts/tasks/*
-!projects/microservices/contexts/tasks/ABC-123.yml
+services/microservices/contexts/tasks/*
+!services/microservices/contexts/tasks/ABC-123.yml
 **/contexts/.resolved/
 **/contexts/tasks/.resolved/
 
 # Independent nested Git repositories keep their own history.
-/qa-projects/Playwright Agentic Framework/
-/qa-projects/playwright_pom_fixtures_modular_framework_template/
-/projects/kafka-test-project/
-/projects/framework-benchmark-dashboard/
+/qa/playwright-agent/
+/qa/playwright-template/
+/labs/kafka-test-project/
+/products/agent-tools/framework-benchmark-dashboard/
+/products/finance/finfolio-app/
+/products/finance/finfolio-agent/
+/products/career/career-agent/

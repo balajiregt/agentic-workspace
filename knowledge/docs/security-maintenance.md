@@ -72,12 +72,12 @@ environment files, credentials directories, runtime state, virtual environments,
 dependency trees and test artifacts. Synthetic private-marker exclusion was verified
 with Docker itself.
 
-The broker uses `projects/kafka-test-project/Dockerfile.kafka`, based on an immutable
+The broker uses `labs/kafka-test-project/Dockerfile.kafka`, based on an immutable
 Apache Kafka image with Alpine security updates and checksum-pinned lz4/snappy fixes.
 Before Docker-enabled Kafka tests:
 
 ```sh
-cd projects/kafka-test-project
+cd labs/kafka-test-project
 docker compose build kafka
 mvn test
 ```

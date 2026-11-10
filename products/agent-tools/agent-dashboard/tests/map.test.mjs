@@ -28,9 +28,9 @@ test('pinned adapter confines state, hides recovery/runtime paths and refuses au
   assert.throws(()=>adaptMapSource(source+'\n',{stateDir,planPath,binDir:dir}),/source changed/);
 });
 test('generated ownership uses registered projects without inventing task completion',()=>{
-  const registry={projects:[{id:'core',name:'Workspace',path:'.'},{id:'playwright',name:'Playwright Agent',path:'qa-projects/Playwright Agentic Framework'}]};
+  const registry={projects:[{id:'core',name:'Workspace',path:'.'},{id:'playwright',name:'Playwright Agent',path:'qa/playwright-agent'}]};
   const plan=ownershipPlan(registry);
-  assert.match(plan,/\{#playwright\}/);assert.match(plan,/files: \[qa-projects\/Playwright Agentic Framework\/\*\*\]/);
+  assert.match(plan,/\{#playwright\}/);assert.match(plan,/files: \[qa\/playwright-agent\/\*\*\]/);
   assert.doesNotMatch(plan,/^- \[[ x~!]\]/m);
   assert.throws(()=>ownershipPlan({projects:[...registry.projects,{id:'escape',name:'Escape',path:'../outside'}]}),/project path/);
   assert.throws(()=>ownershipPlan({projects:[...registry.projects,registry.projects[1]]}),/project identity/);

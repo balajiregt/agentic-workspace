@@ -12,7 +12,7 @@ below run from this directory unless stated otherwise.
    on every request. Keep new private requirements and exports ignored.
 2. In the workspace, follow the shared `microservice-change` skill. Resolve the
    selected task from the workspace root:
-   `npm run context:resolve -- --context projects/microservices/contexts/tasks/ABC-123.yml`.
+   `npm run context:resolve -- --context services/microservices/contexts/tasks/ABC-123.yml`.
    Read `contexts/.resolved/ABC-123.yml`; paths and generated commands are relative
    to the workspace root. Use the selected task's corresponding output, never
    another session's output. Regenerate after task or relevant source changes.

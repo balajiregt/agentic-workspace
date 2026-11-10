@@ -27,7 +27,7 @@ class WorkspaceLayoutTests(unittest.TestCase):
             overlay = Path(temp)
             registry = json.loads((root/'workspace.projects.json').read_text())
             project = dict(next(p for p in registry['projects'] if p['id'] == 'role-aware-ui'))
-            project.update(id='duplicate-ui', path='qa-projects/ui-automation/role-aware-mockserver/../role-aware-mockserver')
+            project.update(id='duplicate-ui', path='qa/ui-automation/role-aware-mockserver/../role-aware-mockserver')
             registry['projects'].append(project)
             (overlay/'workspace.projects.json').write_text(json.dumps(registry))
             self.assertTrue(any(e.startswith('Duplicate project path:') for e in check(root, overlay)['errors']))
@@ -41,6 +41,36 @@ class WorkspaceLayoutTests(unittest.TestCase):
                 overlay = Path(temp)
                 (overlay/retired).mkdir(parents=True)
                 self.assertIn('Retired duplicate project root exists: '+retired, check(root, overlay)['errors'])
+
+    def test_retired_category_roots_cannot_return(self):
+        root = Path(__file__).resolve().parents[2]
+        for legacy in ['projects', 'qa-projects']:
+            with self.subTest(path=legacy), tempfile.TemporaryDirectory() as temp:
+                overlay = Path(temp)
+                (overlay/legacy).mkdir()
+                self.assertIn('Retired category root exists: '+legacy, check(root, overlay)['errors'])
+
+    def test_project_metadata_must_match_its_group_and_repository_boundary(self):
+        root = Path(__file__).resolve().parents[2]
+        registry = json.loads((root/'workspace.projects.json').read_text())
+        cases = {
+            'Project finfolio-app is not inside its declared group': ('finfolio-app', {'group': 'qa'}),
+            'Project career-agent lacks metadata: kind': ('career-agent', {'kind': ''}),
+            'Project kafka uses an unknown kind or status': ('kafka', {'status': 'abandoned'}),
+        }
+        for message, (project_id, change) in cases.items():
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as temp:
+                overlay = Path(temp)
+                edited = json.loads(json.dumps(registry))
+                next(p for p in edited['projects'] if p['id'] == project_id).update(change)
+                (overlay/'workspace.projects.json').write_text(json.dumps(edited))
+                self.assertIn(message, check(root, overlay)['errors'])
+        with tempfile.TemporaryDirectory() as temp:
+            overlay = Path(temp)
+            ignored = (root/'.gitignore').read_text().replace('/products/finance/finfolio-agent/\n', '')
+            (overlay/'.gitignore').write_text(ignored)
+            self.assertIn('Nested repository is not ignored by the workspace: products/finance/finfolio-agent',
+                          check(root, overlay)['errors'])
 
     def test_categories_match_real_directories_and_editor_groups(self):
         root = Path(__file__).resolve().parents[2]
@@ -60,14 +90,17 @@ class WorkspaceLayoutTests(unittest.TestCase):
             old = root/'projects/ui-automation'
             old.mkdir(parents=True)
             self.assertEqual(ui_automation_root(root), old)
-            current = root/'qa-projects/ui-automation'
+            previous = root/'qa-projects/ui-automation'
+            previous.mkdir(parents=True)
+            self.assertEqual(ui_automation_root(root), previous)
+            current = root/'qa/ui-automation'
             current.mkdir(parents=True)
             self.assertEqual(ui_automation_root(root), current)
 
     def test_reports_and_inventory_follow_the_moved_ui_project(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            project = root/'qa-projects/ui-automation/role-aware-mockserver'
+            project = root/'qa/ui-automation/role-aware-mockserver'
             report = project/'playwright/playwright-report/index.html'
             report.parent.mkdir(parents=True)
             report.write_text('report fixture')
@@ -83,9 +116,9 @@ class WorkspaceLayoutTests(unittest.TestCase):
             self.assertEqual(test_file_inventory(root, {}, {})['ui']['totalFiles'], 1)
 
     def test_recommendations_include_actual_resolved_ui_location(self):
-        ui = {'resolved_repositories': {'ui_project': 'qa-projects/ui-automation/role-aware-mockserver'},
+        ui = {'resolved_repositories': {'ui_project': 'qa/ui-automation/role-aware-mockserver'},
               'verification': {'commands': ['run focused checks']}}
-        result = impacted_recommendations({}, ui, ['qa-projects/ui-automation/role-aware-mockserver/app/public/app.js'])
+        result = impacted_recommendations({}, ui, ['qa/ui-automation/role-aware-mockserver/app/public/app.js'])
         self.assertTrue(any(item['area'] == 'UI automation' for item in result))
 
 

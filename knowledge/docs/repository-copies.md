@@ -4,12 +4,12 @@ Verified on 31 October 2026. Each active product has one working checkout.
 
 | Repository / responsibility | Working location |
 | --- | --- |
-| Workspace core, context, skills and Maven projects | `.` and `projects/microservices/` |
-| [Playwright Agent](https://github.com/balajiregt/playwright-agent) | `qa-projects/Playwright Agentic Framework/` |
-| [Role-Aware Mockserver](https://github.com/balajiregt/plawright-role-aware-mockserver) | `qa-projects/ui-automation/role-aware-mockserver/` |
-| [Build with Balaji platform](https://github.com/balajiregt/framework-benchmark-dashboard) | `projects/framework-benchmark-dashboard/` |
-| Kafka/event quality lab | `projects/kafka-test-project/` |
-| Reference Playwright starter template | `qa-projects/playwright_pom_fixtures_modular_framework_template/` |
+| Workspace core, context, skills and Maven projects | `.` and `services/microservices/` |
+| [Playwright Agent](https://github.com/balajiregt/playwright-agent) | `qa/playwright-agent/` |
+| [Role-Aware Mockserver](https://github.com/balajiregt/plawright-role-aware-mockserver) | `qa/ui-automation/role-aware-mockserver/` |
+| [Build with Balaji platform](https://github.com/balajiregt/framework-benchmark-dashboard) | `products/agent-tools/framework-benchmark-dashboard/` |
+| Kafka/event quality lab | `labs/kafka-test-project/` |
+| Reference Playwright starter template | `qa/playwright-template/` |
 
 The mockserver's existing standalone Git metadata moved with its source into the
 canonical UI location. Its origin, commits and security tooling are preserved.
@@ -29,7 +29,7 @@ The old integrated mockserver source is preserved at
 `artifacts/focused-restructure-20261031/recovery/integrated-mockserver/`. Its installed
 dependencies and test evidence moved into the canonical checkout. The empty extra
 API placeholder is also retained only as recovery data; real API tests remain
-under `projects/microservices/qa-projects/xyz-service-api-tests/`.
+under `services/microservices/qa-projects/xyz-service-api-tests/`.
 
 The standalone QA viewer was retired from active projects. Its source/local edits
 remain at `artifacts/product-retirement-20261031/qa-dashboard-viewer/`. No separate

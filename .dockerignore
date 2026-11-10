@@ -8,13 +8,13 @@ target/
 build/
 __pycache__/
 *.py[cod]
-qa-projects/ui-automation/**/node_modules/
-qa-projects/ui-automation/**/playwright-report/**
-!qa-projects/ui-automation/**/playwright-report/
-!qa-projects/ui-automation/**/playwright-report/index.html
-qa-projects/ui-automation/**/test-results/**
-!qa-projects/ui-automation/**/test-results/
-!qa-projects/ui-automation/**/test-results/.last-run.json
+qa/ui-automation/**/node_modules/
+qa/ui-automation/**/playwright-report/**
+!qa/ui-automation/**/playwright-report/
+!qa/ui-automation/**/playwright-report/index.html
+qa/ui-automation/**/test-results/**
+!qa/ui-automation/**/test-results/
+!qa/ui-automation/**/test-results/.last-run.json
 agent-system/local-agents/models/
 agent-system/local-agents/cache/
 agent-system/local-agents/.cache/
@@ -56,7 +56,7 @@ agent-system/local-agents/*.log
 
 # Private task inputs and generated context are never image source inputs.
 **/contexts/tasks/**
-!projects/microservices/contexts/tasks/ABC-123.yml
-!qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
+!services/microservices/contexts/tasks/ABC-123.yml
+!qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
 **/contexts/.resolved
 **/context-inputs

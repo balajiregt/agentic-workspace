@@ -29,7 +29,7 @@ work_item:
     - "riskCategory"
   verification:
     required_commands:
-      - "cd projects/microservices/xyz-service && mvn test"
+      - "cd services/microservices/xyz-service && mvn test"
     ci_jobs: []
   notes:
     - "Prefer this topology when the team keeps service code and tests together."

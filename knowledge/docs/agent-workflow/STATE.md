@@ -6,9 +6,9 @@ contract boundaries and project-specific knowledge belong to their owner:
 
 | Owner | Instructions |
 | --- | --- |
-| Playwright Agent, acceptance and mutation evidence | [Project instructions](../../../qa-projects/Playwright%20Agentic%20Framework/AGENTS.md) |
-| Role-aware mockserver and browser tests | [Project instructions](../../../qa-projects/ui-automation/role-aware-mockserver/AGENTS.md) |
-| API service, contract, deployment and RestAssured | [Aggregate instructions](../../../projects/microservices/AGENTS.md) |
+| Playwright Agent, acceptance and mutation evidence | [Project instructions](../../../qa/playwright-agent/AGENTS.md) |
+| Role-aware mockserver and browser tests | [Project instructions](../../../qa/ui-automation/role-aware-mockserver/AGENTS.md) |
+| API service, contract, deployment and RestAssured | [Aggregate instructions](../../../services/microservices/AGENTS.md) |
 
 The committed `ABC-123.yml` and `UI-ROLE-001.yml` project tasks are sanitised
 examples for resolver smoke checks. They are not globally active tickets.

@@ -101,21 +101,21 @@ execution, not loading a larger unvalidated local profile.
 If Maven is installed:
 
 ```bash
-cd projects/microservices
+cd services/microservices
 mvn -pl xyz-service,qa-steps -am test
 ```
 
 Start the service:
 
 ```bash
-cd projects/microservices/xyz-service
+cd services/microservices/xyz-service
 mvn spring-boot:run
 ```
 
 Run the API tests in another terminal:
 
 ```bash
-cd projects/microservices
+cd services/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```
 

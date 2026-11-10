@@ -1,6 +1,10 @@
 # Agentic workspace folder map
 
-The workspace has seven category folders on disk. Applications and QA frameworks keep their existing paths; evaluation, agent support, knowledge and tooling live together in their own categories. This map describes the layout after the 31 October 2026 reorganisation.
+The workspace has nine category folders on disk, organised by intent. Products
+are grouped by domain; services, QA frameworks and labs each have their own
+root. This map describes the layout after the 10 November 2026 realignment.
+[workspace.projects.json](../../workspace.projects.json) is the authoritative
+inventory: each project records its group, domain, kind, status and repository.
 
 ## High level folder map
 
@@ -8,80 +12,74 @@ Every arrow below represents actual folder containment. These category names are
 
 ```mermaid
 flowchart LR
-  W["agentic-workspace/"] --> P["projects/<br/>Applications, services and labs"]
-  W --> Q["qa-projects/<br/>QA frameworks and templates"]
-  W --> E["evaluation/<br/>Cross-project trials and shared measurement"]
-  W --> A["agent-system/<br/>Shared skills, context examples and local agents"]
-  W --> K["knowledge/<br/>Cross-project guides and reference sources"]
-  W --> T["tooling/<br/>Workspace scripts and their tests"]
-  W --> O["artifacts/<br/>Generated reports, graphs and local tools"]
+  W["agentic-workspace/"] --> PR["products/<br/>Runnable products by domain"]
+  PR --> F["finance/"]
+  PR --> CA["career/"]
+  PR --> AT["agent-tools/"]
+  W --> S["services/<br/>Backend services and API tests"]
+  W --> Q["qa/<br/>QA frameworks and templates"]
+  W --> L["labs/<br/>Experiments"]
+  W --> A["agent-system/<br/>Shared skills and local agents"]
+  W --> E["evaluation/<br/>Cross-project trials"]
+  W --> K["knowledge/<br/>Guides and reference sources"]
+  W --> T["tooling/<br/>Workspace scripts and tests"]
+  W --> O["artifacts/<br/>Ignored generated output"]
 ```
 
 ## Folder tree and responsibilities
 
+Folders marked `[repo]` are independent nested Git repositories, ignored by the
+workspace repository.
+
 ```text
 agentic-workspace/
-├── projects/                              — applications, services and labs
-│   ├── agent-dashboard/                   — Agenttrail Kitchen activity observer
-│   ├── framework-benchmark-dashboard/     — Build with Balaji project showcase
-│   ├── kafka-test-project/                — independent Kafka/event quality lab
-│   ├── microservices/                     — Maven service and API automation
-│   │   ├── AGENTS.md                      — local workflow and verification entrypoint
-│   │   ├── contexts/                      — selected tasks and ignored .resolved/ outputs
-│   │   ├── docs/                          — durable aggregate knowledge
-│   │   ├── xyz-service/                   — Spring Boot source and OpenAPI
-│   │   ├── qa-steps/                      — shared RestAssured helpers
-│   │   ├── qa-projects/
-│   │   │   └── xyz-service-api-tests/      — context-selected API tests
-│   │   └── xyz-deployments/               — Compose and Kubernetes assets
-├── qa-projects/                           — QA frameworks and templates
-│   ├── Playwright Agentic Framework/      — Playwright Agent and internal quality/ tools
-│   │   ├── contexts/                      — application maps, captures and private task inputs
-│   │   └── docs/                          — durable project guidance
-│   ├── playwright_pom_fixtures_modular_framework_template/
-│   ├── ui-automation/
-│   │   └── role-aware-mockserver/         — sole Git-backed UI app, mockserver and tests
-│   │       ├── contexts/                  — selected tasks and ignored .resolved/ outputs
-│   │       ├── docs/                      — architecture and security guidance
-│   │       └── benchmarks/                — project-owned execution comparison
-├── evaluation/
-│   ├── benchmarks/                        — controlled trials and evidence collection
-│   │   └── dashboard/                     — execution benchmark tooling
+├── products/                              — runnable products, grouped by domain
+│   ├── finance/
+│   │   ├── finfolio-app/          [repo]  — FinFolio portfolio tracker (myFinance)
+│   │   └── finfolio-agent/        [repo]  — private alerting and Telegram agent
+│   ├── career/
+│   │   └── career-agent/          [repo]  — private career scouting agent
+│   └── agent-tools/
+│       ├── agent-dashboard/               — Agenttrail Kitchen and Map
+│       └── framework-benchmark-dashboard/ [repo] — public benchmark platform
+├── services/
+│   └── microservices/                     — Maven service and API automation
+│       ├── AGENTS.md                      — local workflow and verification entrypoint
+│       ├── contexts/                      — selected tasks and ignored .resolved/ outputs
+│       ├── docs/                          — durable aggregate knowledge
+│       ├── xyz-service/                   — Spring Boot source and OpenAPI
+│       ├── qa-steps/                      — shared RestAssured helpers
+│       ├── qa-projects/
+│       │   └── xyz-service-api-tests/     — context-selected API tests
+│       └── xyz-deployments/               — Compose and Kubernetes assets
+├── qa/
+│   ├── playwright-agent/          [repo]  — Playwright Agent and internal quality/ tools
+│   ├── playwright-template/       [repo]  — Playwright POM/fixtures starter
+│   └── ui-automation/
+│       └── role-aware-mockserver/ [repo]  — UI app, mockserver and Playwright tests
+├── labs/
+│   └── kafka-test-project/        [repo]  — Kafka and event-quality lab
 ├── agent-system/
-│   ├── contexts/                          — reusable examples and migration guidance
-│   │   ├── current/                       — guidance; no active global task
-│   │   ├── examples/                      — sample task contexts
-│   │   └── services/                      — currently empty
 │   ├── skills/                            — canonical task workflows
 │   ├── local-agents/                      — Pi and llama.cpp setup and launchers
-│   │   └── config/                        — local model profiles
 │   └── context-starter/                   — symlink to an external directory
+├── evaluation/
+│   └── benchmarks/                        — controlled trials and evidence collection
 ├── knowledge/
-│   ├── docs/                              — cross-project guides, research and recorded evidence
-│   │   ├── agent-workflow/                — loop instructions, state and budget
-│   │   ├── assets/                        — saved diagram assets
-│   │   ├── instagram/                     — resource adoption catalogue and provenance
-│   │   └── prompts/                       — reusable task prompts
-│   └── resources/
-│       └── instagram-sources/             — passive upstream reference snapshots
+│   ├── docs/                              — cross-project guides, research and evidence
+│   └── resources/instagram-sources/       — passive upstream reference snapshots
 ├── tooling/
 │   ├── docker/                            — graph-service Dockerfile and Compose
 │   ├── scripts/                           — resolvers, graph builders and validation
 │   └── tests/                             — checks for shared workspace tooling
 └── artifacts/                             — ignored generated and local output
-    ├── graphify-out/                      — graph output and cache
-    ├── qa-dashboard/                      — generated QA dashboard
-    ├── qa-dashboard-negative/             — synthetic negative dashboard examples
-    ├── test-graph/                        — generated test relationships
-    ├── tools/                             — downloaded tools and local environments
-    └── workspace-reorganisation-2026-10-31/ — private migration records
 ```
 
 This tree expands the category folders and principal project boundaries. Project-local dependencies, Java packages, browser reports and caches remain inside their owning projects.
 
 ## Root integration folders
 
-Tools expect these dot-prefixed folders at the root. They sit alongside the seven categories and may be hidden by a file browser.
+Tools expect these dot-prefixed folders at the root. They sit alongside the nine categories and may be hidden by a file browser.
 
 | Folder | Responsibility |
 | --- | --- |
@@ -109,7 +107,7 @@ flowchart TD
   R --> S["agent-system/skills/<br/>Task workflow"]
   C --> X["tooling/scripts/<br/>Resolve exact project paths"]
   X --> D["Project contexts/.resolved/<br/>Task-specific generated file map"]
-  D --> API["projects/microservices/<br/>Service, contract and RestAssured"]
+  D --> API["services/microservices/<br/>Service, contract and RestAssured"]
   D --> UI["Role-aware mockserver<br/>App, backend and Playwright"]
   P --> PA["Playwright Agent local contexts<br/>Maps, captures and requirements"]
   S --> W["Inspect relevant files and make the change"]
@@ -125,7 +123,7 @@ flowchart TD
 Resolved context identifies files and verification commands; it does not itself
 run tests. Select the task explicitly; default root resolver commands use
 sanitized examples. UI and API automation remain isolated. The API example
-selects `projects/microservices/qa-projects/xyz-service-api-tests/`, with no
+selects `services/microservices/qa-projects/xyz-service-api-tests/`, with no
 additional API-test copy under the outer QA category. See the
 [project workflow](project-workflow.md) for task, evidence and knowledge ownership.
 
@@ -133,13 +131,16 @@ additional API-test copy under the outer QA category. See the
 
 | Area | Start here |
 | --- | --- |
-| Agent activity observer | [Agent dashboard](../../projects/agent-dashboard/README.md) |
+| FinFolio portfolio tracker | [FinFolio app](../../products/finance/finfolio-app/README.md) |
+| FinFolio alerts agent | [FinFolio agent](../../products/finance/finfolio-agent/README.md) |
+| Career agent | [Career agent](../../products/career/career-agent/README.md) |
+| Agent activity observer | [Agent dashboard](../../products/agent-tools/agent-dashboard/README.md) |
 | Choose project and task | [Project workflow](project-workflow.md) |
-| API services and tests | [Microservices instructions](../../projects/microservices/AGENTS.md) |
-| Event quality lab | [Kafka project](../../projects/kafka-test-project/README.md) |
-| Playwright Agent | [Project instructions](<../../qa-projects/Playwright Agentic Framework/AGENTS.md>) |
-| Role-aware UI automation | [Mockserver instructions](../../qa-projects/ui-automation/role-aware-mockserver/AGENTS.md) |
-| Acceptance and mutation evidence | [Playwright Agent quality tools](<../../qa-projects/Playwright Agentic Framework/quality/README.md>) |
+| API services and tests | [Microservices instructions](../../services/microservices/AGENTS.md) |
+| Event quality lab | [Kafka project](../../labs/kafka-test-project/README.md) |
+| Playwright Agent | [Project instructions](<../../qa/playwright-agent/AGENTS.md>) |
+| Role-aware UI automation | [Mockserver instructions](../../qa/ui-automation/role-aware-mockserver/AGENTS.md) |
+| Acceptance and mutation evidence | [Playwright Agent quality tools](<../../qa/playwright-agent/quality/README.md>) |
 | Controlled trials | [Shared benchmarks](../../evaluation/benchmarks/README.md) |
 | Local inference | [Local agents](../../agent-system/local-agents/README.md) |
 | Resource adoption | [Catalogue README](instagram/README.md) |
@@ -147,7 +148,26 @@ additional API-test copy under the outer QA category. See the
 
 Agenttrail observes available activity; Playwright Agent owns test authoring and quality assessment. The standalone QA viewer is retired. Folder existence and dashboard activity do not establish passing tests or completed work.
 
-## What moved
+## What moved on 10 November 2026
+
+| Previous location | Current location |
+| --- | --- |
+| `projects/agent-dashboard/` | `products/agent-tools/agent-dashboard/` |
+| `projects/framework-benchmark-dashboard/` | `products/agent-tools/framework-benchmark-dashboard/` |
+| `projects/microservices/` | `services/microservices/` |
+| `projects/kafka-test-project/` | `labs/kafka-test-project/` |
+| `qa-projects/Playwright Agentic Framework/` | `qa/playwright-agent/` |
+| `qa-projects/playwright_pom_fixtures_modular_framework_template/` | `qa/playwright-template/` |
+| `qa-projects/ui-automation/` | `qa/ui-automation/` |
+| `~/Desktop/myFinance` | `products/finance/finfolio-app/` (symlink left at the old path) |
+| `~/Desktop/finfolio-agent` | `products/finance/finfolio-agent/` (symlink left at the old path) |
+| Codex career folder `career-agent/` | `products/career/career-agent/` (symlink left at the old path) |
+
+Project IDs did not change. The `projects/` and `qa-projects/` roots are retired
+and `workspace:check` fails if they reappear. The private career workbench,
+career runtime state and portfolio sites stay outside the workspace.
+
+## What moved on 31 October 2026
 
 | Previous root folder | Current location |
 | --- | --- |
@@ -169,7 +189,7 @@ Agenttrail observes available activity; Playwright Agent owns test authoring and
 | `docker-compose.graphs.yml` | `tooling/docker/docker-compose.graphs.yml` |
 | `Untitled-1.svg` | `knowledge/docs/assets/workspace-diagram.svg` |
 
-Active nested repositories are Playwright Agent, the role-aware mockserver, the public platform, the Kafka lab and the starter template. Each keeps its Git boundary. The retired decision checkout, with its Git directory and local environment, is recovery data under artifacts. Reference snapshots remain passive and unchanged.
+Active nested repositories are marked `[repo]` in the tree above and have `repository.nested` set in the registry. Each keeps its Git boundary. The retired decision checkout, with its Git directory and local environment, is recovery data under artifacts. Reference snapshots remain passive and unchanged.
 
 Update this map and the registry when category ownership changes. This is a dated navigation guide, not an automatically generated live inventory.
 

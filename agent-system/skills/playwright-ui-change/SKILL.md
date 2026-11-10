@@ -13,7 +13,7 @@ for the Playwright slice declared in the UI context YAML.
 ## Inputs
 
 - Read the owning project's `AGENTS.md` and select its task YAML, not a
-  workspace-wide current task. The sanitised example is `qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml`.
+  workspace-wide current task. The sanitised example is `qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml`.
 - Run `npm run context:ui:resolve -- --context <workspace-relative-task-path>` from the
   workspace root. Use the corresponding project `contexts/.resolved/<task>.yml`;
   regenerate after task, source, contract, config or layout changes. Check its

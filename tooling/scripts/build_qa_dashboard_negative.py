@@ -63,21 +63,21 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
         "Role viewer is not mapped to a role coverage edge for the review approval flow.",
         "Role reviewer is in synthetic ticket intent but is missing from the resolved UI role matrix.",
         "Flow review approval is not present in the resolved active UI mapping.",
-        "UI test spec is outside resolved active mapping: qa-projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
-        "API test class is outside resolved active mapping: projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
+        "UI test spec is outside resolved active mapping: qa/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+        "API test class is outside resolved active mapping: services/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
     ]
     data["coverage"]["orphanTestCases"] = [
         {
             "id": "synthetic-orphan-review-test",
             "label": "review flow saves draft without mapped story or endpoint",
             "layer": "ui",
-            "path": "qa-projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+            "path": "qa/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
         },
         {
             "id": "synthetic-orphan-api-decision-test",
             "label": "PATCH /xyz decision accepts review approval without mapped endpoint",
             "layer": "api",
-            "path": "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
+            "path": "services/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
         }
     ]
     data["negativeEvidence"] = {
@@ -202,8 +202,8 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
     duplicate_risk = {
         "left": "GET /xyz returns medium risk response for review customer",
         "right": "GET /xyz should return review risk response for medium customer",
-        "leftPath": "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java",
-        "rightPath": "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
+        "leftPath": "services/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java",
+        "rightPath": "services/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiDuplicateCandidateTest.java",
         "layer": "api",
         "score": 0.92,
         "sharedTerms": ["customer", "medium", "response", "review", "risk", "xyz"],
@@ -216,8 +216,8 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
     )
 
     data["changeImpact"]["changedFiles"] = [
-        "projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
-        "qa-projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+        "services/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
+        "qa/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
         *data["changeImpact"]["changedFiles"],
     ]
     data["changeImpact"]["recommendations"] = [
@@ -226,11 +226,11 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
             "priority": "high",
             "reason": "Synthetic contract change introduces review endpoints and fields without mapped API coverage.",
             "files": [
-                "projects/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
-                "projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java",
+                "services/microservices/xyz-service/src/main/resources/openapi/xyz-service.openapi.yml",
+                "services/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java",
             ],
             "commands": [
-                "cd projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081",
+                "cd services/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081",
             ],
         },
         {
@@ -238,11 +238,11 @@ def inject_negative_signals(data: dict[str, Any]) -> dict[str, Any]:
             "priority": "high",
             "reason": "Synthetic review-flow and reviewer role are outside resolved active UI mapping.",
             "files": [
-                "qa-projects/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
-                "qa-projects/ui-automation/role-aware-mockserver/playwright/pages/operations-console.page.ts",
+                "qa/ui-automation/role-aware-mockserver/playwright/tests/review-flow.spec.ts",
+                "qa/ui-automation/role-aware-mockserver/playwright/pages/operations-console.page.ts",
             ],
             "commands": [
-                "npm --prefix qa-projects/ui-automation/role-aware-mockserver run test:e2e",
+                "npm --prefix qa/ui-automation/role-aware-mockserver run test:e2e",
             ],
         },
         *data["changeImpact"]["recommendations"],

@@ -8,8 +8,8 @@ $ARGUMENTS
 
 Before editing:
 
-- Read projects/microservices/AGENTS.md and select the requested task under
-  projects/microservices/contexts/tasks/; ABC-123.yml is a sanitized example.
+- Read services/microservices/AGENTS.md and select the requested task under
+  services/microservices/contexts/tasks/; ABC-123.yml is a sanitized example.
 - Read that task's matching project contexts/.resolved/ output. Regenerate with
   the workspace resolver and an explicit --context argument if missing or stale.
 - If resolved_files.api_test exists, open and edit that exact file.

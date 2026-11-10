@@ -5,7 +5,7 @@ import { loadConfiguration } from './lib.mjs';
 import { adaptMapSource, mapVersion, ownershipPlan } from './map-adapter.mjs';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const workspaceRoot = path.resolve(projectRoot, '../..');
+const workspaceRoot = path.resolve(projectRoot, '../../..');
 const config = await loadConfiguration(workspaceRoot, projectRoot, 'map');
 const packageRoot = path.join(projectRoot, 'node_modules/agenttrail');
 const metadata = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));

@@ -82,14 +82,14 @@ def main():
 
     # Locked dependencies are also checked on CI where optional local tools are not installed.
     for lock in [ROOT / 'tooling/scripts/requirements-graphify.lock', ROOT / 'tooling/scripts/requirements-python-build.lock',
-                 ROOT / 'qa-projects/Playwright Agentic Framework/quality/python/requirements.lock']:
+                 ROOT / 'qa/playwright-agent/quality/python/requirements.lock']:
         if not lock.is_file():
             raise RuntimeError('Missing Python dependency lock: ' + str(lock.relative_to(ROOT)))
         for line in lock.read_text().splitlines():
             match = re.match(r'^([A-Za-z0-9_.-]+)==([^\s\\]+)', line)
             if match:
                 add('PyPI', *match.groups(), str(lock.relative_to(ROOT)))
-    for environment in [ROOT / 'artifacts/tools/graphify-venv', ROOT / 'qa-projects/Playwright Agentic Framework/quality/.venv']:
+    for environment in [ROOT / 'artifacts/tools/graphify-venv', ROOT / 'qa/playwright-agent/quality/.venv']:
         config = environment / 'pyvenv.cfg'
         if not config.exists():
             continue
@@ -103,8 +103,8 @@ def main():
             add('PyPI', package['Name'], package['Version'], str(environment.relative_to(ROOT)))
 
     if not args.skip_java:
-        for name, project, append in [('microservices', ROOT / 'projects/microservices', True),
-                                      ('kafka', ROOT / 'projects/kafka-test-project', False)]:
+        for name, project, append in [('microservices', ROOT / 'services/microservices', True),
+                                      ('kafka', ROOT / 'labs/kafka-test-project', False)]:
             tree = output / ('maven-' + name + '.txt')
             tree.unlink(missing_ok=True)
             command = ['mvn', '-B', '-ntp', 'org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree',

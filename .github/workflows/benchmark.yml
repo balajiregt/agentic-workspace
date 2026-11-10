@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["evaluation/benchmarks/**", "package*.json", ".github/workflows/benchmark.yml", "projects/microservices/**"]
+    paths: ["evaluation/benchmarks/**", "package*.json", ".github/workflows/benchmark.yml", "services/microservices/**"]
 permissions:
   contents: read
 concurrency:

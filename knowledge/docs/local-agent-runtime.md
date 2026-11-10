@@ -96,9 +96,9 @@ AGENTIC_MAX_TOKENS=2048 npm run agent:tool-agent
 
 Pi starts in the selected owning project and receives root routing plus that
 project's `AGENTS.md`, the matching skill and shared prompt templates. The API
-slice is the default; it starts in `projects/microservices`. The UI slice starts
-in `qa-projects/ui-automation/role-aware-mockserver`. The separate Playwright
-Agent slice starts in `qa-projects/Playwright Agentic Framework` and uses its
+slice is the default; it starts in `services/microservices`. The UI slice starts
+in `qa/ui-automation/role-aware-mockserver`. The separate Playwright
+Agent slice starts in `qa/playwright-agent` and uses its
 own local workflow.
 
 ```bash
@@ -113,11 +113,11 @@ No task is selected automatically. Provide the work item in the request or set
 from the workspace root. For example, to inspect the sanitized API example:
 
 ```bash
-AGENTIC_TASK_CONTEXT=projects/microservices/contexts/tasks/ABC-123.yml npm run agent:tool-agent:api
+AGENTIC_TASK_CONTEXT=services/microservices/contexts/tasks/ABC-123.yml npm run agent:tool-agent:api
 ```
 
 For UI, the sanitized example is
-`qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml`.
+`qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml`.
 Replace examples with the actual work item. API/UI launchers resolve an
 explicitly supplied task and attach the selected input; the agent reads its
 matching project `contexts/.resolved/<work-item>.yml`. The Playwright Agent
@@ -137,8 +137,8 @@ relevant source. From the workspace root, these commands resolve the sanitized
 examples:
 
 ```bash
-npm run context:resolve -- --context projects/microservices/contexts/tasks/ABC-123.yml
-npm run context:ui:resolve -- --context qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
+npm run context:resolve -- --context services/microservices/contexts/tasks/ABC-123.yml
+npm run context:ui:resolve -- --context qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
 ```
 
 Use the actual task path for active work. Keep task YAML small: stable facts

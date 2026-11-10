@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dashboardUrl, hasProjects, loadConfiguration, ownedCommand, probe } from './lib.mjs';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const workspaceRoot = path.resolve(projectRoot, '../..');
+const workspaceRoot = path.resolve(projectRoot, '../../..');
 const view = process.argv.includes('--map') ? 'map' : 'kitchen';
 const label = view === 'map' ? 'Agenttrail Map' : 'Agenttrail Kitchen';
 const dependency = view === 'map' ? ['agenttrail', '0.2.0'] : ['agenttrail-kitchen', '0.1.0-alpha.3'];

@@ -1,6 +1,6 @@
 # Agentic Workspace
 
-Use this workspace for agent and harness engineering, API/UI automation, and measured experiments. Seven category folders organise the work; root instructions and launchers connect them. Projects keep their own frameworks and repository boundaries.
+Use this workspace for agent and harness engineering, API/UI automation, and measured experiments. Nine category folders organise the work by intent; root instructions and launchers connect them. Projects keep their own frameworks and repository boundaries.
 
 ## Start here
 
@@ -18,15 +18,17 @@ See the [actual folder hierarchy and Mermaid maps](knowledge/docs/workspace-map.
 
 | Folder | Responsibility |
 | --- | --- |
-| `projects/` | Build with Balaji platform, applications, services, Kafka lab and agent dashboard |
-| `qa-projects/` | Playwright Agent, the role-aware UI project and a starter template |
+| `products/` | Runnable products by domain: `finance/` (FinFolio app and agent), `career/` (career agent), `agent-tools/` (Agenttrail dashboard, benchmark platform) |
+| `services/` | Backend services with contracts, deployment assets and RestAssured API tests |
+| `qa/` | Playwright Agent, role-aware UI automation and the Playwright starter template |
+| `labs/` | Experiments such as the Kafka testing lab |
 | `evaluation/` | [Shared controlled trials and evidence collection](evaluation/benchmarks/README.md) |
 | `agent-system/` | Task context, canonical skills, [local inference](agent-system/local-agents/README.md) and context starter |
 | `knowledge/` | [Guides](knowledge/docs/workspace-guide.md), prompts, [adoption catalogue](knowledge/docs/instagram/README.md) and reference snapshots |
 | `tooling/` | Workspace scripts, their regression tests and Docker configuration |
 | `artifacts/` | Ignored generated reports, Graphify output, local tools and migration records |
 
-The grouped VS Code view mirrors these seven categories. Each active product has one working location. Playwright Agent owns its internal quality tools; the role-aware mockserver Git checkout lives only under `qa-projects/ui-automation/role-aware-mockserver/`. Retired source and private recovery data stay under ignored `artifacts/`. Agent and editor integration folders remain at the root. See the map for the complete migration table.
+The grouped VS Code view mirrors these nine categories, and `workspace.projects.json` records each project's group, domain, kind, status and repository. Each active product has one working location. Playwright Agent owns its internal quality tools; the role-aware mockserver Git checkout lives only under `qa/ui-automation/role-aware-mockserver/`. Retired source and private recovery data stay under ignored `artifacts/`. Agent and editor integration folders remain at the root. See the map for the complete migration table.
 
 Workflow notes live in [knowledge/docs/agent-workflow](knowledge/docs/agent-workflow/LOOP.md). Graph-service Docker files live in `tooling/docker/`; the existing `graphs:docker:build` and `graphs:docker:up` npm commands use that location.
 
@@ -57,11 +59,11 @@ showcase checkouts and preserved local project boundaries.
 
 ## Focused project ownership
 
-- Playwright test authoring, acceptance assessment and mutation evidence: `qa-projects/Playwright Agentic Framework/` (`quality/` is internal).
-- Role-aware demo, mockserver and UI tests: `qa-projects/ui-automation/role-aware-mockserver/`, the sole Git-backed checkout.
-- API source, contracts and RestAssured tests: `projects/microservices/`, including its existing `qa-projects/xyz-service-api-tests/`.
-- Public project showcase and reviewed aggregate results: `projects/framework-benchmark-dashboard/`.
-- Agent activity observation: `projects/agent-dashboard/`; shared trial tooling: `evaluation/benchmarks/`.
+- Playwright test authoring, acceptance assessment and mutation evidence: `qa/playwright-agent/` (`quality/` is internal).
+- Role-aware demo, mockserver and UI tests: `qa/ui-automation/role-aware-mockserver/`, the sole Git-backed checkout.
+- API source, contracts and RestAssured tests: `services/microservices/`, including its existing `qa-projects/xyz-service-api-tests/`.
+- Public project showcase and reviewed aggregate results: `products/agent-tools/framework-benchmark-dashboard/`.
+- Agent activity observation: `products/agent-tools/agent-dashboard/`; shared trial tooling: `evaluation/benchmarks/`.
 
 The Playwright starter template is reference scaffolding, not another active agent
 or application. The old decision-bench and standalone QA viewer have no active

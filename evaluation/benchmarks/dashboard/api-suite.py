@@ -1,8 +1,8 @@
 """Start an isolated sample API, run its existing oracle and normalize its JUnit evidence."""
 import os,pathlib,signal,socket,subprocess,time,urllib.request
 ROOT=pathlib.Path(__file__).resolve().parents[3]
-SERVICE=ROOT/'projects/microservices/xyz-service'
-XML=ROOT/'projects/microservices/qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml'
+SERVICE=ROOT/'services/microservices/xyz-service'
+XML=ROOT/'services/microservices/qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml'
 def stop(signum,frame): raise KeyboardInterrupt
 signal.signal(signal.SIGTERM,stop)
 def main():
@@ -20,7 +20,7 @@ def main():
                 except OSError:pass
                 time.sleep(1)
             else:raise RuntimeError('Sample API readiness timed out')
-            result=subprocess.run(['mvn','-pl','qa-projects/xyz-service-api-tests','-am','test','-Dapi.port=4283'],cwd=ROOT/'projects/microservices',timeout=600)
+            result=subprocess.run(['mvn','-pl','qa-projects/xyz-service-api-tests','-am','test','-Dapi.port=4283'],cwd=ROOT/'services/microservices',timeout=600)
             normalized=subprocess.run(['python3','evaluation/benchmarks/junit_to_report.py','benchmark-results/api-oracle.json',str(XML)],cwd=ROOT)
             return result.returncode or normalized.returncode
         finally:

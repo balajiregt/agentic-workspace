@@ -13,8 +13,8 @@ YAML control plane and reads exact local paths only when needed.
 ## Inputs
 
 - Workspace root: current repository root.
-- Context file: `projects/microservices/contexts/tasks/ABC-123.yml`
-- Corpus root: `projects/microservices`
+- Context file: `services/microservices/contexts/tasks/ABC-123.yml`
+- Corpus root: `services/microservices`
 - Script: `tooling/scripts/context_efficiency_report.py`
 
 ## Procedure

@@ -8,8 +8,8 @@ updates:
   - package-ecosystem: npm
     directories:
       - /
-      - /projects/agent-dashboard
-      - /qa-projects/ui-automation/role-aware-mockserver
+      - /products/agent-tools/agent-dashboard
+      - /qa/ui-automation/role-aware-mockserver
     schedule:
       interval: weekly
     cooldown:
@@ -17,8 +17,8 @@ updates:
     open-pull-requests-limit: 5
   - package-ecosystem: maven
     directories:
-      - /projects/microservices
-      - /projects/microservices/xyz-service
+      - /services/microservices
+      - /services/microservices/xyz-service
     schedule:
       interval: weekly
     open-pull-requests-limit: 3

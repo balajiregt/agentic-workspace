@@ -2,10 +2,10 @@
 
 `benchmarks/` contains shared controlled-trial tooling and evidence collection.
 Results belong to the project being evaluated; the public showcase is maintained
-in `projects/framework-benchmark-dashboard/`.
+in `products/agent-tools/framework-benchmark-dashboard/`.
 
 Playwright acceptance assessment and behavioral mutation tools belong exclusively
-to [Playwright Agent](../qa-projects/Playwright%20Agentic%20Framework/README.md),
+to [Playwright Agent](../qa/playwright-agent/README.md),
 inside its `quality/` module. The former `playwright-decision-bench/` working
 folder and forwarding commands are retired. Its complete source, Git metadata
 and private runtime are preserved under ignored

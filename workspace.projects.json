@@ -1,112 +1,153 @@
 {
-  "version": 1,
+  "version": 2,
+  "conventions": {
+    "kinds": ["platform", "application", "agent", "service", "framework", "template", "lab", "benchmark"],
+    "statuses": ["active", "maintained", "experimental"],
+    "nestedRepositories": "Projects with repository.nested=true keep their own Git history and are ignored by the workspace repository."
+  },
   "projects": [
     {
       "id": "core",
       "name": "Workspace core",
       "path": ".",
-      "category": "foundation",
-      "purpose": "Shared instructions, skills, context tooling, documentation, and launchers"
+      "group": "core",
+      "domain": "workspace",
+      "kind": "platform",
+      "status": "active",
+      "purpose": "Shared instructions, skills, context tooling, documentation and launchers",
+      "repository": { "remote": "github.com/balajiregt/agentic-workspace", "visibility": "public", "nested": false }
+    },
+    {
+      "id": "finfolio-app",
+      "name": "FinFolio app",
+      "path": "products/finance/finfolio-app",
+      "group": "products",
+      "domain": "finance",
+      "kind": "application",
+      "status": "active",
+      "purpose": "Self-hosted Indian portfolio tracker (myFinance repository) with AI insights and expense tracking",
+      "repository": { "remote": "github.com/balajiregt/myFinance", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "finfolio-agent",
+      "name": "FinFolio agent",
+      "path": "products/finance/finfolio-agent",
+      "group": "products",
+      "domain": "finance",
+      "kind": "agent",
+      "status": "active",
+      "purpose": "Proactive FinFolio portfolio alerts and local-model chat over Telegram",
+      "repository": { "remote": "github.com/balajiregt/finfolio-agent", "visibility": "private", "nested": true }
+    },
+    {
+      "id": "career-agent",
+      "name": "Career agent",
+      "path": "products/career/career-agent",
+      "group": "products",
+      "domain": "career",
+      "kind": "agent",
+      "status": "active",
+      "purpose": "Career opportunity scouting with approval-gated portfolio wiring; private workbench state stays outside the workspace",
+      "repository": { "remote": "github.com/balajiregt/career-agent", "visibility": "private", "nested": true }
     },
     {
       "id": "agent-dashboard",
-      "name": "01 Agent flows",
-      "path": "projects/agent-dashboard",
-      "category": "application",
-      "purpose": "Agenttrail Map for workspace ownership/file activity and Kitchen for available agent activity"
-    },
-    {
-      "id": "playwright-framework",
-      "name": "02 Playwright Agent",
-      "path": "qa-projects/Playwright Agentic Framework",
-      "category": "qa",
-      "purpose": "One product for Playwright test authoring, acceptance assessment and behavioral mutation verification; evaluator lives in quality/."
-    },
-    {
-      "id": "role-aware-ui",
-      "name": "04 Role-aware UI automation",
-      "path": "qa-projects/ui-automation/role-aware-mockserver",
-      "category": "qa",
-      "purpose": "Single Git-backed Role-Aware Mockserver checkout: demo app, mockserver and Playwright UI tests."
-    },
-    {
-      "id": "microservices",
-      "name": "05 API services and RestAssured",
-      "path": "projects/microservices",
-      "category": "service",
-      "purpose": "Spring Boot, contracts, deployment assets, shared QA and API tests"
-    },
-    {
-      "id": "kafka",
-      "name": "06 Kafka testing lab",
-      "path": "projects/kafka-test-project",
-      "category": "service",
-      "purpose": "Kafka and integration-test experiments; independent Git repository"
-    },
-    {
-      "id": "benchmarks",
-      "name": "08 Shared agent benchmarks",
-      "path": "evaluation/benchmarks",
-      "category": "benchmark",
-      "purpose": "Shared controlled trials and evidence collection; results belong to their owning projects."
-    },
-    {
-      "id": "playwright-template",
-      "name": "09 Playwright template",
-      "path": "qa-projects/playwright_pom_fixtures_modular_framework_template",
-      "category": "template",
-      "purpose": "Reusable Playwright framework template"
+      "name": "Agenttrail dashboard",
+      "path": "products/agent-tools/agent-dashboard",
+      "group": "products",
+      "domain": "agent-tools",
+      "kind": "application",
+      "status": "active",
+      "purpose": "Agenttrail Map for workspace ownership/file activity and Kitchen for available agent activity",
+      "repository": { "remote": "github.com/balajiregt/agentic-workspace", "visibility": "public", "nested": false }
     },
     {
       "id": "framework-benchmark-dashboard",
-      "name": "11 Framework benchmark platform",
-      "path": "projects/framework-benchmark-dashboard",
-      "category": "application",
-      "purpose": "Independent platform repository with the reusable publishing contract and skill."
+      "name": "Framework benchmark platform",
+      "path": "products/agent-tools/framework-benchmark-dashboard",
+      "group": "products",
+      "domain": "agent-tools",
+      "kind": "application",
+      "status": "active",
+      "purpose": "Public benchmark platform with the reusable publishing contract and skill",
+      "repository": { "remote": "github.com/balajiregt/framework-benchmark-dashboard", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "microservices",
+      "name": "API services and RestAssured",
+      "path": "services/microservices",
+      "group": "services",
+      "domain": "quality-engineering",
+      "kind": "service",
+      "status": "active",
+      "purpose": "Spring Boot service, OpenAPI contracts, deployment assets, shared QA steps and RestAssured API tests",
+      "repository": { "remote": "github.com/balajiregt/agentic-workspace", "visibility": "public", "nested": false }
+    },
+    {
+      "id": "playwright-framework",
+      "name": "Playwright Agent",
+      "path": "qa/playwright-agent",
+      "group": "qa",
+      "domain": "quality-engineering",
+      "kind": "framework",
+      "status": "active",
+      "purpose": "Playwright test authoring, acceptance assessment and behavioral mutation verification; evaluator lives in quality/",
+      "repository": { "remote": "github.com/balajiregt/playwright-agent", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "role-aware-ui",
+      "name": "Role-aware UI automation",
+      "path": "qa/ui-automation/role-aware-mockserver",
+      "group": "qa",
+      "domain": "quality-engineering",
+      "kind": "framework",
+      "status": "active",
+      "purpose": "Role-aware demo app, mockserver and Playwright UI tests",
+      "repository": { "remote": "github.com/balajiregt/plawright-role-aware-mockserver", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "playwright-template",
+      "name": "Playwright template",
+      "path": "qa/playwright-template",
+      "group": "qa",
+      "domain": "quality-engineering",
+      "kind": "template",
+      "status": "maintained",
+      "purpose": "Reusable Playwright page-object, fixtures and modular framework starter",
+      "repository": { "remote": "github.com/balajiregt/playwright_pom_fixtures_modular_framework_template", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "kafka",
+      "name": "Kafka testing lab",
+      "path": "labs/kafka-test-project",
+      "group": "labs",
+      "domain": "quality-engineering",
+      "kind": "lab",
+      "status": "experimental",
+      "purpose": "Kafka and event-quality integration-test experiments",
+      "repository": { "remote": "github.com/balajiregt/kafka-test-project", "visibility": "public", "nested": true }
+    },
+    {
+      "id": "benchmarks",
+      "name": "Shared agent benchmarks",
+      "path": "evaluation/benchmarks",
+      "group": "evaluation",
+      "domain": "workspace",
+      "kind": "benchmark",
+      "status": "active",
+      "purpose": "Shared controlled trials and evidence collection; results belong to their owning projects",
+      "repository": { "remote": "github.com/balajiregt/agentic-workspace", "visibility": "public", "nested": false }
     }
   ],
   "groups": [
-    {
-      "id": "applications",
-      "name": "01 Applications and services",
-      "path": "projects",
-      "purpose": "Runnable applications, services and integration labs"
-    },
-    {
-      "id": "qa",
-      "name": "02 QA frameworks",
-      "path": "qa-projects",
-      "purpose": "Playwright Agent, the role-aware UI project and a reusable starter template"
-    },
-    {
-      "id": "evaluation",
-      "name": "03 Evaluation",
-      "path": "evaluation",
-      "purpose": "Shared controlled trials and evidence collection"
-    },
-    {
-      "id": "agents",
-      "name": "04 Agent system",
-      "path": "agent-system",
-      "purpose": "Canonical skills and owned templates, local inference and context starter"
-    },
-    {
-      "id": "knowledge",
-      "name": "05 Knowledge",
-      "path": "knowledge",
-      "purpose": "Workspace documentation and passive upstream reference material"
-    },
-    {
-      "id": "tooling",
-      "name": "06 Workspace tooling",
-      "path": "tooling",
-      "purpose": "Shared scripts and their regression tests"
-    },
-    {
-      "id": "outputs",
-      "name": "07 Generated outputs",
-      "path": "artifacts",
-      "purpose": "Ignored reports, generated graphs, downloads and migration records"
-    }
+    { "id": "products", "name": "01 Products", "path": "products", "purpose": "Runnable applications and agents, grouped by domain: finance, career, agent-tools" },
+    { "id": "services", "name": "02 Services", "path": "services", "purpose": "Backend services with their contracts, deployment assets and API tests" },
+    { "id": "qa", "name": "03 QA frameworks", "path": "qa", "purpose": "Playwright Agent, role-aware UI automation and reusable test templates" },
+    { "id": "labs", "name": "04 Labs", "path": "labs", "purpose": "Experiments and integration labs that are not product code" },
+    { "id": "agents", "name": "05 Agent system", "path": "agent-system", "purpose": "Canonical skills and owned templates, local inference and context starter" },
+    { "id": "evaluation", "name": "06 Evaluation", "path": "evaluation", "purpose": "Shared controlled trials and evidence collection" },
+    { "id": "knowledge", "name": "07 Knowledge", "path": "knowledge", "purpose": "Workspace documentation and passive upstream reference material" },
+    { "id": "tooling", "name": "08 Tooling", "path": "tooling", "purpose": "Shared scripts and their regression tests" },
+    { "id": "outputs", "name": "09 Generated outputs", "path": "artifacts", "purpose": "Ignored reports, generated graphs, downloads and migration records" }
   ]
 }

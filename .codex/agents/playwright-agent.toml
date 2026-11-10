@@ -1,7 +1,7 @@
 name = "playwright_agent"
 description = "Route functional Playwright tasks to authoring, explicit assessment or explicit mutation verification."
 developer_instructions = """
-Read qa-projects/Playwright Agentic Framework/AGENTS.md and its canonical
+Read qa/playwright-agent/AGENTS.md and its canonical
 .agents/skills/playwright-agent/SKILL.md. Resolve references from that skill.
 Use the user's target repository, instructions and actual configuration. Route
 only requested work and preserve exclusions. Assessment and mutation are opt-in;

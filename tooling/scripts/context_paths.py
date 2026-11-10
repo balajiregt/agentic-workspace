@@ -6,8 +6,8 @@ These defaults demonstrate the workflow; callers must select a different
 from pathlib import Path
 import hashlib
 
-API_TASK = Path("projects/microservices/contexts/tasks/ABC-123.yml")
-UI_TASK = Path("qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml")
+API_TASK = Path("services/microservices/contexts/tasks/ABC-123.yml")
+UI_TASK = Path("qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml")
 
 
 def resolved_path(context: Path) -> Path:

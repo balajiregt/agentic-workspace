@@ -2,6 +2,9 @@
   "port": 4780,
   "watchProjects": [
     "core",
+    "finfolio-app",
+    "finfolio-agent",
+    "career-agent",
     "playwright-framework",
     "role-aware-ui",
     "microservices",

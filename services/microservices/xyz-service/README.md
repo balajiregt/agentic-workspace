@@ -14,7 +14,7 @@ external dependencies.
 ## Run Locally
 
 ```bash
-cd projects/microservices/xyz-service
+cd services/microservices/xyz-service
 mvn spring-boot:run
 ```
 

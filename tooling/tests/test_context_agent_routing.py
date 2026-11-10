@@ -17,12 +17,12 @@ from resolve_context import build_resolved as resolve_api
 
 
 PROJECTS = {
-    "api": (Path("projects/microservices"), "API_LOCAL_MARKER",
+    "api": (Path("services/microservices"), "API_LOCAL_MARKER",
             Path("agent-system/skills/microservice-change")),
-    "ui": (Path("qa-projects/ui-automation/role-aware-mockserver"), "UI_LOCAL_MARKER",
+    "ui": (Path("qa/ui-automation/role-aware-mockserver"), "UI_LOCAL_MARKER",
            Path("agent-system/skills/playwright-ui-change")),
-    "playwright-agent": (Path("qa-projects/Playwright Agentic Framework"), "AGENT_LOCAL_MARKER",
-                         Path("qa-projects/Playwright Agentic Framework/.agents/skills/playwright-agent")),
+    "playwright-agent": (Path("qa/playwright-agent"), "AGENT_LOCAL_MARKER",
+                         Path("qa/playwright-agent/.agents/skills/playwright-agent")),
 }
 
 

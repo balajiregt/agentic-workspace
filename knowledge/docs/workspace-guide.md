@@ -21,18 +21,24 @@ agentic-workspace/
   knowledge/docs/               -> cross-project guides, research and workflow diagrams
   agent-system/skills/             -> reusable agent instructions and owned templates
     microservice-change/examples/ -> service topology context examples
-  projects/
+  products/
+    finance/finfolio-app/, finance/finfolio-agent/ -> FinFolio tracker and alerting agent
+    career/career-agent/ -> career scouting agent
+    agent-tools/agent-dashboard/ -> agent activity observer
+    agent-tools/framework-benchmark-dashboard/ -> Build with Balaji showcase
+  services/
     microservices/    -> Spring Boot, RestAssured, local AGENTS/docs/contexts
-    framework-benchmark-dashboard/ -> Build with Balaji showcase
-    agent-dashboard/  -> agent activity observer
-  qa-projects/
-    Playwright Agentic Framework/ -> local context/docs and internal quality/
+  qa/
+    playwright-agent/ -> local context/docs and internal quality/
     ui-automation/role-aware-mockserver/ -> local context/docs and app/backend/UI tests
+    playwright-template/ -> Playwright starter
+  labs/
+    kafka-test-project/ -> Kafka and event-quality lab
   evaluation/         -> shared controlled trials and evidence collection
   tooling/scripts/            -> context efficiency utilities
 ```
 
-See [the folder map](workspace-map.md) for the complete current category hierarchy and the 31 October 2026 migration table.
+See [the folder map](workspace-map.md) for the complete current category hierarchy and the 10 November 2026 migration table.
 Use [the project workflow](project-workflow.md) to select the owning project,
 task context, checks and evidence before making a change.
 
@@ -84,7 +90,7 @@ npm run agent:tool-agent-25k
 ```
 
 The launcher starts Pi in the selected owning project: API defaults to
-`projects/microservices`, UI to the role-aware mockserver, and
+`services/microservices`, UI to the role-aware mockserver, and
 `npm run agent:tool-agent:playwright` to Playwright Agent. It supplies root
 routing plus local `AGENTS.md`. Select the task explicitly through
 `AGENTIC_TASK_CONTEXT` or the request; it does not assume an example task.
@@ -131,7 +137,7 @@ Prompt the agent with the selected project's task context. This is a sanitized
 API example; replace it with the actual work item:
 
 ```text
-Use the Jira context in projects/microservices/contexts/tasks/ABC-123.yml.
+Use the Jira context in services/microservices/contexts/tasks/ABC-123.yml.
 Follow repository_topology before deciding where tests or deployment changes belong.
 Update service code, OpenAPI, tests, and deployment impact only as required by the context.
 ```
@@ -140,7 +146,7 @@ For existing-test edits, use a direct prompt like:
 
 ```text
 For the existing API test that covers the affected endpoint, add one assertion for <field>.
-Use projects/microservices/AGENTS.md and the selected project task context before editing.
+Use services/microservices/AGENTS.md and the selected project task context before editing.
 Do not create, rename, or append to unrelated test files.
 ```
 
@@ -161,8 +167,8 @@ select its task before resolving context. The API and mockserver tasks below
 are sanitized examples, not a shared current ticket:
 
 ```bash
-npm run context:resolve -- --context projects/microservices/contexts/tasks/ABC-123.yml
-npm run context:ui:resolve -- --context qa-projects/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
+npm run context:resolve -- --context services/microservices/contexts/tasks/ABC-123.yml
+npm run context:ui:resolve -- --context qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
 ```
 
 The no-argument root commands resolve those examples for smoke checks. For real
@@ -180,11 +186,11 @@ contract or set of response examples in task YAML. New private requirements
 and generated outputs remain ignored; the committed examples are sanitized.
 
 Follow `repository_topology` before placing service, API test and deployment
-changes. The local [microservices instructions](../../projects/microservices/AGENTS.md)
-and [mockserver instructions](../../qa-projects/ui-automation/role-aware-mockserver/AGENTS.md)
+changes. The local [microservices instructions](../../services/microservices/AGENTS.md)
+and [mockserver instructions](../../qa/ui-automation/role-aware-mockserver/AGENTS.md)
 also provide commands and source maps usable without workspace resolvers.
 
-Playwright Agent uses its own [local instructions](<../../qa-projects/Playwright Agentic Framework/AGENTS.md>)
+Playwright Agent uses its own [local instructions](<../../qa/playwright-agent/AGENTS.md>)
 and existing `contexts/` maps, captures and selected requirements. Its
 `quality/` evaluator and mutation runner belong to that product; do not route
 Playwright Agent tasks through the mockserver's sample context.
@@ -208,7 +214,7 @@ The workspace includes a concrete dummy service setup represented by the
 sanitized split-QA microservice task example:
 
 ```text
-projects/microservices/
+services/microservices/
   xyz-service/                         -> Spring Boot dummy API
   xyz-deployments/                     -> deployment companion assets
   qa-steps/                            -> shared RestAssured utilities
@@ -225,14 +231,14 @@ agent-system/skills/microservice-change/examples/service-context.service-owned-t
 Run the service:
 
 ```bash
-cd projects/microservices/xyz-service
+cd services/microservices/xyz-service
 mvn spring-boot:run
 ```
 
 Run the RestAssured API tests:
 
 ```bash
-cd projects/microservices
+cd services/microservices
 mvn -pl qa-projects/xyz-service-api-tests -am test
 ```
 
@@ -275,15 +281,15 @@ implemented by source code or documented in OpenAPI.
 The workspace also includes an isolated role-aware Playwright validation slice:
 
 ```text
-qa-projects/ui-automation/
+qa/ui-automation/
   role-aware-mockserver/               -> Playwright tests, demo app, and Koa mockserver
 ```
 
 Install and run it without adding Node dependencies to the workspace root:
 
 ```bash
-npm --prefix qa-projects/ui-automation/role-aware-mockserver install
-npx --prefix qa-projects/ui-automation/role-aware-mockserver playwright install chromium
+npm --prefix qa/ui-automation/role-aware-mockserver install
+npx --prefix qa/ui-automation/role-aware-mockserver playwright install chromium
 npm run ui:test
 ```
 

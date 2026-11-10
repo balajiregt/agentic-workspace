@@ -1,6 +1,6 @@
 ---
 name: microservice-change
-description: Make context-aware microservice changes in the agentic workspace across same-repo or split-repo topologies. Use when a task references service-context.yml, Jira-driven service changes, API code, OpenAPI alignment, deployment impact checks, service-owned tests, shared QA utilities, or API tests under projects/microservices.
+description: Make context-aware microservice changes in the agentic workspace across same-repo or split-repo topologies. Use when a task references service-context.yml, Jira-driven service changes, API code, OpenAPI alignment, deployment impact checks, service-owned tests, shared QA utilities, or API tests under services/microservices.
 ---
 
 # Microservice Change
@@ -13,7 +13,7 @@ deployment, and tests for the topology declared in the context YAML.
 ## Inputs
 
 - Read the owning project's `AGENTS.md` and select its task YAML, not a
-  workspace-wide current task. The sanitised example is `projects/microservices/contexts/tasks/ABC-123.yml`.
+  workspace-wide current task. The sanitised example is `services/microservices/contexts/tasks/ABC-123.yml`.
 - Run `npm run context:resolve -- --context <workspace-relative-task-path>` from the
   workspace root. Use the corresponding project `contexts/.resolved/<task>.yml`;
   regenerate after task, source, contract, config or layout changes. Check its
@@ -124,7 +124,7 @@ owning project. Keep actual task inputs in that project's `contexts/tasks/`;
 the current runnable workspace example is the project-local `ABC-123.yml`.
 
 ```text
-Use the context in projects/microservices/contexts/tasks/ABC-123.yml. Add a response field to
+Use the context in services/microservices/contexts/tasks/ABC-123.yml. Add a response field to
 the affected endpoint, update OpenAPI, and add API test coverage.
 ```
 

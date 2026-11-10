@@ -36,19 +36,19 @@ fi
 
 case "${AGENT_SLICE}" in
   api)
-    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/projects/microservices}"
+    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/services/microservices}"
     PI_SKILL_PATH="${ROOT_DIR}/agent-system/skills/microservice-change"
     RESOLVER="${ROOT_DIR}/tooling/scripts/resolve_context.py"
     ;;
   ui|playwright)
     AGENT_SLICE="ui"
-    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/qa-projects/ui-automation/role-aware-mockserver}"
+    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/qa/ui-automation/role-aware-mockserver}"
     PI_SKILL_PATH="${ROOT_DIR}/agent-system/skills/playwright-ui-change"
     RESOLVER="${ROOT_DIR}/tooling/scripts/resolve_ui_context.py"
     ;;
   playwright-agent)
-    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/qa-projects/Playwright Agentic Framework}"
-    PI_SKILL_PATH="${ROOT_DIR}/qa-projects/Playwright Agentic Framework/.agents/skills/playwright-agent"
+    TARGET_REPO="${TARGET_REPO:-${ROOT_DIR}/qa/playwright-agent}"
+    PI_SKILL_PATH="${ROOT_DIR}/qa/playwright-agent/.agents/skills/playwright-agent"
     RESOLVER=""
     ;;
   *)

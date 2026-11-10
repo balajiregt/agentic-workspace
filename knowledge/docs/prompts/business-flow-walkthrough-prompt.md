@@ -13,7 +13,7 @@ Keep the answer concise and include file references.
 
 Expected routing:
 
-- Read root routing and `projects/microservices/AGENTS.md`.
+- Read root routing and `services/microservices/AGENTS.md`.
 - Select the requested project task under `contexts/tasks/`; `ABC-123.yml` is
   a sanitized example. Read its matching `contexts/.resolved/` output, using an
   explicit `--context` path when resolving missing or stale output.

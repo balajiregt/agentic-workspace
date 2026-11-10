@@ -3,7 +3,7 @@ name: Playwright Agent
 description: Route functional Playwright tasks to authoring, explicit assessment or explicit mutation verification.
 ---
 
-Read qa-projects/Playwright Agentic Framework/AGENTS.md and follow its canonical
+Read qa/playwright-agent/AGENTS.md and follow its canonical
 .agents/skills/playwright-agent/SKILL.md. Resolve references from that skill.
 Follow the user's selected project, instructions and configuration. Route intent
 before choosing tools. Respect exclusions; formal assessment and mutation are

@@ -21,9 +21,9 @@ Results, traces, trial records and reviewer notes stay ignored under `benchmark-
 
 ## Maven API evidence without a browser dependency
 
-Use the existing `projects/microservices/xyz-service` and `CustomerRiskApiTest` oracle for task `api-customer-risk`. Start the service with `mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=4283` from its module. From `projects/microservices`, run `mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283`.
+Use the existing `services/microservices/xyz-service` and `CustomerRiskApiTest` oracle for task `api-customer-risk`. Start the service with `mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=4283` from its module. From `services/microservices`, run `mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283`.
 
-Normalize its exact Surefire report using `python3 evaluation/benchmarks/junit_to_report.py benchmark-results/api-oracle.json projects/microservices/qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml`. Then collect that JSON with the task metadata. The adapter preserves failures and skips, rejects empty XML and DTD/entities, hashes input reports, and retains method identities. Run `npm run benchmark:test` for collector/adapter regression checks.
+Normalize its exact Surefire report using `python3 evaluation/benchmarks/junit_to_report.py benchmark-results/api-oracle.json services/microservices/qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml`. Then collect that JSON with the task metadata. The adapter preserves failures and skips, rejects empty XML and DTD/entities, hashes input reports, and retains method identities. Run `npm run benchmark:test` for collector/adapter regression checks.
 
 The shared CRM tasks can also use the companion Playwright harness demo and oracle; this repository does not import UI dependencies into Maven. Use the same target/oracle snapshots when comparing those tasks across workflows.
 

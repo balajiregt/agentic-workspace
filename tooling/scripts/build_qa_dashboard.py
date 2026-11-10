@@ -172,7 +172,7 @@ def test_file_inventory(root: Path, api: dict[str, Any], ui: dict[str, Any]) -> 
     }
     api_files = sorted(
         relative_existing(path, root)
-        for path in root.glob("projects/microservices/qa-projects/**/*Test.java")
+        for path in root.glob("services/microservices/qa-projects/**/*Test.java")
         if path.is_file()
     )
     ui_files = sorted(
@@ -212,14 +212,14 @@ def impacted_recommendations(api: dict[str, Any], ui: dict[str, Any], files: lis
     recommendations: list[dict[str, Any]] = []
 
     api_source_prefixes = (
-        "projects/microservices/xyz-service/src/main/java/",
-        "projects/microservices/xyz-service/src/main/resources/openapi/",
+        "services/microservices/xyz-service/src/main/java/",
+        "services/microservices/xyz-service/src/main/resources/openapi/",
     )
     api_test_prefixes = (
-        "projects/microservices/qa-projects/",
-        "projects/microservices/qa-steps/",
+        "services/microservices/qa-projects/",
+        "services/microservices/qa-steps/",
     )
-    ui_project = ui.get("resolved_repositories", {}).get("ui_project", "qa-projects/ui-automation/role-aware-mockserver")
+    ui_project = ui.get("resolved_repositories", {}).get("ui_project", "qa/ui-automation/role-aware-mockserver")
     ui_prefixes = (
         ui_project.rstrip("/") + "/",
         "projects/ui-automation/role-aware-mockserver/app/",

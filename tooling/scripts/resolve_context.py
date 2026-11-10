@@ -127,7 +127,7 @@ def build_resolved(workspace: Path, task: dict[str, Any], context_path: Path | N
     if not service_name:
         raise SystemExit("Missing service_name in current task context")
 
-    microservices_root = workspace / "projects/microservices"
+    microservices_root = workspace / "services/microservices"
     service_repo = microservices_root / service_name
     qa_steps = microservices_root / "qa-steps"
     qa_project = microservices_root / "qa-projects" / f"{service_name}-api-tests"
