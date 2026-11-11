@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "notes": "Per-project evidence profiles. Context counts what a workspace-guided agent loads for one task (routing, one skill, the task and its resolved files) against the project's Git-tracked text files. Paths are workspace-relative.",
+  "corpusSuffixes": [".java", ".kt", ".ts", ".tsx", ".js", ".mjs", ".cjs", ".py", ".json", ".yml", ".yaml", ".md", ".xml", ".properties", ".html", ".css", ".feature"],
+  "projects": {
+    "api-workspace": {
+      "registryId": "microservices",
+      "root": "services/microservices",
+      "contextProfiles": {
+        "api-test-change": {
+          "description": "Add or change RestAssured API tests for the customer-risk endpoint (task ABC-123).",
+          "instructions": ["AGENTS.md", "services/microservices/AGENTS.md", "agent-system/skills/microservice-change/SKILL.md"],
+          "task": "services/microservices/contexts/tasks/ABC-123.yml",
+          "resolved": "services/microservices/contexts/.resolved/ABC-123.yml",
+          "resolveCommand": "npm run context:resolve"
+        }
+      }
+    },
+    "mockserver": {
+      "registryId": "role-aware-ui",
+      "root": "qa/ui-automation/role-aware-mockserver",
+      "contextProfiles": {
+        "ui-role-change": {
+          "description": "Change role-aware UI journeys and their mockserver behaviour (task UI-ROLE-001).",
+          "instructions": ["AGENTS.md", "qa/ui-automation/role-aware-mockserver/AGENTS.md", "agent-system/skills/playwright-ui-change/SKILL.md"],
+          "task": "qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml",
+          "resolved": "qa/ui-automation/role-aware-mockserver/contexts/.resolved/UI-ROLE-001.yml",
+          "resolveCommand": "npm run context:ui:resolve"
+        }
+      }
+    },
+    "playwright-agent": {
+      "registryId": "playwright-framework",
+      "root": "qa/playwright-agent",
+      "contextProfiles": {
+        "crm-assessment": {
+          "description": "Assess the sample CRM tests against the CRM-DEMO-001 acceptance criteria.",
+          "instructions": ["AGENTS.md", "qa/playwright-agent/AGENTS.md", "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md", "qa/playwright-agent/.agents/skills/playwright-assessment/SKILL.md"],
+          "task": "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/epic.md",
+          "files": [
+            "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/requirements.json",
+            "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/jira-tickets.json",
+            "qa/playwright-agent/tests/sample-crm.spec.ts",
+            "qa/playwright-agent/tests/validation-login.spec.ts",
+            "qa/playwright-agent/pages/sample-crm.page.ts",
+            "qa/playwright-agent/assertions/sample-crm.assertions.ts"
+          ]
+        }
+      }
+    }
+  }
+}

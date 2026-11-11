@@ -21,11 +21,28 @@ published automatically.
 ## Commands
 
 ```sh
-npm run context:report             # API workspace context report (detailed)
+npm run evidence                                  # all projects
+npm run evidence -- --project playwright-agent    # or api-workspace, mockserver
+npm run evidence:context                          # context only
 npm run evidence:trial:collect -- METADATA.json REPORT.json
 npm run evidence:trial:summary
-npm run evidence:test              # collector and JUnit adapter tests
+npm run evidence:test                             # evidence tool tests
+npm run context:report                            # detailed API workspace context report
 ```
+
+Profiles live in [`projects.json`](projects.json). Each context profile names the
+routing instructions, the one skill an agent loads, the task input and either its
+resolved context or an explicit file list. API and mockserver profiles read
+`contexts/.resolved/`; regenerate with `npm run context:resolve` or
+`npm run context:ui:resolve` after task or layout changes.
+
+## Reading the context numbers
+
+`instructions` is the fixed cost of workspace guidance (root routing, project
+instructions and one skill), about 5k tokens. `task files` is what the task needs
+from the project. The comparison corpus is the project's Git-tracked text files.
+Workspace guidance pays off on larger projects and can cost more than reading a
+very small project in full; the report keeps that visible instead of hiding it.
 
 ## History
 
