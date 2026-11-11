@@ -25,7 +25,7 @@ agentic-workspace/
     finance/finfolio-app/, finance/finfolio-agent/ -> FinFolio tracker and alerting agent
     career/career-agent/ -> career scouting agent
     agent-tools/agent-dashboard/ -> agent activity observer
-    agent-tools/framework-benchmark-dashboard/ -> Build with Balaji showcase
+    portfolio/portfolio-web/ -> public portfolio site
   services/
     microservices/    -> Spring Boot, RestAssured, local AGENTS/docs/contexts
   qa/

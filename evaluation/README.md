@@ -1,8 +1,9 @@
 # Shared evaluation tooling
 
 `benchmarks/` contains shared controlled-trial tooling and evidence collection.
-Results belong to the project being evaluated; the public showcase is maintained
-in `products/agent-tools/framework-benchmark-dashboard/`.
+Results belong to the project being evaluated. The former public benchmark
+platform (framework-benchmark-dashboard) was retired on 11 November 2026; its
+working copy is preserved under ignored `artifacts/retired/`.
 
 Playwright acceptance assessment and behavioral mutation tools belong exclusively
 to [Playwright Agent](../qa/playwright-agent/README.md),

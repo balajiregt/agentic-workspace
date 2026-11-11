@@ -1,5 +1,8 @@
 # Automatic dashboard updates
 
+> Retired 11 November 2026: the shared framework-benchmark dashboard is no longer
+> maintained in this workspace. This page is kept as a historical record.
+
 Run `npm run benchmark`. The complete fixed protocol runs, validates source evidence,
 and publishes sanitised aggregates to this repository's `benchmark-results` branch.
 The shared [dashboard](https://framework-benchmarks-balaji.netlify.app) refreshes

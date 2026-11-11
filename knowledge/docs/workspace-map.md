@@ -15,6 +15,7 @@ flowchart LR
   W["agentic-workspace/"] --> PR["products/<br/>Runnable products by domain"]
   PR --> F["finance/"]
   PR --> CA["career/"]
+  PR --> PO["portfolio/"]
   PR --> AT["agent-tools/"]
   W --> S["services/<br/>Backend services and API tests"]
   W --> Q["qa/<br/>QA frameworks and templates"]
@@ -39,9 +40,10 @@ agentic-workspace/
 │   │   └── finfolio-agent/        [repo]  — private alerting and Telegram agent
 │   ├── career/
 │   │   └── career-agent/          [repo]  — private career scouting agent
+│   ├── portfolio/
+│   │   └── portfolio-web/         [repo]  — public portfolio site (Netlify)
 │   └── agent-tools/
-│       ├── agent-dashboard/               — Agenttrail Kitchen and Map
-│       └── framework-benchmark-dashboard/ [repo] — public benchmark platform
+│       └── agent-dashboard/               — Agenttrail Kitchen and Map
 ├── services/
 │   └── microservices/                     — Maven service and API automation
 │       ├── AGENTS.md                      — local workflow and verification entrypoint
@@ -134,6 +136,7 @@ additional API-test copy under the outer QA category. See the
 | FinFolio portfolio tracker | [FinFolio app](../../products/finance/finfolio-app/README.md) |
 | FinFolio alerts agent | [FinFolio agent](../../products/finance/finfolio-agent/README.md) |
 | Career agent | [Career agent](../../products/career/career-agent/README.md) |
+| Portfolio website | [Portfolio site](../../products/portfolio/portfolio-web/README.md) |
 | Agent activity observer | [Agent dashboard](../../products/agent-tools/agent-dashboard/README.md) |
 | Choose project and task | [Project workflow](project-workflow.md) |
 | API services and tests | [Microservices instructions](../../services/microservices/AGENTS.md) |
@@ -153,7 +156,7 @@ Agenttrail observes available activity; Playwright Agent owns test authoring and
 | Previous location | Current location |
 | --- | --- |
 | `projects/agent-dashboard/` | `products/agent-tools/agent-dashboard/` |
-| `projects/framework-benchmark-dashboard/` | `products/agent-tools/framework-benchmark-dashboard/` |
+| `projects/framework-benchmark-dashboard/` | Retired 11 November; preserved in ignored `artifacts/retired/` |
 | `projects/microservices/` | `services/microservices/` |
 | `projects/kafka-test-project/` | `labs/kafka-test-project/` |
 | `qa-projects/Playwright Agentic Framework/` | `qa/playwright-agent/` |
@@ -162,6 +165,7 @@ Agenttrail observes available activity; Playwright Agent owns test authoring and
 | `~/Desktop/myFinance` | `products/finance/finfolio-app/` (symlink left at the old path) |
 | `~/Desktop/finfolio-agent` | `products/finance/finfolio-agent/` (symlink left at the old path) |
 | Codex career folder `career-agent/` | `products/career/career-agent/` (symlink left at the old path) |
+| Codex career folder `portfolio-map/` | `products/portfolio/portfolio-web/` (11 November; symlink left at the old path) |
 
 Project IDs did not change. The `projects/` and `qa-projects/` roots are retired
 and `workspace:check` fails if they reappear. The private career workbench,

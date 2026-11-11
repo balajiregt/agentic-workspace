@@ -14,8 +14,9 @@ project's instructions or treat the example tasks as the user's current request.
 | FinFolio portfolio tracker (myFinance) | `products/finance/finfolio-app/README.md` | Project README and its own tests |
 | FinFolio alerts and Telegram agent | `products/finance/finfolio-agent/README.md` | Project README and `docs/` |
 | Career scouting and application agent | `products/career/career-agent/README.md` | Project README and `docs/SETUP.md` |
+| Public portfolio website (Netlify) | `products/portfolio/portfolio-web/README.md` | `agent-system/skills/frontend-design-review/SKILL.md`; deploy only with explicit approval |
 
-The finance and career products have no local `AGENTS.md` yet; use their README
+The finance, career and portfolio products have no local `AGENTS.md` yet; use their README
 as the entrypoint. They are independent private or personal repositories:
 never copy portfolio data, credentials, resumes, application state or the
 private career workbench into the workspace repository or its generated

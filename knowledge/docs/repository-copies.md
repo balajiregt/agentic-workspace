@@ -1,13 +1,14 @@
 # Workspace ownership and Git boundaries
 
-Verified on 31 October 2026. Each active product has one working checkout.
+Verified on 11 November 2026. Each active product has one working checkout.
 
 | Repository / responsibility | Working location |
 | --- | --- |
 | Workspace core, context, skills and Maven projects | `.` and `services/microservices/` |
 | [Playwright Agent](https://github.com/balajiregt/playwright-agent) | `qa/playwright-agent/` |
 | [Role-Aware Mockserver](https://github.com/balajiregt/plawright-role-aware-mockserver) | `qa/ui-automation/role-aware-mockserver/` |
-| [Build with Balaji platform](https://github.com/balajiregt/framework-benchmark-dashboard) | `products/agent-tools/framework-benchmark-dashboard/` |
+| [Portfolio website](https://github.com/balajiregt/portfolio-web) | `products/portfolio/portfolio-web/` |
+| FinFolio app, FinFolio agent, career agent | `products/finance/`, `products/career/` |
 | Kafka/event quality lab | `labs/kafka-test-project/` |
 | Reference Playwright starter template | `qa/playwright-template/` |
 

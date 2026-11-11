@@ -20,7 +20,7 @@ The pinned version documents experimental local Codex/Claude log observation and
 
 ## Project selection
 
-The workspace project registry is `../../../workspace.projects.json`. `dashboard.config.json` selects eight project IDs: the workspace root, FinFolio app, FinFolio agent, career agent, Playwright Agent, role-aware UI automation, microservices, and the Kafka lab. Retired projects are not watched. Select a project inside the Kitchen to focus its observations. Stop and restart after changing the configured watched set. Up to twelve folders are supported by the pinned release.
+The workspace project registry is `../../../workspace.projects.json`. `dashboard.config.json` selects nine project IDs: the workspace root, FinFolio app, FinFolio agent, career agent, portfolio website, Playwright Agent, role-aware UI automation, microservices, and the Kafka lab. Retired projects are not watched. Select a project inside the Kitchen to focus its observations. Stop and restart after changing the configured watched set. Up to twelve folders are supported by the pinned release.
 
 ## Map versus Kitchen
 

@@ -4,9 +4,25 @@ Component ownership comes from workspace.projects.json. The checkboxes below des
 
 ## Workspace core {#core}
 files: [AGENTS.md, README.md, workspace.projects.json, package.json, .agents/**, agent-system/**, tooling/**, knowledge/docs/**]
-links: [agent-dashboard, playwright-framework, role-aware-ui, microservices, kafka, benchmarks, playwright-template, framework-benchmark-dashboard]
+links: [finfolio-app, finfolio-agent, career-agent, portfolio-web, agent-dashboard, microservices, playwright-framework, role-aware-ui, playwright-template, kafka, benchmarks]
 
-## 01 Agent flows {#agent-dashboard}
+## FinFolio app {#finfolio-app}
+files: [products/finance/finfolio-app/**]
+links: [core]
+
+## FinFolio agent {#finfolio-agent}
+files: [products/finance/finfolio-agent/**]
+links: [core]
+
+## Career agent {#career-agent}
+files: [products/career/career-agent/**]
+links: [core]
+
+## Portfolio website {#portfolio-web}
+files: [products/portfolio/portfolio-web/**]
+links: [core]
+
+## Agenttrail dashboard {#agent-dashboard}
 files: [products/agent-tools/agent-dashboard/**]
 links: [core]
 
@@ -17,30 +33,26 @@ links: [core]
 - [x] Verify the rendered Map and managed stop/restart behavior {#map-install-verification}
   tech: Readiness and identity passed on port 5330; nine components rendered in browser; managed stop/restart passed, and reuse retained the same running PID.
 
-## 02 Playwright Agent {#playwright-framework}
-files: [qa/playwright-agent/**]
-links: [core]
-
-## 04 Role-aware UI automation {#role-aware-ui}
-files: [qa/ui-automation/role-aware-mockserver/**]
-links: [core]
-
-## 05 API services and RestAssured {#microservices}
+## API services and RestAssured {#microservices}
 files: [services/microservices/**]
 links: [core]
 
-## 06 Kafka testing lab {#kafka}
-files: [labs/kafka-test-project/**]
+## Playwright Agent {#playwright-framework}
+files: [qa/playwright-agent/**]
 links: [core]
 
-## 08 Shared agent benchmarks {#benchmarks}
-files: [evaluation/benchmarks/**]
+## Role-aware UI automation {#role-aware-ui}
+files: [qa/ui-automation/role-aware-mockserver/**]
 links: [core]
 
-## 09 Playwright template {#playwright-template}
+## Playwright template {#playwright-template}
 files: [qa/playwright-template/**]
 links: [core]
 
-## 11 Framework benchmark platform {#framework-benchmark-dashboard}
-files: [products/agent-tools/framework-benchmark-dashboard/**]
+## Kafka testing lab {#kafka}
+files: [labs/kafka-test-project/**]
+links: [core]
+
+## Shared agent benchmarks {#benchmarks}
+files: [evaluation/benchmarks/**]
 links: [core]

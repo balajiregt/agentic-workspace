@@ -18,7 +18,7 @@ See the [actual folder hierarchy and Mermaid maps](knowledge/docs/workspace-map.
 
 | Folder | Responsibility |
 | --- | --- |
-| `products/` | Runnable products by domain: `finance/` (FinFolio app and agent), `career/` (career agent), `agent-tools/` (Agenttrail dashboard, benchmark platform) |
+| `products/` | Runnable products by domain: `finance/` (FinFolio app and agent), `career/` (career agent), `portfolio/` (public portfolio site), `agent-tools/` (Agenttrail dashboard) |
 | `services/` | Backend services with contracts, deployment assets and RestAssured API tests |
 | `qa/` | Playwright Agent, role-aware UI automation and the Playwright starter template |
 | `labs/` | Experiments such as the Kafka testing lab |
@@ -62,7 +62,7 @@ showcase checkouts and preserved local project boundaries.
 - Playwright test authoring, acceptance assessment and mutation evidence: `qa/playwright-agent/` (`quality/` is internal).
 - Role-aware demo, mockserver and UI tests: `qa/ui-automation/role-aware-mockserver/`, the sole Git-backed checkout.
 - API source, contracts and RestAssured tests: `services/microservices/`, including its existing `qa-projects/xyz-service-api-tests/`.
-- Public project showcase and reviewed aggregate results: `products/agent-tools/framework-benchmark-dashboard/`.
+- Public portfolio site (balaji-kumarasamy.netlify.app): `products/portfolio/portfolio-web/`.
 - Agent activity observation: `products/agent-tools/agent-dashboard/`; shared trial tooling: `evaluation/benchmarks/`.
 
 The Playwright starter template is reference scaffolding, not another active agent
