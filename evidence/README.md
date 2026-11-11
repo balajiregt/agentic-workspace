@@ -8,7 +8,7 @@ mockserver and Playwright Agent.
 | --- | --- | --- |
 | Context | Workspace context needs X tokens; giving the whole project would need Y | `context/` |
 | Agent trials | With workspace help the agent passed the required tests; without it, it failed K | `trials/` ([protocol](trials/PROTOCOL.md)) |
-| Project evidence | Each project's own results, imported as they are | Owned by each project |
+| Project evidence | Each project's own results, imported as they are (`native.py`) | Owned by each project |
 
 Projects keep their own tools and still work standalone. This folder calls them
 from the workspace root; it never copies them or adds workspace-only scripts to
@@ -43,6 +43,15 @@ instructions and one skill), about 5k tokens. `task files` is what the task need
 from the project. The comparison corpus is the project's Git-tracked text files.
 Workspace guidance pays off on larger projects and can cost more than reading a
 very small project in full; the report keeps that visible instead of hiding it.
+
+## Project evidence
+
+`npm run evidence` also imports the latest output each project already produced,
+listed under `nativeEvidence` in `projects.json`: the API workspace's Surefire
+report, the mockserver's interception-vs-mockserver benchmark, and Playwright
+Agent's mutation campaign and evaluation report. It never reruns them. Each
+record keeps the source's own evidence kind (for example `synthetic`) and date;
+a source with no local output shows `not-run` with the command that produces it.
 
 ## Running a trial
 

@@ -11,6 +11,8 @@ from pathlib import Path
 WORKSPACE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKSPACE / "evidence" / "context"))
 from measure import load_manifest, measure  # noqa: E402
+sys.path.insert(0, str(WORKSPACE / "evidence"))
+from native import import_source  # noqa: E402
 
 
 def results_dir(base: Path | None) -> Path:
@@ -34,6 +36,31 @@ def run_context(projects: list[str], base: Path, manifest: dict) -> list[dict]:
             write_result(base, record)
             records.append(record)
     return records
+
+
+def run_native(projects: list[str], base: Path, manifest: dict) -> list[dict]:
+    records = []
+    for project in projects:
+        config = manifest["projects"][project]
+        for source in config.get("nativeEvidence", []):
+            record = import_source(WORKSPACE, project, config["root"], source)
+            write_result(base, record)
+            records.append(record)
+    return records
+
+
+def print_native(records: list[dict]) -> None:
+    print("\nProject evidence (imported as recorded)")
+    for r in records:
+        line = f"  {r['project']:18} {r['profile']:28} {r['status']:10}"
+        if r["status"] == "imported":
+            line += f" {r.get('evidenceKind') or 'unknown kind'}, {r.get('generatedAt') or r['sourceModifiedAt']}"
+            print(line)
+            print(f"      {json.dumps(r['headline'])[:200]}")
+        else:
+            print(line)
+            for note in r.get("notes", []):
+                print(f"      {note}")
 
 
 def print_context(records: list[dict]) -> None:
@@ -61,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
     base = results_dir(args.results_dir)
     records = run_context(projects, base, manifest)
     print_context(records)
+    if args.command == "run":
+        print_native(run_native(projects, base, manifest))
     print(f"\nSaved to {base.relative_to(WORKSPACE) if base.is_relative_to(WORKSPACE) else base}")
     return 0 if all(r["status"] == "complete" for r in records) else 1
 

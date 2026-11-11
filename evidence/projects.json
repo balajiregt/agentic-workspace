@@ -36,7 +36,16 @@
           "resolved": "services/microservices/contexts/.resolved/ABC-123.yml",
           "resolveCommand": "npm run context:resolve"
         }
-      }
+      },
+      "nativeEvidence": [
+        {
+          "name": "api-tests",
+          "description": "RestAssured API tests for the customer-risk endpoint (Surefire)",
+          "reader": "junit",
+          "glob": "qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-*.xml",
+          "refreshCommand": "cd services/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283 (service running on 4283; see services/microservices/AGENTS.md)"
+        }
+      ]
     },
     "mockserver": {
       "registryId": "role-aware-ui",
@@ -53,7 +62,16 @@
           "resolved": "qa/ui-automation/role-aware-mockserver/contexts/.resolved/UI-ROLE-001.yml",
           "resolveCommand": "npm run context:ui:resolve"
         }
-      }
+      },
+      "nativeEvidence": [
+        {
+          "name": "interception-vs-mockserver",
+          "description": "Same role journeys via browser interception and via the mockserver",
+          "reader": "mockserver-benchmark",
+          "glob": "benchmark-results/summary.json",
+          "refreshCommand": "cd qa/ui-automation/role-aware-mockserver && node node_modules/@playwright/test/cli.js test --config=benchmarks/playwright.config.ts; node benchmarks/summarize.mjs"
+        }
+      ]
     },
     "playwright-agent": {
       "registryId": "playwright-framework",
@@ -94,7 +112,23 @@
             "qa/playwright-agent/examples/sample-crm-app/README.md"
           ]
         }
-      }
+      },
+      "nativeEvidence": [
+        {
+          "name": "mutation-campaign",
+          "description": "Behavioral mutation campaign: reviewed faults run against the suite in disposable copies",
+          "reader": "mutation-campaign",
+          "glob": "artifacts/validation-demo/mutations/*/campaign.json",
+          "refreshCommand": "cd qa/playwright-agent && npm run mutation -- run --config examples/validation-demo/mutation.config.json --allow-run"
+        },
+        {
+          "name": "evaluation-report",
+          "description": "Capability scorecard (assessment, matrix, authoring, mutation, routing)",
+          "reader": "pa-evaluation",
+          "glob": "artifacts/agent-tasks/**/evaluation.json",
+          "refreshCommand": "cd qa/playwright-agent && npm run eval (see docs/evaluation-reports.md)"
+        }
+      ]
     }
   },
   "guidancePaths": [
