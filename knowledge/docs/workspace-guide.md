@@ -425,9 +425,13 @@ flow and role, and production-like error counts.
 
 ### Inspect QA evidence
 
-The standalone QA dashboard viewer was retired on 31 October 2026. Review
-Playwright Agent reports from its internal quality tools, and use the Build with
-Balaji project pages for published aggregate results. The old viewer's source and
+The standalone QA dashboard viewer was retired on 31 October 2026, and its hosted
+copy (agentic-qa-metrics-viewer on Netlify) is scheduled for deletion. Review
+Playwright test evidence in Playwright Agent's local report viewer
+(`npm run report -- --repo <project> --serve` in `qa/playwright-agent`). Use the
+local `npm run dashboard:serve` and `npm run graphs:serve` commands for this
+workspace's QA dashboard and graph views. The public framework-benchmark
+dashboard was retired on 11 November 2026. The old viewer's source and
 local edits are retained in ignored `artifacts/product-retirement-20261031/qa-dashboard-viewer/`.
 Its root launch aliases and active project registration have been removed.
 
