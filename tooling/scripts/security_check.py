@@ -58,6 +58,16 @@ def main():
     if node.returncode or version_tuple(node.stdout) < version_tuple((ROOT / '.nvmrc').read_text()):
         raise RuntimeError('Select the Node version in .nvmrc before checking dependencies')
 
+    # Independent nested repositories (registry repository.nested) own their own
+    # dependency audits and are absent from a workspace-only checkout such as CI.
+    # Their inputs are audited when present; when absent they are reported as skipped.
+    registry = json.loads((ROOT / 'workspace.projects.json').read_text())
+    nested_roots = [ROOT / p['path'] for p in registry['projects'] if p.get('repository', {}).get('nested')]
+    skipped = []
+
+    def nested_owner(path):
+        return any(path == r or r in path.parents for r in nested_roots)
+
     def add(ecosystem, name, version, source):
         if name and version:
             coordinates.setdefault((ecosystem, name, version), set()).add(source)
@@ -84,6 +94,9 @@ def main():
     for lock in [ROOT / 'tooling/scripts/requirements-graphify.lock', ROOT / 'tooling/scripts/requirements-python-build.lock',
                  ROOT / 'qa/playwright-agent/quality/python/requirements.lock']:
         if not lock.is_file():
+            if nested_owner(lock):
+                skipped.append(str(lock.relative_to(ROOT)))
+                continue
             raise RuntimeError('Missing Python dependency lock: ' + str(lock.relative_to(ROOT)))
         for line in lock.read_text().splitlines():
             match = re.match(r'^([A-Za-z0-9_.-]+)==([^\s\\]+)', line)
@@ -105,6 +118,9 @@ def main():
     if not args.skip_java:
         for name, project, append in [('microservices', ROOT / 'services/microservices', True),
                                       ('kafka', ROOT / 'labs/kafka-test-project', False)]:
+            if not (project / 'pom.xml').is_file() and nested_owner(project):
+                skipped.append(str(project.relative_to(ROOT)))
+                continue
             tree = output / ('maven-' + name + '.txt')
             tree.unlink(missing_ok=True)
             command = ['mvn', '-B', '-ntp', 'org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree',
@@ -177,7 +193,7 @@ def main():
                     finding['advisories'] = [a for a in finding['advisories'] if a['id'] != receipt['advisory']]
         findings = [p for p in findings if p['advisories']]
     summary = {'coordinatesChecked': len(results), 'matchedCoordinates': len(raw_matches), 'unaddressedCoordinates':len(findings),
-               'verifiedLocalBackports':patched, 'npmAudits': audits, 'javaSkipped': args.skip_java, 'globalToolsIncluded': args.include_global}
+               'verifiedLocalBackports':patched, 'npmAudits': audits, 'nestedInputsSkipped': skipped, 'javaSkipped': args.skip_java, 'globalToolsIncluded': args.include_global}
     (output / 'osv-results.json').write_text(json.dumps(results, indent=2))
     (output / 'summary.json').write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))

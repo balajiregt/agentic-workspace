@@ -13,6 +13,6 @@ keywords = ["qaf_"]
 [[allowlists]]
 description = "SHA-256 file hashes in reference snapshot manifests"
 condition = "AND"
-paths = ['''^knowledge/resources/instagram-sources/[^/]+/snapshot\.json$''']
+paths = ['''(^|/)knowledge/resources/instagram-sources/[^/]+/snapshot\.json$''']
 regexTarget = "secret"
 regexes = ['''^[0-9a-f]{64}$''']
