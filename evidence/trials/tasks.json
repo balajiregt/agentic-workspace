@@ -9,7 +9,12 @@
     "target": {
       "project": "playwright-framework",
       "path": "qa/playwright-agent/examples/sample-crm-app",
-      "oracle": "Independent Playwright UI/API checks against the bundled synthetic CRM"
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
     }
   },
   {
@@ -23,7 +28,12 @@
     "target": {
       "project": "playwright-framework",
       "path": "qa/playwright-agent/examples/sample-crm-app",
-      "oracle": "Independent Playwright UI/API checks against the bundled synthetic CRM"
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
     }
   },
   {
@@ -36,7 +46,12 @@
     "target": {
       "project": "playwright-framework",
       "path": "qa/playwright-agent/examples/sample-crm-app",
-      "oracle": "Independent Playwright UI/API checks against the bundled synthetic CRM"
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
     }
   },
   {
@@ -53,7 +68,16 @@
     "target": {
       "project": "microservices",
       "path": "services/microservices/xyz-service",
-      "oracle": "services/microservices/qa-projects/xyz-service-api-tests CustomerRiskApiTest (Surefire report via junit_to_report.py)"
+      "oracle": {
+        "type": "junit",
+        "steps": [
+          "cd xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=4283  (separate terminal)",
+          "mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283",
+          "report: qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml"
+        ]
+      },
+      "evidenceProject": "api-workspace",
+      "contextProfile": "api-test-change"
     }
   }
 ]

@@ -49,6 +49,7 @@
     "evidence:trial:summary": "node evidence/trials/trials.mjs summary",
     "evidence": "python3 evidence/evidence.py run",
     "evidence:context": "python3 evidence/evidence.py context",
+    "evidence:trial": "python3 evidence/trials/runner.py",
     "evidence:test": "node --test evidence/trials/*.test.mjs && python3 -m unittest discover -s evidence/tests",
     "agents:dashboard": "npm --prefix products/agent-tools/agent-dashboard start",
     "agents:example": "npm --prefix products/agent-tools/agent-dashboard run example",

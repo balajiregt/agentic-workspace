@@ -24,7 +24,7 @@ published automatically.
 npm run evidence                                  # all projects
 npm run evidence -- --project playwright-agent    # or api-workspace, mockserver
 npm run evidence:context                          # context only
-npm run evidence:trial:collect -- METADATA.json REPORT.json
+npm run evidence:trial -- prepare --task crm-viewer-export   # see "Running a trial"
 npm run evidence:trial:summary
 npm run evidence:test                             # evidence tool tests
 npm run context:report                            # detailed API workspace context report
@@ -43,6 +43,37 @@ instructions and one skill), about 5k tokens. `task files` is what the task need
 from the project. The comparison corpus is the project's Git-tracked text files.
 Workspace guidance pays off on larger projects and can cost more than reading a
 very small project in full; the report keeps that visible instead of hiding it.
+
+## Running a trial
+
+A trial compares the same task done by your coding agent with and without
+workspace guidance. Tasks, their target project and oracle live in
+[`trials/tasks.json`](trials/tasks.json).
+
+```sh
+npm run evidence:trial -- prepare --task crm-manager-direct-route   # prints the exact next commands
+npm run evidence:trial -- start   --run RUN --arm baseline
+#   open RUN/baseline in your agent, paste RUN/PROMPT.md, let it finish
+npm run evidence:trial -- finish  --run RUN --arm baseline
+npm run evidence:trial -- collect --run RUN --arm baseline --model MODEL --model-version VERSION
+#   repeat for --arm framework, then:
+npm run evidence:trial:summary
+```
+
+- `prepare` builds two clean Git copies of the project's last commit outside the
+  workspace (default `~/evidence-trials/`): `baseline` without agent guidance
+  (`AGENTS.md`, `.agents/`, `contexts/` and similar are removed) and `framework`
+  with the project's guidance plus the workspace context profile. Both arms get
+  the identical prompt; its SHA-256 and the snapshot hash are recorded.
+- The independent oracle is added only at `collect`, after the agent has
+  finished, and runs only the required tests. Sample CRM tasks run it
+  automatically; the API task's Maven oracle is run by hand and passed with
+  `--report <surefire XML>`.
+- Alternate arm order across repeats (`--repeat N`; `prepare` suggests the order).
+  Use `--evidence-kind scripted-validation` only for pipeline checks, never for
+  agent results.
+- A passing oracle shows operational completion, not code quality. Review each
+  arm's diff (`git -C RUN/ARM diff`) before drawing conclusions.
 
 ## History
 
