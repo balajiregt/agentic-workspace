@@ -41,7 +41,8 @@ agentic-workspace/
 │   ├── career/
 │   │   └── career-agent/          [repo]  — private career scouting agent
 │   ├── portfolio/
-│   │   └── portfolio-web/         [repo]  — public portfolio site (Netlify)
+│   │   ├── portfolio-web/         [repo]  — public portfolio site (Netlify)
+│   │   └── portfolio-template/    [repo]  — public MIT template, fictional content
 │   └── agent-tools/
 │       └── agent-dashboard/               — Agenttrail Kitchen and Map
 ├── services/
@@ -137,6 +138,7 @@ additional API-test copy under the outer QA category. See the
 | FinFolio alerts agent | [FinFolio agent](../../products/finance/finfolio-agent/README.md) |
 | Career agent | [Career agent](../../products/career/career-agent/README.md) |
 | Portfolio website | [Portfolio site](../../products/portfolio/portfolio-web/README.md) |
+| Portfolio template | [Template](../../products/portfolio/portfolio-template/README.md) |
 | Agent activity observer | [Agent dashboard](../../products/agent-tools/agent-dashboard/README.md) |
 | Choose project and task | [Project workflow](project-workflow.md) |
 | API services and tests | [Microservices instructions](../../services/microservices/AGENTS.md) |
@@ -166,6 +168,7 @@ Agenttrail observes available activity; Playwright Agent owns test authoring and
 | `~/Desktop/finfolio-agent` | `products/finance/finfolio-agent/` (symlink left at the old path) |
 | Codex career folder `career-agent/` | `products/career/career-agent/` (symlink left at the old path) |
 | Codex career folder `portfolio-map/` | `products/portfolio/portfolio-web/` (11 November; symlink left at the old path) |
+| Codex career folder `engineering-portfolio-template/` | `products/portfolio/portfolio-template/` (11 November; symlink left at the old path) |
 
 Project IDs did not change. The `projects/` and `qa-projects/` roots are retired
 and `workspace:check` fails if they reappear. The private career workbench,

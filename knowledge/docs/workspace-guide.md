@@ -26,6 +26,7 @@ agentic-workspace/
     career/career-agent/ -> career scouting agent
     agent-tools/agent-dashboard/ -> agent activity observer
     portfolio/portfolio-web/ -> public portfolio site
+    portfolio/portfolio-template/ -> public MIT portfolio template (fictional content)
   services/
     microservices/    -> Spring Boot, RestAssured, local AGENTS/docs/contexts
   qa/

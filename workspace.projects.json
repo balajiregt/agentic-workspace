@@ -95,6 +95,21 @@
       }
     },
     {
+      "id": "portfolio-template",
+      "name": "Portfolio template",
+      "path": "products/portfolio/portfolio-template",
+      "group": "products",
+      "domain": "portfolio",
+      "kind": "template",
+      "status": "maintained",
+      "purpose": "Public MIT-licensed engineering portfolio template with fictional sample content, derived from the portfolio site",
+      "repository": {
+        "remote": "github.com/balajiregt/portfolio-template",
+        "visibility": "public",
+        "nested": true
+      }
+    },
+    {
       "id": "agent-dashboard",
       "name": "Agenttrail dashboard",
       "path": "products/agent-tools/agent-dashboard",

@@ -50,6 +50,7 @@ services/microservices/contexts/tasks/*
 /qa/playwright-template/
 /labs/kafka-test-project/
 /products/portfolio/portfolio-web/
+/products/portfolio/portfolio-template/
 /products/finance/finfolio-app/
 /products/finance/finfolio-agent/
 /products/career/career-agent/

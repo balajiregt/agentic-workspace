@@ -8,6 +8,7 @@ Verified on 11 November 2026. Each active product has one working checkout.
 | [Playwright Agent](https://github.com/balajiregt/playwright-agent) | `qa/playwright-agent/` |
 | [Role-Aware Mockserver](https://github.com/balajiregt/plawright-role-aware-mockserver) | `qa/ui-automation/role-aware-mockserver/` |
 | [Portfolio website](https://github.com/balajiregt/portfolio-web) | `products/portfolio/portfolio-web/` |
+| [Portfolio template](https://github.com/balajiregt/portfolio-template) | `products/portfolio/portfolio-template/` |
 | FinFolio app, FinFolio agent, career agent | `products/finance/`, `products/career/` |
 | Kafka/event quality lab | `labs/kafka-test-project/` |
 | Reference Playwright starter template | `qa/playwright-template/` |

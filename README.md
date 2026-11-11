@@ -18,7 +18,7 @@ See the [actual folder hierarchy and Mermaid maps](knowledge/docs/workspace-map.
 
 | Folder | Responsibility |
 | --- | --- |
-| `products/` | Runnable products by domain: `finance/` (FinFolio app and agent), `career/` (career agent), `portfolio/` (public portfolio site), `agent-tools/` (Agenttrail dashboard) |
+| `products/` | Runnable products by domain: `finance/` (FinFolio app and agent), `career/` (career agent), `portfolio/` (public portfolio site and its template), `agent-tools/` (Agenttrail dashboard) |
 | `services/` | Backend services with contracts, deployment assets and RestAssured API tests |
 | `qa/` | Playwright Agent, role-aware UI automation and the Playwright starter template |
 | `labs/` | Experiments such as the Kafka testing lab |
