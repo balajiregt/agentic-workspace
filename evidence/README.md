@@ -24,6 +24,7 @@ published automatically.
 npm run evidence                                  # all projects
 npm run evidence -- --project playwright-agent    # or api-workspace, mockserver
 npm run evidence:context                          # context only
+npm run evidence:dashboard                        # measure, import and open the private page
 npm run evidence:trial -- prepare --task crm-viewer-export   # see "Running a trial"
 npm run evidence:trial:summary
 npm run evidence:test                             # evidence tool tests
