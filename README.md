@@ -23,7 +23,7 @@ See the [actual folder hierarchy and Mermaid maps](knowledge/docs/workspace-map.
 | `qa/` | Playwright Agent, role-aware UI automation and the Playwright starter template |
 | `labs/` | Experiments such as the Kafka testing lab |
 | `evidence/` | [Workspace evidence](evidence/README.md): context size, with/without-workspace agent trials and imported project evidence |
-| `agent-system/` | Task context, canonical skills, [local inference](agent-system/local-agents/README.md) and context starter |
+| `agent-system/` | Shared agent skills and the [local model setup](agent-system/local-agents/README.md) (fallback when cloud sessions run out) |
 | `knowledge/` | [Guides](knowledge/docs/workspace-guide.md), prompts, [adoption catalogue](knowledge/docs/instagram/README.md) and reference snapshots |
 | `tooling/` | Workspace scripts, their regression tests and Docker configuration |
 | `artifacts/` | Ignored generated reports, Graphify output, local tools and migration records |

@@ -244,7 +244,7 @@
       "id": "agents",
       "name": "05 Agent system",
       "path": "agent-system",
-      "purpose": "Canonical skills and owned templates, local inference and context starter"
+      "purpose": "Shared agent skills and the local model fallback setup"
     },
     {
       "id": "evidence",

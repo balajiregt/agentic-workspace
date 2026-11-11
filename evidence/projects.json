@@ -69,7 +69,7 @@
           "description": "Same role journeys via browser interception and via the mockserver",
           "reader": "mockserver-benchmark",
           "glob": "benchmark-results/summary.json",
-          "refreshCommand": "cd qa/ui-automation/role-aware-mockserver && node node_modules/@playwright/test/cli.js test --config=benchmarks/playwright.config.ts; node benchmarks/summarize.mjs"
+          "refreshCommand": "cd qa/ui-automation/role-aware-mockserver && npm run benchmark"
         }
       ]
     },

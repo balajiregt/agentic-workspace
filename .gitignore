@@ -4,8 +4,6 @@
 .netlify/
 projects/**/.netlify/
 
-# Local reference symlink.
-agent-system/context-starter
 
 # Local runtime downloads/builds stay out of Git.
 agent-system/local-agents/models/

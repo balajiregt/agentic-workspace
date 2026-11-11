@@ -64,8 +64,7 @@ agentic-workspace/
 │   └── kafka-test-project/        [repo]  — Kafka and event-quality lab
 ├── agent-system/
 │   ├── skills/                            — canonical task workflows
-│   ├── local-agents/                      — Pi and llama.cpp setup and launchers
-│   └── context-starter/                   — symlink to an external directory
+│   └── local-agents/                      — Pi and llama.cpp fallback setup and launchers
 ├── evidence/                              — measures the workspace's claims per project
 │   ├── context/                           — context-size measurement
 │   ├── trials/                            — with/without-workspace agent trial kit
@@ -185,7 +184,7 @@ career runtime state and portfolio sites stay outside the workspace.
 | `contexts/` | Project-owned `contexts/`; reusable service templates in `agent-system/skills/microservice-change/examples/` |
 | `skills/` | `agent-system/skills/` |
 | `local-agents/` | `agent-system/local-agents/` |
-| `context-starter/` | `agent-system/context-starter/` |
+| `context-starter/` | `agent-system/context-starter/`; link removed 11 November 2026 |
 | `docs/` | `knowledge/docs/` |
 | `resources/` | `knowledge/resources/` |
 | `scripts/` | `tooling/scripts/` |

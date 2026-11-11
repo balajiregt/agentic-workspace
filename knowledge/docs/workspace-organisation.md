@@ -11,7 +11,7 @@ The workspace is organised into nine physical category folders, grouped by inten
 | `qa/` | QA frameworks, UI automation and Playwright templates. |
 | `labs/` | Experiments and integration labs that are not product code. |
 | `evidence/` | Workspace measurement per project: context size, agent trials and imported project evidence; project-specific checks stay local. |
-| `agent-system/` | Canonical skills with their reusable templates, local inference wrappers and the external context-starter symlink. |
+| `agent-system/` | Canonical shared skills with their reusable templates, and the local model (Pi + llama.cpp) fallback setup. Skills that depend on workspace resolvers, such as `microservice-change` and `playwright-ui-change`, stay here rather than in standalone project repositories. |
 | `knowledge/` | Cross-project documentation, reusable prompts, adoption decisions and passive reference snapshots. |
 | `tooling/` | Workspace infrastructure scripts, their regression tests and graph-service Docker configuration. |
 | `artifacts/` | Ignored generated reports, Graphify output, downloads, environments and migration records. |
