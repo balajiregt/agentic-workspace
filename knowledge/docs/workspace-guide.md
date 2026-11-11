@@ -426,7 +426,7 @@ flow and role, and production-like error counts.
 ### Inspect QA evidence
 
 The standalone QA dashboard viewer was retired on 31 October 2026, and its hosted
-copy (agentic-qa-metrics-viewer on Netlify) is scheduled for deletion. Review
+copy (agentic-qa-metrics-viewer on Netlify) was deleted on 11 November 2026. Review
 Playwright test evidence in Playwright Agent's local report viewer
 (`npm run report -- --repo <project> --serve` in `qa/playwright-agent`). Use the
 local `npm run dashboard:serve` and `npm run graphs:serve` commands for this

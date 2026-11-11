@@ -35,8 +35,8 @@ under `services/microservices/qa-projects/xyz-service-api-tests/`.
 
 The standalone QA viewer was retired from active projects. Its source/local edits
 remain at `artifacts/product-retirement-20261031/qa-dashboard-viewer/`. Its hosted
-copy (agentic-qa-metrics-viewer on Netlify, last deployed 20 October 2026) is
-retired and scheduled for deletion; do not redeploy it. The framework-benchmark
+copy (agentic-qa-metrics-viewer on Netlify, last deployed 20 October 2026) was
+deleted on 11 November 2026; do not redeploy it. The framework-benchmark
 dashboard repository was archived and its Netlify site deleted on 11 November
 2026. Recovery copies
 under artifacts are excluded from active registration, watches and publication.
