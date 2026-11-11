@@ -7,3 +7,12 @@ id = "caseforge-api-key"
 description = "CaseForge upload API key"
 regex = '''qaf_[a-f0-9]{64}'''
 keywords = ["qaf_"]
+
+# Reference snapshot manifests record SHA-256 hashes of upstream files; keys
+# such as "...AUTH.md" or "api-reference.md" trip the generic key rule.
+[[allowlists]]
+description = "SHA-256 file hashes in reference snapshot manifests"
+condition = "AND"
+paths = ['''(^|/)knowledge/resources/instagram-sources/[^/]+/snapshot\.json$''']
+regexTarget = "secret"
+regexes = ['''^[0-9a-f]{64}$''']

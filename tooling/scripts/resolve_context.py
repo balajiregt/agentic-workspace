@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""Generate resolved agent context from a small task YAML plus repo conventions."""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import hashlib
+from pathlib import Path
+from typing import Any
+
+from context_paths import API_TASK, resolved_path
+
+try:
+    import yaml
+except ImportError as exc:  # pragma: no cover - local setup guard
+    raise SystemExit("PyYAML is required for context resolution: python3 -m pip install pyyaml") from exc
+
+
+DEFAULT_WORKSPACE = Path(__file__).resolve().parents[2]
+
+
+def read_yaml(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    if not isinstance(data, dict):
+        raise SystemExit(f"Expected YAML mapping in {path}")
+    return data
+
+
+def rel(path: Path, workspace: Path) -> str:
+    return str(path.resolve().relative_to(workspace.resolve()))
+
+
+def endpoint_path(endpoint: str) -> str:
+    parts = endpoint.strip().split(maxsplit=1)
+    return parts[1] if len(parts) == 2 else endpoint.strip()
+
+
+def find_one(root: Path, pattern: str, contains: str | None = None) -> Path:
+    matches = []
+    if root.exists():
+        for path in sorted(root.rglob(pattern)):
+            if not path.is_file():
+                continue
+            if contains is None:
+                matches.append(path)
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            if contains in text:
+                matches.append(path)
+    if not matches:
+        detail = f" containing {contains!r}" if contains else ""
+        raise SystemExit(f"No file found under {root} matching {pattern}{detail}")
+    return matches[0]
+
+
+def command_with_cd(command: str, cwd: str) -> str:
+    return f"cd {cwd} && {command}"
+
+
+def openapi_query_parameter(openapi: Path, path: str) -> dict[str, Any]:
+    data = read_yaml(openapi)
+    operation = data.get("paths", {}).get(path, {}).get("get", {})
+    for parameter in operation.get("parameters", []):
+        if parameter.get("in") != "query":
+            continue
+        schema = parameter.get("schema", {}) or {}
+        return {
+            "name": parameter.get("name"),
+            "required": bool(parameter.get("required", False)),
+            "schema": schema,
+            "has_pattern": "pattern" in schema,
+            "pattern": schema.get("pattern"),
+            "minLength": schema.get("minLength"),
+        }
+    return {}
+
+
+def source_validation(controller: Path, service_file: Path) -> dict[str, Any]:
+    controller_text = controller.read_text(encoding="utf-8", errors="ignore")
+    service_text = service_file.read_text(encoding="utf-8", errors="ignore")
+    combined = f"{controller_text}\n{service_text}"
+    return {
+        "controller_validation_signals": {
+            "has_required_or_not_blank_annotation": any(
+                token in controller_text for token in ("@NotBlank", "@NotNull", "@NotEmpty")
+            ),
+            "has_pattern_or_regex_annotation": "@Pattern" in controller_text,
+            "has_size_annotation": "@Size" in controller_text,
+        },
+        "implementation_signals": {
+            "normalizes_string_with_trim": ".trim()" in service_text,
+            "normalizes_string_case": ".toUpperCase()" in service_text or ".toLowerCase()" in service_text,
+            "has_explicit_pattern_or_regex_check": any(
+                token in combined for token in ("@Pattern", "Pattern.", ".matches(", "regex")
+            ),
+            "has_enum_or_allowlist_signal": any(
+                token in combined for token in (" enum ", "EnumSet", "contains(", "Set.of(")
+            ),
+        },
+    }
+
+
+def first_affected_endpoint(task: dict[str, Any]) -> str:
+    endpoints = task.get("work_item", {}).get("affected_endpoints", [])
+    if not endpoints:
+        raise SystemExit("Missing work_item.affected_endpoints in current task context")
+    return str(endpoints[0])
+
+
+def deployment_repo_for(microservices_root: Path, service_name: str) -> Path:
+    prefix = service_name.removesuffix("-service")
+    candidates = [
+        microservices_root / f"{prefix}-deployments",
+        microservices_root / f"{service_name}-deployments",
+        microservices_root / "deployments",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
+def build_resolved(workspace: Path, task: dict[str, Any], context_path: Path | None = None) -> dict[str, Any]:
+    service_name = task.get("service_name")
+    if not service_name:
+        raise SystemExit("Missing service_name in current task context")
+
+    microservices_root = workspace / "services/microservices"
+    service_repo = microservices_root / service_name
+    qa_steps = microservices_root / "qa-steps"
+    qa_project = microservices_root / "qa-projects" / f"{service_name}-api-tests"
+    deployment_repo = deployment_repo_for(microservices_root, service_name)
+    endpoint = first_affected_endpoint(task)
+    path = endpoint_path(endpoint)
+
+    controller = find_one(service_repo / "src/main/java", "*Controller.java", f'"{path}"')
+    service_file = find_one(service_repo / "src/main/java", "*Service.java")
+    openapi = find_one(service_repo / "src/main/resources", "*.yml", path)
+    api_test = find_one(qa_project / "src/test/java", "*Test.java", f'get("{path}")')
+    fixtures = find_one(qa_steps / "src/main/java", "*Fixtures.java")
+    assertions = find_one(qa_steps / "src/main/java", "*Assertions.java")
+    openapi_query = openapi_query_parameter(openapi, path)
+    source_validation_result = source_validation(controller, service_file)
+
+    service_port = int(task.get("local_validation", {}).get("service_port", 8081))
+    test_port_property = str(task.get("local_validation", {}).get("test_port_property", "api.port"))
+    service_command = command_with_cd(
+        f"mvn spring-boot:run -Dspring-boot.run.arguments=--server.port={service_port}",
+        rel(service_repo, workspace),
+    )
+    test_command = command_with_cd(
+        f"mvn -pl qa-projects/{service_name}-api-tests -am test -D{test_port_property}={service_port}",
+        rel(microservices_root, workspace),
+    )
+
+    return {
+        "generated": {
+            "at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
+            "by": "tooling/scripts/resolve_context.py",
+            "note": "Generated file. Do not hand-maintain; update the selected task context or repo conventions instead.",
+        },
+        "task_context": {
+            "path": rel(context_path or workspace / API_TASK, workspace),
+            "service_name": service_name,
+            "work_item": task.get("work_item", {}),
+            "quality_gates": task.get("quality_gates", {}),
+        },
+        "service_context": {
+            "source": "derived from current task context, repo layout, and OpenAPI",
+            "architecture": "microservice",
+            "repository_topology": task.get("repository_topology", {}),
+            "api": {
+                "endpoint": endpoint,
+                "path": path,
+                "contract_source": rel(openapi, workspace),
+            },
+        },
+        "resolved_repositories": {
+            "microservices_root": rel(microservices_root, workspace),
+            "service_repo": rel(service_repo, workspace),
+            "deployment_repo": rel(deployment_repo, workspace),
+            "qa_steps": rel(qa_steps, workspace),
+            "qa_project": rel(qa_project, workspace),
+        },
+        "resolved_files": {
+            "controller": rel(controller, workspace),
+            "service": rel(service_file, workspace),
+            "openapi": rel(openapi, workspace),
+            "api_test": rel(api_test, workspace),
+            "shared_fixtures": rel(fixtures, workspace),
+            "shared_assertions": rel(assertions, workspace),
+        },
+        "derived_validation": {
+            "query_parameter": openapi_query,
+            "source": source_validation_result,
+            "unsupported_gap_hints": [
+                "If a negative-test input satisfies the documented OpenAPI schema, a 4xx expectation needs explicit source validation or a contract update.",
+                "If OpenAPI lacks pattern, enum, format, bounds, or other constraints for the field under test, rejection may be undocumented.",
+                "If source lacks a matching validation signal, rejection may be unimplemented even when the test expectation sounds reasonable.",
+            ],
+        },
+        "verification": {
+            "commands": [service_command, test_command],
+            "notes": [
+                "Start the service command first and keep it running while API tests execute.",
+                f"Use port {service_port} because local llama.cpp may already use 8080.",
+            ],
+        },
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--workspace",
+        default=str(DEFAULT_WORKSPACE),
+        help="Agentic workspace root. Defaults to this script's parent repo.",
+    )
+    parser.add_argument("--context", default=str(API_TASK), help="Task YAML; paths are relative to --workspace unless absolute. Default is a sanitised example.")
+    parser.add_argument("--output", help="Override the default project contexts/.resolved/<task>.yml output.")
+    args = parser.parse_args()
+
+    workspace = Path(args.workspace).expanduser().resolve()
+    context_path = (workspace / args.context).resolve()
+    if not context_path.is_relative_to(workspace):
+        raise SystemExit("Task context must be inside --workspace")
+    task = read_yaml(context_path)
+    service_name = task.get("service_name")
+    if not service_name:
+        raise SystemExit(f"Missing service_name in {context_path}")
+
+    resolved = build_resolved(workspace, task, context_path)
+    resolved["task_context"]["sha256"] = hashlib.sha256(context_path.read_bytes()).hexdigest()
+
+    output = (workspace / args.output).resolve() if args.output else resolved_path(context_path)
+    if output == context_path:
+        raise SystemExit("Output must not overwrite the task context")
+    resolved["generated"]["output"] = str(output.relative_to(workspace)) if output.is_relative_to(workspace) else str(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("w", encoding="utf-8") as handle:
+        yaml.safe_dump(resolved, handle, sort_keys=False, width=1000)
+    print(f"Wrote {output}")
+
+
+if __name__ == "__main__":
+    main()

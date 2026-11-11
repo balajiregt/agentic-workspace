@@ -1,0 +1,26 @@
+{
+  "name": "agentic-agent-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "One-click local Agenttrail Map and Kitchen views for the agentic workspace.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/manage.mjs start --open",
+    "start:headless": "node scripts/manage.mjs start",
+    "example": "node scripts/manage.mjs start --open --example",
+    "status": "node scripts/manage.mjs status",
+    "stop": "node scripts/manage.mjs stop",
+    "test": "node --test tests/*.test.mjs",
+    "map": "node scripts/manage.mjs start --map --open",
+    "map:headless": "node scripts/manage.mjs start --map",
+    "map:status": "node scripts/manage.mjs status --map",
+    "map:stop": "node scripts/manage.mjs stop --map"
+  },
+  "dependencies": {
+    "agenttrail": "0.2.0",
+    "agenttrail-kitchen": "0.1.0-alpha.3"
+  }
+}

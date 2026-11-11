@@ -1,0 +1,4 @@
+interface:
+  display_name: "Playwright Agent"
+  short_description: "Route focused functional Playwright tasks"
+  default_prompt: "Use $playwright-agent for the selected project and only the work requested in my prompt."

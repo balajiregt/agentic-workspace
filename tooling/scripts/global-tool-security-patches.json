@@ -1,0 +1,22 @@
+[
+  {
+    "package": "deepmerge",
+    "version": "4.3.1",
+    "advisory": "GHSA-gcqx-w48m-w2h4",
+    "reason": "Backport rejects prototype-mutating keys in both target and source; upstream has no published fixed release.",
+    "files": [
+      {
+        "path": "lib/node_modules/netlify-cli/node_modules/deepmerge/index.js",
+        "sha256": "7edddc0d871225c21ca9e0a8708888bffc7e38cfff96adb22d812e74b3d8e330"
+      },
+      {
+        "path": "lib/node_modules/netlify-cli/node_modules/deepmerge/dist/cjs.js",
+        "sha256": "8f2c3e224dedbcd6acd88ba1cad28f45bf6bcc2d30f900fe01930896718c7c08"
+      },
+      {
+        "path": "lib/node_modules/netlify-cli/node_modules/deepmerge/dist/umd.js",
+        "sha256": "5208b913475ad98f93a7f2ba562d2b02d9a26bb7b469432887b2a8bf41eef706"
+      }
+    ]
+  }
+]
