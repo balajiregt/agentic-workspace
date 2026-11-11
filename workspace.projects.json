@@ -200,14 +200,14 @@
       }
     },
     {
-      "id": "benchmarks",
-      "name": "Shared agent benchmarks",
-      "path": "evaluation/benchmarks",
-      "group": "evaluation",
+      "id": "evidence",
+      "name": "Workspace evidence",
+      "path": "evidence",
+      "group": "evidence",
       "domain": "workspace",
       "kind": "benchmark",
       "status": "active",
-      "purpose": "Shared controlled trials and evidence collection; results belong to their owning projects",
+      "purpose": "Measures whether the workspace delivers what it claims, per project: context size, with/without-workspace agent trials and each project's own evidence",
       "repository": {
         "remote": "github.com/balajiregt/agentic-workspace",
         "visibility": "public",
@@ -247,10 +247,10 @@
       "purpose": "Canonical skills and owned templates, local inference and context starter"
     },
     {
-      "id": "evaluation",
-      "name": "06 Evaluation",
-      "path": "evaluation",
-      "purpose": "Shared controlled trials and evidence collection"
+      "id": "evidence",
+      "name": "06 Evidence",
+      "path": "evidence",
+      "purpose": "Workspace-level measurement: context, agent trials and imported project evidence"
     },
     {
       "id": "knowledge",

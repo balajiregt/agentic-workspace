@@ -10,7 +10,7 @@ The workspace is organised into nine physical category folders, grouped by inten
 | `services/` | Backend services with their contracts, deployment assets and API tests. |
 | `qa/` | QA frameworks, UI automation and Playwright templates. |
 | `labs/` | Experiments and integration labs that are not product code. |
-| `evaluation/` | Cross-project controlled trials and shared evidence collection; project-specific checks stay local. |
+| `evidence/` | Workspace measurement per project: context size, agent trials and imported project evidence; project-specific checks stay local. |
 | `agent-system/` | Canonical skills with their reusable templates, local inference wrappers and the external context-starter symlink. |
 | `knowledge/` | Cross-project documentation, reusable prompts, adoption decisions and passive reference snapshots. |
 | `tooling/` | Workspace infrastructure scripts, their regression tests and graph-service Docker configuration. |
@@ -69,9 +69,9 @@ captures and task-input workflow under its existing `contexts/`.
 Durable domain explanations and decisions live in each project's `docs/`, with
 links to authoritative source, contracts and configuration. Preserve existing
 local test, `quality/` and `benchmarks/` ownership; shared comparisons stay under
-workspace `evaluation/`. Keep private task inputs and execution evidence ignored,
+workspace `evidence/`. Keep private task inputs and execution evidence ignored,
 and promote only verified reusable lessons into docs. Do not create empty
-`knowledge/` or `evaluation/` folders in every project.
+`knowledge/` or `evidence/` folders in every project.
 
 ## Checks
 

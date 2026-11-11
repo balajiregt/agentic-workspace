@@ -41,7 +41,7 @@ function median(values){if(!values.length)return null;const v=[...values].sort((
 if (process.argv[1]===fileURLToPath(import.meta.url)) {
  try {
   const [command,metadataPath,reportPath]=process.argv.slice(2);
-  const dir=path.resolve('benchmark-results/trials');
+  const dir=path.resolve(process.env.EVIDENCE_RESULTS||'evidence/results','trials');
   if(command==='collect'){
     const m=JSON.parse(fs.readFileSync(metadataPath,'utf8'));const raw=fs.readFileSync(reportPath,'utf8');
     const tasks=JSON.parse(fs.readFileSync(new URL('./tasks.json',import.meta.url),'utf8'));

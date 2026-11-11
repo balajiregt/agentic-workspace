@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Iterable
 
-from context_paths import API_TASK, API_RESOLVED, resolved_path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tooling" / "scripts"))
+from context_paths import API_TASK, API_RESOLVED, resolved_path  # noqa: E402
 
 
 DEFAULT_INCLUDE_SUFFIXES = {

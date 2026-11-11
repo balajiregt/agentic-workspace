@@ -15,7 +15,7 @@ YAML control plane and reads exact local paths only when needed.
 - Workspace root: current repository root.
 - Context file: `services/microservices/contexts/tasks/ABC-123.yml`
 - Corpus root: `services/microservices`
-- Script: `tooling/scripts/context_efficiency_report.py`
+- Script: `evidence/context/context_efficiency_report.py`
 
 ## Procedure
 
@@ -30,11 +30,11 @@ YAML control plane and reads exact local paths only when needed.
 ## Commands
 
 ```bash
-python3 tooling/scripts/context_efficiency_report.py
+python3 evidence/context/context_efficiency_report.py
 ```
 
 ```bash
-python3 tooling/scripts/context_efficiency_report.py --format json
+python3 evidence/context/context_efficiency_report.py --format json
 ```
 
 ## Metrics To Report

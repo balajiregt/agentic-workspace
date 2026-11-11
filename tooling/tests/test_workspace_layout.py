@@ -44,7 +44,7 @@ class WorkspaceLayoutTests(unittest.TestCase):
 
     def test_retired_category_roots_cannot_return(self):
         root = Path(__file__).resolve().parents[2]
-        for legacy in ['projects', 'qa-projects']:
+        for legacy in ['projects', 'qa-projects', 'evaluation']:
             with self.subTest(path=legacy), tempfile.TemporaryDirectory() as temp:
                 overlay = Path(temp)
                 (overlay/legacy).mkdir()
