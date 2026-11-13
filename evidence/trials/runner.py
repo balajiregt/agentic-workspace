@@ -228,14 +228,58 @@ def cmd_mark(args, field: str) -> None:
     print(f"{args.arm} {field} = {arm[field]}")
 
 
-AGENT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep", "Bash(npx playwright:*)", "Bash(node:*)",
-               "Bash(npm run:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(git status:*)", "Bash(git diff:*)"]
+# Read-only inspection, running tests and type checks, and stopping the sample app.
+# Agents chain commands (`cat a; head b`) and prefix env vars, so each piece must be allowed.
+AGENT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep",
+               "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(wc:*)", "Bash(ls:*)", "Bash(find:*)",
+               "Bash(grep:*)", "Bash(rg:*)", "Bash(sed -n:*)", "Bash(sort:*)", "Bash(pwd)", "Bash(echo:*)",
+               "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)",
+               "Bash(node:*)", "Bash(npx playwright:*)", "Bash(npx tsc:*)", "Bash(npm run:*)", "Bash(npm test:*)",
+               "Bash(APP_BASE_URL=*)", "Bash(PORT=*)", "Bash(pkill -f:*)", "Bash(lsof:*)", "Bash(sleep:*)", "Bash(curl -s:*)"]
 
 
 def primary_model(model_usage: dict) -> str | None:
     if not model_usage:
         return None
     return max(model_usage.items(), key=lambda kv: kv[1].get("outputTokens", 0))[0]
+
+
+def blocked_tool_calls(session_id: str | None) -> list[str] | None:
+    """Commands the agent tried but was not permitted to run, read from its transcript."""
+    if not session_id:
+        return None
+    matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl"))
+    if not matches:
+        return None
+    calls, blocked = {}, []
+    for line in matches[0].read_text().splitlines():
+        content = (json.loads(line).get("message") or {}).get("content")
+        for item in content if isinstance(content, list) else []:
+            if item.get("type") == "tool_use":
+                calls[item["id"]] = item.get("input", {}).get("command") or item.get("name")
+            elif item.get("type") == "tool_result" and item.get("is_error"):
+                text = item.get("content") if isinstance(item.get("content"), str) else json.dumps(item.get("content"))
+                if any(word in text.lower() for word in ("permission", "approval", "not allowed")):
+                    blocked.append(str(calls.get(item.get("tool_use_id"), "unknown"))[:200])
+    return blocked
+
+
+def stop_arm_processes(arm: Path) -> list[int]:
+    """Stop processes the agent left running with their working directory inside the arm."""
+    listing = subprocess.run(["lsof", "-d", "cwd", "-F", "pn"], capture_output=True, text=True).stdout
+    stopped, pid = [], None
+    for line in listing.splitlines():
+        if line.startswith("p"):
+            pid = int(line[1:])
+        elif line.startswith("n") and pid and pid != os.getpid():
+            path = Path(line[1:])
+            if path == arm or arm in path.parents:
+                try:
+                    os.kill(pid, 15)
+                    stopped.append(pid)
+                except OSError:
+                    pass
+    return stopped
 
 
 def cmd_run_agent(args) -> None:
@@ -275,11 +319,17 @@ def cmd_run_agent(args) -> None:
         "model": primary_model(data.get("modelUsage") or {}), "costUsd": data.get("total_cost_usd"),
         "inputTokens": sum(int(usage.get(k) or 0) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) if usage else None,
         "outputTokens": usage.get("output_tokens"),
+        "blockedToolCalls": blocked_tool_calls(data.get("session_id")),
+        "leftoverProcessesStopped": stop_arm_processes(arm),
     }
     save_run(run, record)
     a = arm_record["agent"]
     print(f"{args.arm}: agent finished {arm_record['finishedAt']} (exit {code}, {a['turns']} turns, model {a['model']}, "
           f"cost ${a['costUsd']}). Transcript summary: {run / (args.arm + '-agent.json')}")
+    if a["blockedToolCalls"]:
+        print(f"WARNING {args.arm}: {len(a['blockedToolCalls'])} blocked tool call(s); this arm may not be a fair run:")
+        for item in a["blockedToolCalls"]:
+            print(f"  - {item}")
     changed = subprocess.run(["git", "status", "--porcelain"], cwd=arm, capture_output=True, text=True).stdout.strip()
     print(f"{args.arm}: files changed by the agent:\n{changed or '  (none)'}")
 
