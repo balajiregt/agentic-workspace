@@ -250,7 +250,7 @@ AGENT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep",
                "Bash(grep:*)", "Bash(rg:*)", "Bash(sed -n:*)", "Bash(sort:*)", "Bash(pwd)", "Bash(echo:*)",
                "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)",
                "Bash(node:*)", "Bash(npx playwright:*)", "Bash(npx tsc:*)", "Bash(npm run:*)", "Bash(npm test:*)",
-               "Bash(APP_BASE_URL=*)", "Bash(PORT=*)", "Bash(pkill -f:*)", "Bash(lsof:*)", "Bash(sleep:*)", "Bash(curl -s:*)"]
+               "Bash(cd:*)", "Bash(APP_BASE_URL=*)", "Bash(PORT=*)", "Bash(pkill -f:*)", "Bash(lsof:*)", "Bash(sleep:*)", "Bash(curl -s:*)"]
 
 
 def primary_model(model_usage: dict) -> str | None:
@@ -277,6 +277,29 @@ def blocked_tool_calls(session_id: str | None) -> list[str] | None:
                 if any(word in text.lower() for word in ("permission", "approval", "not allowed")):
                     blocked.append(str(calls.get(item.get("tool_use_id"), "unknown"))[:200])
     return blocked
+
+
+def guidance_received(arm: Path, session_id: str | None) -> bool | None:
+    """True when a successful tool result contains the content of a skill in the arm."""
+    if not session_id:
+        return None
+    matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl"))
+    skills = list(arm.glob(".agents/skills/*/SKILL.md")) + list(arm.glob(".workspace-context/**/SKILL.md"))
+    if not matches or not skills:
+        return None
+    markers = []
+    for skill in skills:
+        body = [l.strip() for l in skill.read_text().split("---", 2)[-1].splitlines() if len(l.strip()) > 40]
+        if body:
+            markers.append(body[0][:50])
+    for line in matches[0].read_text().splitlines():
+        content = (json.loads(line).get("message") or {}).get("content")
+        for item in content if isinstance(content, list) else []:
+            if item.get("type") == "tool_result" and not item.get("is_error"):
+                text = item.get("content") if isinstance(item.get("content"), str) else json.dumps(item.get("content"))
+                if any(marker in text for marker in markers):
+                    return True
+    return False
 
 
 def stop_arm_processes(arm: Path) -> list[int]:
@@ -335,12 +358,15 @@ def cmd_run_agent(args) -> None:
         "inputTokens": sum(int(usage.get(k) or 0) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) if usage else None,
         "outputTokens": usage.get("output_tokens"),
         "blockedToolCalls": blocked_tool_calls(data.get("session_id")),
+        "guidanceReceived": guidance_received(arm, data.get("session_id")) if args.arm == "framework" else None,
         "leftoverProcessesStopped": stop_arm_processes(arm),
     }
     save_run(run, record)
     a = arm_record["agent"]
     print(f"{args.arm}: agent finished {arm_record['finishedAt']} (exit {code}, {a['turns']} turns, model {a['model']}, "
           f"cost ${a['costUsd']}). Transcript summary: {run / (args.arm + '-agent.json')}")
+    if args.arm == "framework" and a["guidanceReceived"] is False:
+        print("WARNING framework: the agent never received its skill content; this run does not test guidance.")
     if a["blockedToolCalls"]:
         print(f"WARNING {args.arm}: {len(a['blockedToolCalls'])} blocked tool call(s); this arm may not be a fair run:")
         for item in a["blockedToolCalls"]:
