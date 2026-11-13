@@ -136,7 +136,7 @@ def trials_section(project: str, groups: list[dict]) -> str:
         first = sorted(mine)[0]
         return (f'<p class="muted">Tasks: {", ".join(f"<code>{esc(t)}</code>" for t in sorted(mine))}. No trials recorded yet. '
                 f'Start one with <code>npm run evidence:trial -- prepare --task {esc(first)}</code>.</p>')
-    out = ['<div class="scroll"><table><thead><tr><th>Task</th><th>Model</th><th>Kind</th><th>Without workspace</th><th>With workspace</th><th>Paired</th></tr></thead><tbody>']
+    out = ['<div class="scroll"><table><thead><tr><th>Task</th><th>Model</th><th>Kind</th><th>Agent alone</th><th>Agent + guidance</th><th>Paired</th></tr></thead><tbody>']
     for g in rows:
         cell = lambda s: f"{s['correct']}/{s['trials']} completed" + (f", median {round(s['medianElapsedMs'] / 60000, 1)} min" if s.get("medianElapsedMs") else "")  # noqa: E731
         out.append(f"<tr><td><code>{esc(g['taskId'])}</code></td><td>{esc(g['model'])} {esc(g['modelVersion'])}</td><td>{esc(g['evidenceKind'])}</td>"
@@ -158,7 +158,7 @@ def build(base: Path) -> str:
         cards.append(f'<section class="card" aria-labelledby="{project}"><div class="head"><h2 id="{project}">{esc(LABELS.get(project, project))}</h2>'
                      f'<span class="muted mono">{esc(manifest["projects"][project]["root"])} @ {esc(rev)} · measured {esc(recorded[:16].replace("T", " "))}</span></div>'
                      f'<h3>Context: workspace guidance vs the whole project</h3>{context_section(records)}'
-                     f'<h3>Agent trials: with vs without workspace</h3>{trials_section(project, groups)}'
+                     f'<h3>Agent trials: the agent alone vs with guidance</h3>{trials_section(project, groups)}'
                      f'<h3>Project evidence</h3>{native_section(records)}</section>')
     generated = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'

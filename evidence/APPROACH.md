@@ -6,6 +6,11 @@ This workspace makes one central claim:
 > files a task needs) helps it do correct work at lower cost than giving it a
 > whole project.
 
+For Playwright Agent the question is narrower and practical: it is not an
+alternative to Claude, Codex or Copilot, it is an add-on to them. Every trial
+therefore compares **the same coding agent alone** with **the same agent plus
+Playwright Agent's guidance**, and asks what the add-on changes.
+
 This document explains how that claim is measured for each project, how the
 measurements are combined into one view, what the current results show, and
 where the method is limited. Everything described here runs locally from the
@@ -16,7 +21,7 @@ workspace root.
 | Question | Measurement | Where it comes from |
 | --- | --- | --- |
 | How much context does an agent need? | **Context**: tokens in the workspace guidance for a task vs the whole project | Measured by the workspace |
-| Does guidance change what an agent achieves? | **Agent trials**: the same task done with and without workspace guidance, judged by an independent test | Run by the workspace |
+| What does the guidance add to a coding agent? | **Agent trials**: the same agent (Claude Opus) on the same task, alone and with the guidance, judged by an independent oracle | Run by the workspace |
 | Is each project's own output good? | **Project evidence**: each project's existing test, benchmark and mutation results | Produced by the project, imported as is |
 
 The first two test the workspace itself. The third keeps each project's own
@@ -131,40 +136,63 @@ Workspace guidance is a fixed cost of about 5k tokens per task. It pays off on
 larger projects (28× smaller than Playwright Agent) and costs more than reading a
 very small project in full (the synthetic API sample).
 
-### Agent trials
+### Agent trials: Claude Opus alone vs Claude Opus + Playwright Agent
 
-Claude Code (Opus 5.5) in fresh headless sessions, three repeats per task with
-alternating arm order; medians per run.
+All runs use Claude Code (Opus 5.5) in fresh headless sessions with identical
+prompts; the only difference is Playwright Agent's guidance (its `AGENTS.md`
+routing and skills). Arm order alternates between repeats. Fairness figures come
+from `npm run evidence:audit`, which re-reads every session transcript.
 
-| Task | Arm | Oracle passed | Time | Turns | Input tokens | Est. cost* |
-| --- | --- | :---: | ---: | ---: | ---: | ---: |
-| `crm-viewer-export` (UI + API) | without workspace | 3/3 | 54 s | 16 | 577k | $0.44 |
-| | with workspace | 3/3 | 57 s | 16 | 584k | $0.47 |
-| `crm-manager-export` (API data) | without workspace | 3/3 | 52 s | 11 | 420k | $0.38 |
-| | with workspace | 3/3 | 69 s | 17 | 669k | $0.52 |
+**1. Writing tests** (2 tasks × 3 repeats)
 
-\* Claude Code's estimate of the same usage at API prices; runs used a subscription.
+| Task | | Opus alone | Opus + Playwright Agent |
+| --- | --- | --- | --- |
+| `crm-viewer-export` (UI + API) | Oracle passed | 3/3 | 3/3 |
+| | Median time · input tokens · est. cost* | 54 s · 577k · $0.44 | 57 s · 584k · $0.47 |
+| | How tests were written | 3/3 reused page object and assertion layers | 3/3 reused page object and assertion layers |
+| `crm-manager-export` (API data) | Oracle passed | 3/3 | 3/3 |
+| | Median time · input tokens · est. cost* | 52 s · 420k · $0.38 | 69 s · 669k · $0.52 |
+| | How tests were written | **3/3 bypassed the test framework**: imported the app's internal `createApi`, ran a private in-process server and **added a file inside the app folder** (~80 lines, new spec) | **2/3 tested through the real app session** by extending the page object and assertions (~40 lines); 1/3 used the existing spec with direct requests; **none changed the app** |
 
-**The oracle did not separate the arms: all 12 runs completed.** The difference
-showed in how the tests were written, found by reviewing every diff:
+The oracle could not separate the arms; reviewing every diff did. Where neighbouring
+code already shows the way (viewer export), Playwright Agent changed nothing. Where
+the obvious shortcut is to import the app's internals (manager export), it kept
+Opus inside the project's conventions and out of the system under test, for about
+40% more input tokens and 17 seconds more per run. Every framework run received the
+skill content (6/6).
 
-| Task | Without workspace | With workspace |
+**2. Coverage assessment** (4 suite variants × 3–6 repeats, 18 pairs)
+
+Four variants of the sample suite plant known gaps: inside a shared assertion
+helper, in test bodies, a dropped call, and a test covered in name only. The answer
+key is frozen in `trials/assessment/cases.json` and validated by experiment: each
+planted gap stays green under a matching app fault, while the original suite catches
+the same fault. Both arms get the same weakened suite, criteria and output contract.
+
+| | Opus alone | Opus + Playwright Agent |
 | --- | --- | --- |
-| `crm-viewer-export` | 3/3 reused the page object and assertion layers | 3/3 reused the page object and assertion layers |
-| `crm-manager-export` | 3/3 bypassed the test framework: imported the app's internal `createApi`, ran a private in-process server and **added a type file inside the app folder**; about 80 lines in a new spec | 2/3 tested through the real app session by extending the page object (`requestAccountsExport`) and assertions (`expectAccountsExportMatchesSeed`), about 40 lines; 1/3 used the existing spec with direct requests; none changed the app |
+| Planted (hidden) gaps found | **21/21** | **21/21** |
+| Documented gap found (`DASHBOARD-METRIC`) | 18/18 | 18/18 |
+| False alarms on covered criteria | 0 | 0 |
+| Stayed read-only | 18/18 | 18/18 |
+| Median turns · est. cost* | 5 · $0.33 | 6.5 · $0.36 |
+| Received the Playwright Agent skill | — | **9/18** |
 
-**Reading.** On a task that neighbouring code already explains (viewer export),
-guidance changed nothing. On a task where the obvious shortcut is to import the
-app's internals (manager export), guidance kept the agent inside the project's
-conventions and out of the system under test, at about 40% more input tokens and
-17 seconds more per run. Guidance did not make agents more likely to pass; it
-made their tests fit the project.
+Claude Opus alone already assessed coverage perfectly, so Playwright Agent added no
+measurable accuracy. In half the runs Opus did not open the assessment skill at all,
+although the routing pointed to it, and the answers were the same either way (the
+nine runs that read it: 7/7 planted gaps, 0 false alarms).
 
-**Fairness notes.** Every "with workspace" run read its guidance (checked in
-transcripts). Blocked commands: 9 across the baseline runs, 1 across the
-framework runs, all minor (an env-prefixed app start, a `git stash`, a one-off
-Python script, a type-check chain); every agent still ran its own tests except
-one framework run. Three repeats per task show direction, not significance.
+\* Claude Code's estimate of the same usage at API prices; these runs used a
+subscription and incurred no API charges.
+
+**What Playwright Agent adds to Claude Opus, so far**
+
+| Activity | Added value | Evidence |
+| --- | --- | --- |
+| Writing tests | **Yes, for quality and scope**: framework-consistent tests, no edits to the app; no change in pass rate | 6 pairs, diff review |
+| Coverage assessment | **None measurable on this benchmark**: Opus alone was already perfect | 18 pairs, frozen key |
+| Mutation verification | Being measured: proof by execution that tests catch a defect, with the app left unchanged | Trial in progress |
 
 ### Project evidence
 
@@ -178,18 +206,24 @@ one framework run. Three repeats per task show direction, not significance.
 
 ## What went wrong, and what changed
 
-**The first live trial was invalid.** The tool allowlist blocked chained read
-commands such as `cat AGENTS.md SKILL.md; head …`, so the "with workspace" agent
-never read its guidance, and neither agent could run its own test. Both passed
-the oracle with near-identical code, which looked like a tie but compared
-nothing. It was found by reading the session transcripts, not the results.
+**The first live trial could not verify its own work.** The tool allowlist blocked
+running Playwright tests, so neither agent could check its test before finishing.
+Both passed the oracle with near-identical code. The run is excluded from the
+results because later runs allowed test execution.
 
-Changes made: the allowlist now covers read-only inspection, test and type-check
-commands (verified with a probe session); `run-agent` reads every transcript and
-records and warns about any blocked command; leftover processes are stopped
-between arms; and the invalid records were moved to `evidence/results/trials-invalid/`
-with a note. The lesson: a passing oracle says the task was completed, not that
-the comparison was fair. Check how each run was conducted, not only its result.
+**Our fairness checks had two bugs, found while reviewing the assessment runs.**
+The blocked-command detector matched words such as "approval" in normal command
+output (this workspace's `AGENTS.md` contains them), so it over-reported blocks; and
+the guidance check ignored outputs from commands that printed a skill and then
+exited with an error, so it under-reported skill use. Acting on the faulty signals,
+six assessment pairs were excluded and rerun, and the first trial was described as
+"unable to read its guidance", which was wrong. Both detectors now match only
+genuine Claude Code permission denials and actual skill content, `npm run
+evidence:audit` recomputes fairness for every run from its transcript, and the six
+pairs were restored (their reruns are kept as additional repeats).
+
+Lessons: a passing oracle says the task was completed, not that the comparison was
+fair; and fairness checks need the same scrutiny as the results they protect.
 
 ## Limits
 
@@ -202,6 +236,10 @@ the comparison was fair. Check how each run was conducted, not only its result.
   guidance differently.
 - **The oracle checks completion only.** Here it passed every run; the
   meaningful difference was found by reviewing diffs, which is not yet automated.
+- **Ceiling effect.** Claude Opus solved the assessment benchmark alone; harder
+  suites or a smaller model may show a difference this benchmark cannot.
+- **Skill uptake is the agent's choice.** Opus read the assessment skill in only
+  half the runs; Playwright Agent's value depends on agents being routed into it.
 - **Operational oracle.** Passing the required tests shows completion, not code
   quality; diffs are reviewed by hand.
 - **Approximate tokens.** Context sizes are estimates for comparison only.
