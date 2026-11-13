@@ -79,5 +79,69 @@
       "evidenceProject": "api-workspace",
       "contextProfile": "api-test-change"
     }
+  },
+  {
+    "id": "crm-assessment-A",
+    "kind": "assessment",
+    "variant": "A",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-B",
+    "kind": "assessment",
+    "variant": "B",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-C",
+    "kind": "assessment",
+    "variant": "C",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-D",
+    "kind": "assessment",
+    "variant": "D",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
   }
 ]

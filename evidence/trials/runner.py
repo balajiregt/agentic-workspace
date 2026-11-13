@@ -27,6 +27,8 @@ from pathlib import Path
 WORKSPACE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(WORKSPACE / "evidence" / "context"))
 from measure import load_manifest, resolved_file_list  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent / "assessment"))
+import assessment  # noqa: E402
 
 TRIALS = WORKSPACE / "evidence" / "trials"
 DEFAULT_OUT = Path.home() / "evidence-trials"
@@ -151,6 +153,14 @@ def init_repo(arm: Path, source_root: Path) -> None:
 
 
 def prompt_text(task: dict) -> str:
+    if task.get("kind") == "assessment":
+        return (f"# Task {task['id']}\n\n{task['intent']}\n\n"
+                "Do not change, create or run tests, and do not modify any file except `assessment.json`.\n\n"
+                "Write `assessment.json` at the repository root in exactly this shape, with one entry per criterion id:\n\n"
+                '```json\n{"criteria": [{"id": "LOGIN-VALID", "status": "covered | partial | missing", '
+                '"test": "test title or null", "assertion": "assertion or helper that proves it, or null", '
+                '"reason": "one sentence"}]}\n```\n\n'
+                "Work only inside this folder. Do not create or edit anything under `.evidence/`.\n")
     titles = "\n".join(f"- `{t}`" for t in task["requiredTests"])
     return (f"# Task {task['id']}\n\n{task['intent']}\n\n"
             f"Name the required tests exactly as follows, and make them pass:\n\n{titles}\n\n"
@@ -172,6 +182,11 @@ def cmd_prepare(args) -> None:
     base = run / ".snapshot"
     base.mkdir(parents=True)
     commit = snapshot(source_root, base)
+    if task.get("kind") == "assessment":
+        cases = assessment.load_cases()
+        assessment.apply_edits(base, cases["variants"][task["variant"]]["edits"])
+        items = [{"id": c["id"], "criterion": c["criterion"]} for c in assessment.criteria(cases)]
+        (base / "criteria.json").write_text(json.dumps({"criteria": items}, indent=2) + "\n")
     target_revision = tree_hash(base)
     prompt = prompt_text(task)
     (run / "PROMPT.md").write_text(prompt)
@@ -358,6 +373,42 @@ def run_oracle(arm: Path, record: dict, task: dict, report_arg: str | None) -> P
     return report
 
 
+def collect_assessment(args, run: Path, record: dict, task: dict, arm: Path) -> None:
+    arm_record = record["arms"][args.arm]
+    cases = assessment.load_cases()
+    answer_path = arm / "assessment.json"
+    try:
+        answer = json.loads(answer_path.read_text())
+    except (OSError, ValueError) as exc:
+        answer, error = {}, f"assessment.json missing or invalid: {exc}"
+    else:
+        error = None
+    result = assessment.score(answer, cases, task["variant"])
+    documented = set(cases["variants"]["A"]["gaps"])
+    planted = [r for r in result["criteria"] if r["truth"] == "gap" and r["criterion"] not in documented]
+    changed = [line[3:] for line in subprocess.run(["git", "status", "--porcelain", "-uall"], cwd=arm,
+               capture_output=True, text=True).stdout.splitlines()
+               if line[3:] != "assessment.json" and not line[3:].startswith((".evidence", "node_modules"))]
+    agent = arm_record.get("agent") or {}
+    row = {"schemaVersion": 1, "kind": "assessment", "trialId": f"{record['runId']}-{args.arm}",
+           "taskId": record["taskId"], "variant": task["variant"], "arm": args.arm, "repeat": record["repeat"],
+           "evidenceKind": args.evidence_kind, "model": args.model or ("claude-code" if agent else None),
+           "modelVersion": args.model_version or agent.get("model"),
+           "startedAt": arm_record["startedAt"], "finishedAt": arm_record["finishedAt"],
+           "plantedGaps": len(planted), "plantedGapsFound": sum(r["outcome"] == "found" for r in planted),
+           "documentedGapFound": any(r["criterion"] in documented and r["outcome"] == "found" for r in result["criteria"]),
+           "answerError": error, "filesChangedOutsideAnswer": changed, "readOnlyRespected": not changed,
+           "agent": agent, **result}
+    out = Path(args.results_dir).resolve() if args.results_dir else WORKSPACE / "evidence/results"
+    (out / "assessments").mkdir(parents=True, exist_ok=True)
+    target = out / "assessments" / f"{row['trialId']}.json"
+    if target.exists():
+        raise SystemExit(f"{target.name} already collected.")
+    target.write_text(json.dumps(row, indent=2) + "\n")
+    print(json.dumps({k: row[k] for k in ("trialId", "plantedGapsFound", "plantedGaps", "documentedGapFound",
+                                           "falseAlarms", "unanswered", "readOnlyRespected", "answerError")}))
+
+
 def cmd_collect(args) -> None:
     run, record = load_run(args.run)
     arm_record = record["arms"][args.arm]
@@ -365,6 +416,9 @@ def cmd_collect(args) -> None:
         raise SystemExit("Record `start` and `finish` for this arm before collecting.")
     task = load_task(record["taskId"])
     arm = Path(arm_record["path"])
+    if task.get("kind") == "assessment":
+        collect_assessment(args, run, record, task, arm)
+        return
     report = run_oracle(arm, record, task, args.report)
     agent = arm_record.get("agent") or {}
     model = args.model or ("claude-code" if agent else None)

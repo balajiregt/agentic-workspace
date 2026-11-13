@@ -57,7 +57,10 @@ class TrialRunnerTests(unittest.TestCase):
             with self.subTest(task=task["id"]):
                 target = task["target"]
                 self.assertIn(target["contextProfile"], manifest["projects"][target["evidenceProject"]]["contextProfiles"])
-                self.assertIn(target["oracle"]["type"], ("playwright", "junit"))
+                self.assertIn(target["oracle"]["type"], ("playwright", "junit", "assessment-key"))
+                if target["oracle"]["type"] == "assessment-key":
+                    self.assertTrue((ROOT / target["oracle"]["cases"]).is_file())
+                    self.assertIn(task["variant"], runner.assessment.load_cases()["variants"])
                 if target["oracle"]["type"] == "playwright":
                     self.assertTrue((ROOT / target["oracle"]["config"]).is_file())
 

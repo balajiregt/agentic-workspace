@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "notes": "Coverage-assessment trial cases for Playwright Agent's sample CRM. Each variant weakens the committed suite in a known way; the answer key is frozen here before any agent runs and is validated by validate_key.py with app faults. truth: covered | gap | ambiguous (ambiguous criteria must be answered but are not scored).",
+  "project": "playwright-agent",
+  "criteriaSource": "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/requirements.json",
+  "scope": ["tests/sample-crm.spec.ts", "tests/validation-login.spec.ts"],
+  "baseTruth": {
+    "LOGIN-VALID": "covered",
+    "LOGIN-INVALID": "covered",
+    "VIEWER-READONLY": "covered",
+    "MANAGER-ACCESS": "covered",
+    "LEAD-CREATE": "ambiguous",
+    "OPPORTUNITY-CREATE": "ambiguous",
+    "REPORT-RETRY": "covered",
+    "DASHBOARD-METRIC": "gap"
+  },
+  "faults": {
+    "DASHBOARD-METRIC": {"file": "examples/sample-crm-app/public/assets/app.js", "find": "<strong>$842k</strong>", "replace": "<strong>$0</strong>"},
+    "VIEWER-READONLY": {"file": "examples/sample-crm-app/public/assets/app.js", "find": "<button data-testid=\"export-accounts\" ${readOnly ? 'disabled aria-disabled=\"true\"' : ''}>", "replace": "<button data-testid=\"export-accounts\">"},
+    "LOGIN-INVALID": {"file": "examples/sample-crm-app/public/assets/app.js", "find": "data-testid=\"login-error\" hidden>Invalid credentials</p>", "replace": "data-testid=\"login-error\" hidden>Login failed</p>"},
+    "REPORT-RETRY": {"file": "examples/sample-crm-app/public/assets/app.js", "find": "<p data-testid=\"report-ready\">Revenue report is ready.</p>", "replace": "<p data-testid=\"report-ready\">Revenue report queued.</p>"},
+    "MANAGER-ACCESS": {"file": "examples/sample-crm-app/public/assets/app.js", "find": "const disabled = !route.roles.includes(state.user.role);", "replace": "const disabled = !route.roles.includes(state.user.role) && route.label !== 'Admin users';"}
+  },
+  "variants": {
+    "A": {
+      "description": "Original suite: the open-pipeline metric value is never asserted.",
+      "edits": [],
+      "gaps": ["DASHBOARD-METRIC"]
+    },
+    "B": {
+      "description": "The shared viewer assertion helper no longer checks that Export accounts is disabled; the test name is unchanged.",
+      "edits": [
+        {"file": "assertions/sample-crm.assertions.ts", "find": "    await expect(this.crmPage.page.getByRole('button', { name: 'Export accounts' })).toBeDisabled();\n", "replace": ""}
+      ],
+      "gaps": ["VIEWER-READONLY", "DASHBOARD-METRIC"]
+    },
+    "C": {
+      "description": "The invalid-password test no longer checks the error text, and the report test no longer checks the report is ready after retry.",
+      "edits": [
+        {"file": "tests/validation-login.spec.ts", "find": "  await expect(page.getByTestId('login-error')).toHaveText('Invalid credentials');\n", "replace": ""},
+        {"file": "tests/sample-crm.spec.ts", "find": "    await sampleCrmAssertions.expectReportDownloadReady();\n", "replace": ""}
+      ],
+      "gaps": ["LOGIN-INVALID", "REPORT-RETRY", "DASHBOARD-METRIC"]
+    },
+    "D": {
+      "description": "A test named after the metric only checks it is visible, never its value; the manager navigation helper no longer checks Admin users is disabled.",
+      "edits": [
+        {"file": "assertions/sample-crm.assertions.ts", "find": "      disabled: ['Leads', 'Admin users']", "replace": "      disabled: ['Leads']"},
+        {"file": "tests/sample-crm.spec.ts", "find": "import { test } from '../fixtures/base.fixture';", "replace": "import { test, expect } from '../fixtures/base.fixture';"},
+        {"file": "tests/sample-crm.spec.ts", "find": "  test('viewer has read-only accounts and denied admin users", "replace": "  test('dashboard shows the open-pipeline metric @regression @crm', async ({ page, sampleCrmPage, sampleCrmAssertions }) => {\n    await sampleCrmPage.signInAs('admin');\n    await sampleCrmAssertions.expectDashboardLoadedForRole('admin');\n    await expect(page.getByTestId('metric-open-pipeline')).toBeVisible();\n  });\n\n  test('viewer has read-only accounts and denied admin users"}
+      ],
+      "gaps": ["MANAGER-ACCESS", "DASHBOARD-METRIC"]
+    }
+  }
+}
