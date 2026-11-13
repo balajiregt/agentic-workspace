@@ -1,5 +1,7 @@
 # Workspace evidence
 
+Read [how the evidence is collected, and the current results](APPROACH.md).
+
 This folder measures whether the agentic workspace delivers what it claims, for
 each project: the API workspace (`services/microservices`), the role-aware
 mockserver and Playwright Agent.
