@@ -27,8 +27,13 @@ class TrialRunnerTests(unittest.TestCase):
             (arm / "AGENTS.md").write_text("# Project rules\n")
             profile = {"instructions": ["AGENTS.md", "qa/playwright-agent/AGENTS.md"],
                        "task": "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/epic.md"}
+            (arm / ".agents/skills/x").mkdir(parents=True)
             added = runner.add_workspace_context(arm, "qa/playwright-agent", profile)
-            self.assertEqual(added, [".workspace-context/AGENTS.md", "contexts/tasks/CRM-DEMO-001/epic.md"])
+            self.assertEqual(added, [".workspace-context/AGENTS.md", "contexts/tasks/CRM-DEMO-001/epic.md",
+                                     "CLAUDE.md", ".claude/skills -> ../.agents/skills"])
+            # Claude Code reads CLAUDE.md and .claude/skills: both must bridge to the same guidance.
+            self.assertEqual((arm / "CLAUDE.md").read_text(), "@AGENTS.md\n")
+            self.assertEqual((arm / ".claude/skills").resolve(), (arm / ".agents/skills").resolve())
             listing = (arm / ".workspace-context/README.md").read_text()
             self.assertIn("`AGENTS.md`", listing)
             agents = (arm / "AGENTS.md").read_text()

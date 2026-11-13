@@ -126,6 +126,15 @@ def add_workspace_context(arm: Path, project_root: str, profile: dict) -> list[s
     pointer = "\n\n## Workspace context\n\nFor the current task, read `.workspace-context/README.md` first.\n"
     agents = arm / "AGENTS.md"
     agents.write_text((agents.read_text() if agents.exists() else "# Agent instructions\n") + pointer)
+    # Claude Code reads CLAUDE.md and .claude/skills rather than AGENTS.md and .agents/skills.
+    # Bridge them the same way the workspace does, so every agent sees the same guidance.
+    if not (arm / "CLAUDE.md").exists():
+        (arm / "CLAUDE.md").write_text("@AGENTS.md\n")
+        added.append("CLAUDE.md")
+    if (arm / ".agents/skills").is_dir() and not (arm / ".claude/skills").exists():
+        (arm / ".claude").mkdir(exist_ok=True)
+        (arm / ".claude/skills").symlink_to("../.agents/skills", target_is_directory=True)
+        added.append(".claude/skills -> ../.agents/skills")
     return added
 
 
@@ -219,6 +228,62 @@ def cmd_mark(args, field: str) -> None:
     print(f"{args.arm} {field} = {arm[field]}")
 
 
+AGENT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep", "Bash(npx playwright:*)", "Bash(node:*)",
+               "Bash(npm run:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(git status:*)", "Bash(git diff:*)"]
+
+
+def primary_model(model_usage: dict) -> str | None:
+    if not model_usage:
+        return None
+    return max(model_usage.items(), key=lambda kv: kv[1].get("outputTokens", 0))[0]
+
+
+def cmd_run_agent(args) -> None:
+    """Run a fresh, headless Claude Code session in one arm with the run's prompt."""
+    run, record = load_run(args.run)
+    arm_record = record["arms"][args.arm]
+    if arm_record["startedAt"]:
+        raise SystemExit(f"{args.arm} was already started; prepare a new run to repeat it.")
+    arm = Path(arm_record["path"])
+    prompt = (run / "PROMPT.md").read_text()
+    command = ["claude", "-p", prompt, "--output-format", "json", "--permission-mode", "acceptEdits",
+               "--setting-sources", "project,local", "--max-turns", str(args.max_turns),
+               "--allowedTools", *AGENT_TOOLS]
+    if args.model:
+        command += ["--model", args.model]
+    arm_record["startedAt"] = now()
+    save_run(run, record)
+    print(f"{args.arm}: agent started {arm_record['startedAt']} in {arm}")
+    try:
+        result = subprocess.run(command, cwd=arm, capture_output=True, text=True, timeout=args.timeout_minutes * 60)
+        output, error, code = result.stdout, result.stderr, result.returncode
+    except subprocess.TimeoutExpired as exc:
+        output, error, code = exc.stdout or "", f"timed out after {args.timeout_minutes} min", 124
+    run, record = load_run(args.run)
+    arm_record = record["arms"][args.arm]
+    arm_record["finishedAt"] = now()
+    (run / f"{args.arm}-agent.json").write_text(output if isinstance(output, str) else output.decode())
+    (run / f"{args.arm}-agent.stderr.log").write_text(error if isinstance(error, str) else error.decode())
+    try:
+        data = json.loads(output)
+    except (TypeError, ValueError):
+        data = {}
+    usage = data.get("usage") or {}
+    arm_record["agent"] = {
+        "tool": "claude-code-headless", "exitCode": code, "isError": data.get("is_error", code != 0),
+        "subtype": data.get("subtype"), "turns": data.get("num_turns"),
+        "model": primary_model(data.get("modelUsage") or {}), "costUsd": data.get("total_cost_usd"),
+        "inputTokens": sum(int(usage.get(k) or 0) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) if usage else None,
+        "outputTokens": usage.get("output_tokens"),
+    }
+    save_run(run, record)
+    a = arm_record["agent"]
+    print(f"{args.arm}: agent finished {arm_record['finishedAt']} (exit {code}, {a['turns']} turns, model {a['model']}, "
+          f"cost ${a['costUsd']}). Transcript summary: {run / (args.arm + '-agent.json')}")
+    changed = subprocess.run(["git", "status", "--porcelain"], cwd=arm, capture_output=True, text=True).stdout.strip()
+    print(f"{args.arm}: files changed by the agent:\n{changed or '  (none)'}")
+
+
 def run_oracle(arm: Path, record: dict, task: dict, report_arg: str | None) -> Path:
     evidence = arm / ".evidence"
     evidence.mkdir(exist_ok=True)
@@ -251,11 +316,19 @@ def cmd_collect(args) -> None:
     task = load_task(record["taskId"])
     arm = Path(arm_record["path"])
     report = run_oracle(arm, record, task, args.report)
+    agent = arm_record.get("agent") or {}
+    model = args.model or ("claude-code" if agent else None)
+    model_version = args.model_version or agent.get("model")
+    if not (model and model_version):
+        raise SystemExit("Pass --model and --model-version (they are recorded automatically only for run-agent runs).")
     usage = None
+    if agent.get("inputTokens") is not None and agent.get("outputTokens") is not None and args.usage_input is None:
+        usage = {"inputTokens": agent["inputTokens"], "outputTokens": agent["outputTokens"],
+                 "source": "Claude Code headless JSON usage (input includes cache creation and cache reads)"}
     if args.usage_input is not None or args.usage_output is not None:
         usage = {"inputTokens": args.usage_input, "outputTokens": args.usage_output, "source": args.usage_source}
     metadata = {"trialId": f"{record['runId']}-{args.arm}", "taskId": record["taskId"], "arm": args.arm,
-                "evidenceKind": args.evidence_kind, "model": args.model, "modelVersion": args.model_version,
+                "evidenceKind": args.evidence_kind, "model": model, "modelVersion": model_version,
                 "targetRevision": record["targetRevision"], "promptSha256": record["promptSha256"],
                 "repeat": record["repeat"], "startedAt": arm_record["startedAt"], "finishedAt": arm_record["finishedAt"],
                 "humanCorrectionMs": None, "incorrectChanges": None, "reviewerEvidence": None,
@@ -281,11 +354,17 @@ def main(argv: list[str] | None = None) -> None:
         s = sub.add_parser(name)
         s.add_argument("--run", required=True)
         s.add_argument("--arm", choices=ARMS, required=True)
+    r = sub.add_parser("run-agent", help="run a fresh headless Claude Code session in one arm")
+    r.add_argument("--run", required=True)
+    r.add_argument("--arm", choices=ARMS, required=True)
+    r.add_argument("--model", help="Claude model alias or ID; default is your Claude Code default")
+    r.add_argument("--max-turns", type=int, default=60)
+    r.add_argument("--timeout-minutes", type=int, default=45)
     c = sub.add_parser("collect")
     c.add_argument("--run", required=True)
     c.add_argument("--arm", choices=ARMS, required=True)
-    c.add_argument("--model", required=True)
-    c.add_argument("--model-version", required=True)
+    c.add_argument("--model", help="defaults to claude-code for run-agent runs")
+    c.add_argument("--model-version", help="defaults to the model recorded by run-agent")
     c.add_argument("--evidence-kind", choices=("live-agent", "scripted-validation"), default="live-agent")
     c.add_argument("--report", help="JUnit/Surefire XML for tasks whose oracle is run by hand")
     c.add_argument("--usage-input", type=int)
@@ -299,6 +378,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_mark(args, "startedAt")
     elif args.command == "finish":
         cmd_mark(args, "finishedAt")
+    elif args.command == "run-agent":
+        cmd_run_agent(args)
     else:
         cmd_collect(args)
 

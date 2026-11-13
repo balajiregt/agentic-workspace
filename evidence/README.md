@@ -70,10 +70,26 @@ npm run evidence:trial -- collect --run RUN --arm baseline --model MODEL --model
 npm run evidence:trial:summary
 ```
 
+To let Claude Code do the agent work instead of a person, replace the
+start/agent/finish steps for each arm with:
+
+```sh
+npm run evidence:trial -- run-agent --run RUN --arm baseline     # fresh headless Claude Code session
+npm run evidence:trial -- run-agent --run RUN --arm framework
+npm run evidence:trial -- collect   --run RUN --arm baseline     # model and token usage are recorded automatically
+```
+
+`run-agent` starts a new `claude -p` session inside the arm (project and local
+settings only, edits accepted, a fixed tool allowlist, 60 turns and 45 minutes at
+most), records the times, model, turns, cost and token usage, and saves the JSON
+summary beside the run.
+
 - `prepare` builds two clean Git copies of the project's last commit outside the
   workspace (default `~/evidence-trials/`): `baseline` without agent guidance
   (`AGENTS.md`, `.agents/`, `contexts/` and similar are removed) and `framework`
-  with the project's guidance plus the workspace context profile. Both arms get
+  with the project's guidance plus the workspace context profile, bridged for
+  Claude Code (`CLAUDE.md` importing `AGENTS.md`, `.claude/skills` linking to
+  `.agents/skills`) as the workspace does. Both arms get
   the identical prompt; its SHA-256 and the snapshot hash are recorded.
 - The independent oracle is added only at `collect`, after the agent has
   finished, and runs only the required tests. Sample CRM tasks run it
