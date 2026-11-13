@@ -50,6 +50,7 @@
     "evidence": "python3 evidence/evidence.py run",
     "evidence:context": "python3 evidence/evidence.py context",
     "evidence:trial": "python3 evidence/trials/runner.py",
+    "evidence:audit": "python3 evidence/trials/audit.py",
     "evidence:dashboard": "python3 evidence/evidence.py run && python3 evidence/dashboard.py --open",
     "evidence:test": "node --test evidence/trials/*.test.mjs && python3 -m unittest discover -s evidence/tests",
     "agents:dashboard": "npm --prefix products/agent-tools/agent-dashboard start",

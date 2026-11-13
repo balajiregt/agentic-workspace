@@ -259,6 +259,15 @@ def primary_model(model_usage: dict) -> str | None:
     return max(model_usage.items(), key=lambda kv: kv[1].get("outputTokens", 0))[0]
 
 
+DENIAL_PHRASES = ("requires approval", "require approval", "can't be checked before it runs", "Brace expansion",
+                  "Permission to use", "was denied", "not allowed")
+
+
+def is_permission_denial(text: str) -> bool:
+    """Claude Code denials are errors whose text is the denial itself, not command output."""
+    return not text.startswith("Exit code") and any(phrase in text[:300] for phrase in DENIAL_PHRASES)
+
+
 def blocked_tool_calls(session_id: str | None) -> list[str] | None:
     """Commands the agent tried but was not permitted to run, read from its transcript."""
     if not session_id:
@@ -274,7 +283,7 @@ def blocked_tool_calls(session_id: str | None) -> list[str] | None:
                 calls[item["id"]] = item.get("input", {}).get("command") or item.get("name")
             elif item.get("type") == "tool_result" and item.get("is_error"):
                 text = item.get("content") if isinstance(item.get("content"), str) else json.dumps(item.get("content"))
-                if any(word in text.lower() for word in ("permission", "approval", "not allowed")):
+                if is_permission_denial(text):
                     blocked.append(str(calls.get(item.get("tool_use_id"), "unknown"))[:200])
     return blocked
 
@@ -295,9 +304,9 @@ def guidance_received(arm: Path, session_id: str | None) -> bool | None:
     for line in matches[0].read_text().splitlines():
         content = (json.loads(line).get("message") or {}).get("content")
         for item in content if isinstance(content, list) else []:
-            if item.get("type") == "tool_result" and not item.get("is_error"):
+            if item.get("type") == "tool_result":
                 text = item.get("content") if isinstance(item.get("content"), str) else json.dumps(item.get("content"))
-                if any(marker in text for marker in markers):
+                if not is_permission_denial(text) and any(marker in text for marker in markers):
                     return True
     return False
 
