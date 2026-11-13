@@ -57,7 +57,9 @@ class TrialRunnerTests(unittest.TestCase):
             with self.subTest(task=task["id"]):
                 target = task["target"]
                 self.assertIn(target["contextProfile"], manifest["projects"][target["evidenceProject"]]["contextProfiles"])
-                self.assertIn(target["oracle"]["type"], ("playwright", "junit", "assessment-key"))
+                self.assertIn(target["oracle"]["type"], ("playwright", "junit", "assessment-key", "mutation-proof"))
+                if target["oracle"]["type"] == "mutation-proof":
+                    self.assertIn(task["case"], runner.assessment.load_cases()["mutationCases"])
                 if target["oracle"]["type"] == "assessment-key":
                     self.assertTrue((ROOT / target["oracle"]["cases"]).is_file())
                     self.assertIn(task["variant"], runner.assessment.load_cases()["variants"])
@@ -67,3 +69,26 @@ class TrialRunnerTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExecutionEvidenceTests(unittest.TestCase):
+    def test_transcript_distinguishes_in_place_edits_from_disposable_copies(self):
+        import json as _json
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            arm = home / "arm"
+            (home / ".claude/projects/p").mkdir(parents=True)
+            def turn(uid, name, data, result):
+                return [_json.dumps({"message": {"content": [{"type": "tool_use", "id": uid, "name": name, "input": data}]}}),
+                        _json.dumps({"message": {"content": [{"type": "tool_result", "tool_use_id": uid, "content": result}]}})]
+            lines = []
+            lines += turn("1", "Edit", {"file_path": f"{arm}/examples/sample-crm-app/public/assets/app.js"}, "ok")
+            lines += turn("2", "Bash", {"command": "npx playwright test tests"}, "  6 passed (4s)")
+            lines += turn("3", "Bash", {"command": "cp -R examples/sample-crm-app /tmp/mutant"}, "This command requires approval")
+            (home / ".claude/projects/p/s.jsonl").write_text("\n".join(lines))
+            with patch.object(runner.Path, "home", return_value=home):
+                found = runner.execution_evidence("s", arm)
+            self.assertTrue(found["editedRealSource"])
+            self.assertFalse(found["usedDisposableCopy"])  # the copy was denied, so it does not count
+            self.assertEqual(found["testRuns"], 1)

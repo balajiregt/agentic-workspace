@@ -143,5 +143,73 @@
         "cases": "evidence/trials/assessment/cases.json"
       }
     }
+  },
+  {
+    "id": "crm-mutation-proof-M1",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "M1",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): a viewer's Export accounts button becomes enabled while the read-only banner is still shown?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M2",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "M2",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): after a wrong password, the login error text changes from 'Invalid credentials' to different wording?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M3",
+    "kind": "mutation-proof",
+    "variant": "C",
+    "case": "M3",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): after a manager retries the failed revenue report, the page no longer says the report is ready?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M4",
+    "kind": "mutation-proof",
+    "variant": "A",
+    "case": "M4",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): the Admin users navigation button becomes enabled for managers (the admin page itself still denies access)?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
   }
 ]

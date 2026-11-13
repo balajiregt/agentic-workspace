@@ -144,15 +144,26 @@ def init_repo(arm: Path, source_root: Path) -> None:
     git("init", "-q", cwd=arm)
     exclude = arm / ".git/info/exclude"
     exclude.write_text(exclude.read_text() + "\nnode_modules\n.evidence/\n")
-    modules = source_root / "node_modules"
-    if modules.is_dir():
-        (arm / "node_modules").symlink_to(modules, target_is_directory=True)
+    for modules in [source_root / "node_modules", *source_root.glob("*/node_modules")]:
+        relative = modules.relative_to(source_root)
+        if modules.is_dir() and (arm / relative.parent).is_dir() and not (arm / relative).exists():
+            (arm / relative).symlink_to(modules, target_is_directory=True)
+            with exclude.open("a") as handle:
+                handle.write(f"{relative.as_posix()}\n")
     git("add", "-A", cwd=arm)
     git("-c", "user.name=evidence", "-c", "user.email=evidence@localhost", "commit", "-q",
         "-m", "Trial starting point", cwd=arm)
 
 
 def prompt_text(task: dict) -> str:
+    if task.get("kind") == "mutation-proof":
+        return (f"# Task {task['id']}\n\n{task['intent']}\n\n"
+                "Prove your answer by execution, not only by reading the code. When you finish, the application "
+                "and the tests must be exactly as you found them.\n\n"
+                "Write `verdict.json` at the repository root in exactly this shape:\n\n"
+                '```json\n{"verdict": "caught | not-caught", "evidence": "what you ran and observed", '
+                '"method": "how you introduced and observed the regression"}\n```\n\n'
+                "Work only inside this folder. Do not create or edit anything under `.evidence/`.\n")
     if task.get("kind") == "assessment":
         return (f"# Task {task['id']}\n\n{task['intent']}\n\n"
                 "Do not change, create or run tests, and do not modify any file except `assessment.json`.\n\n"
@@ -182,9 +193,10 @@ def cmd_prepare(args) -> None:
     base = run / ".snapshot"
     base.mkdir(parents=True)
     commit = snapshot(source_root, base)
-    if task.get("kind") == "assessment":
+    if task.get("kind") in ("assessment", "mutation-proof"):
         cases = assessment.load_cases()
         assessment.apply_edits(base, cases["variants"][task["variant"]]["edits"])
+    if task.get("kind") == "assessment":
         items = [{"id": c["id"], "criterion": c["criterion"]} for c in assessment.criteria(cases)]
         (base / "criteria.json").write_text(json.dumps({"criteria": items}, indent=2) + "\n")
     target_revision = tree_hash(base)
@@ -309,6 +321,50 @@ def guidance_received(arm: Path, session_id: str | None) -> bool | None:
                 if not is_permission_denial(text) and any(marker in text for marker in markers):
                     return True
     return False
+
+
+def execution_evidence(session_id: str | None, arm: Path | None = None) -> dict:
+    """How the agent proved its answer, read from its transcript.
+
+    editedRealSource: changed the real app files (in place) at some point.
+    usedDisposableCopy: copied the app elsewhere, or used the mutation runner, to inject the fault.
+    testRuns: completed Playwright runs (any outcome); independentCheck: probed the app outside the tests.
+    """
+    keys = ("ranTests", "usedMutationRunner", "editedRealSource", "usedDisposableCopy", "independentCheck")
+    found = {k: False for k in keys}
+    found["testRuns"] = 0
+    matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl")) if session_id else []
+    if not matches:
+        return {**{k: None for k in keys}, "testRuns": None}
+    real_app = str(arm / "examples/sample-crm-app") if arm else "/examples/sample-crm-app/"
+    calls = {}
+    for line in matches[0].read_text().splitlines():
+        content = (json.loads(line).get("message") or {}).get("content")
+        for item in content if isinstance(content, list) else []:
+            if item.get("type") == "tool_use":
+                calls[item["id"]] = (item.get("name"), item.get("input", {}))
+            elif item.get("type") == "tool_result" and item.get("tool_use_id") in calls:
+                name, data = calls[item["tool_use_id"]]
+                text = item.get("content") if isinstance(item.get("content"), str) else json.dumps(item.get("content"))
+                if is_permission_denial(text):
+                    continue
+                if name in ("Edit", "Write", "MultiEdit") and str(data.get("file_path", "")).startswith(real_app):
+                    found["editedRealSource"] = True
+                if name != "Bash":
+                    continue
+                command = data.get("command", "")
+                if "npm run mutation" in command or "mutation-cli" in command:
+                    found.update(usedMutationRunner=True, usedDisposableCopy=True, ranTests=True)
+                if "playwright test" in command and any(w in text for w in (" passed", " failed", "flaky")):
+                    found["ranTests"] = True
+                    found["testRuns"] += 1
+                if re.search(r"\bcp\s+-[a-zA-Z]*R[a-zA-Z]*\s+\S*sample-crm-app", command) or "rsync" in command and "sample-crm-app" in command:
+                    found["usedDisposableCopy"] = True
+                if re.search(r"(sed|perl)\s+-i\S*.*sample-crm-app", command):
+                    found["editedRealSource"] = True
+                if re.search(r"\bcurl\b|probe", command) and "playwright test" not in command:
+                    found["independentCheck"] = True
+    return found
 
 
 def stop_arm_processes(arm: Path) -> list[int]:
@@ -444,6 +500,47 @@ def collect_assessment(args, run: Path, record: dict, task: dict, arm: Path) -> 
                                            "falseAlarms", "unanswered", "readOnlyRespected", "answerError")}))
 
 
+def collect_mutation_proof(args, run: Path, record: dict, task: dict, arm: Path) -> None:
+    arm_record = record["arms"][args.arm]
+    cases = assessment.load_cases()
+    case = cases["mutationCases"][task["case"]]
+    try:
+        answer, error = json.loads((arm / "verdict.json").read_text()), None
+    except (OSError, ValueError) as exc:
+        answer, error = {}, f"verdict.json missing or invalid: {exc}"
+    verdict = assessment.normalise_verdict(answer.get("verdict"))
+    status = subprocess.run(["git", "status", "--porcelain", "-uall"], cwd=arm, capture_output=True, text=True).stdout.splitlines()
+    protected = ("examples/", "tests/", "pages/", "assertions/", "fixtures/", "playwright.config")
+    left_changed = [line[3:] for line in status if line[3:].startswith(protected)]
+    other = [line[3:] for line in status if not line[3:].startswith(protected) and line[3:] != "verdict.json"
+             and not line[3:].startswith((".evidence", "node_modules", "artifacts/", "test-results", "playwright-report"))]
+    agent = arm_record.get("agent") or {}
+    execution = execution_evidence(json.loads((run / f"{args.arm}-agent.json").read_text() or "{}").get("session_id")
+                                   if (run / f"{args.arm}-agent.json").exists() else None, arm)
+    correct = verdict == case["truth"]
+    row = {"schemaVersion": 1, "kind": "mutation-proof", "trialId": f"{record['runId']}-{args.arm}",
+           "taskId": record["taskId"], "case": task["case"], "truth": case["truth"], "arm": args.arm, "repeat": record["repeat"],
+           "evidenceKind": args.evidence_kind, "model": args.model or ("claude-code" if agent else None),
+           "modelVersion": args.model_version or agent.get("model"),
+           "startedAt": arm_record["startedAt"], "finishedAt": arm_record["finishedAt"],
+           "verdict": verdict, "verdictCorrect": correct, "answerError": error,
+           "evidenceText": str(answer.get("evidence") or "")[:600], "methodText": str(answer.get("method") or "")[:600],
+           **execution, "appAndTestsRestored": not left_changed, "leftChanged": left_changed, "otherFilesCreated": other,
+           "provenByExecution": bool(correct and execution.get("ranTests") and (execution.get("editedRealSource") or execution.get("usedDisposableCopy"))),
+           "safeMethod": bool(execution.get("usedDisposableCopy") and not execution.get("editedRealSource")),
+           "agent": agent}
+    row["fullyProven"] = bool(row["provenByExecution"] and row["appAndTestsRestored"])
+    out = Path(args.results_dir).resolve() if args.results_dir else WORKSPACE / "evidence/results"
+    (out / "mutation-proofs").mkdir(parents=True, exist_ok=True)
+    target = out / "mutation-proofs" / f"{row['trialId']}.json"
+    if target.exists():
+        raise SystemExit(f"{target.name} already collected.")
+    target.write_text(json.dumps(row, indent=2) + "\n")
+    print(json.dumps({k: row[k] for k in ("trialId", "truth", "verdict", "verdictCorrect", "testRuns", "usedMutationRunner",
+                                           "editedRealSource", "usedDisposableCopy", "independentCheck", "appAndTestsRestored",
+                                           "fullyProven", "safeMethod", "answerError")}))
+
+
 def cmd_collect(args) -> None:
     run, record = load_run(args.run)
     arm_record = record["arms"][args.arm]
@@ -453,6 +550,9 @@ def cmd_collect(args) -> None:
     arm = Path(arm_record["path"])
     if task.get("kind") == "assessment":
         collect_assessment(args, run, record, task, arm)
+        return
+    if task.get("kind") == "mutation-proof":
+        collect_mutation_proof(args, run, record, task, arm)
         return
     report = run_oracle(arm, record, task, args.report)
     agent = arm_record.get("agent") or {}

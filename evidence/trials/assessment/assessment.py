@@ -58,6 +58,15 @@ def normalise(status) -> str | None:
     return None
 
 
+def normalise_verdict(value) -> str | None:
+    text = str(value or "").strip().lower().replace("_", "-").replace(" ", "-")
+    if text in ("caught", "detected", "killed", "yes"):
+        return "caught"
+    if text in ("not-caught", "not-detected", "undetected", "survived", "missed", "no"):
+        return "not-caught"
+    return None
+
+
 def score(answer: dict, cases: dict, variant: str) -> dict:
     """Score one assessment.json against the frozen key for a variant."""
     key = truth(cases, variant)
@@ -133,6 +142,11 @@ def validate(output: Path | None = None) -> dict:
                 if gap != "DASHBOARD-METRIC":
                     checks.append({"variant": variant, "check": f"{gap}: original suite catches the fault",
                                    "expected": False, "observed": original})
+        for case_id, case in cases.get("mutationCases", {}).items():
+            spec = cases["variants"][case["variant"]]
+            green = _run_suite(_copy(source, base / f"{case_id}-proof", spec["edits"], cases["faults"][case["fault"]]))
+            checks.append({"variant": case["variant"], "check": f"{case_id} ({case['truth']}): suite under {case['fault']} fault",
+                           "expected": case["truth"] == "not-caught", "observed": green})
     ok = all(c["expected"] == c["observed"] for c in checks)
     result = {"ok": ok, "checks": checks}
     if output:
