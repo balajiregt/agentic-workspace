@@ -1,0 +1,111 @@
+# Workspace evidence
+
+Read [how the evidence is collected, and the current results](APPROACH.md).
+
+This folder measures whether the agentic workspace delivers what it claims, for
+each project: the API workspace (`services/microservices`), the role-aware
+mockserver and Playwright Agent.
+
+| Measurement | Question | Location |
+| --- | --- | --- |
+| Context | Workspace context needs X tokens; giving the whole project would need Y | `context/` |
+| Agent trials | With workspace help the agent passed the required tests; without it, it failed K | `trials/` ([protocol](trials/PROTOCOL.md)) |
+| Project evidence | Each project's own results, imported as they are (`native.py`) | Owned by each project |
+
+Projects keep their own tools and still work standalone. This folder calls them
+from the workspace root; it never copies them or adds workspace-only scripts to
+an independent repository.
+
+Results are private and stay under ignored `evidence/results/`. Failed and
+skipped runs are kept, unknown values stay null rather than zero, and nothing is
+published automatically.
+
+## Commands
+
+```sh
+npm run evidence                                  # all projects
+npm run evidence -- --project playwright-agent    # or api-workspace, mockserver
+npm run evidence:context                          # context only
+npm run evidence:dashboard                        # measure, import and open the private page
+npm run evidence:trial -- prepare --task crm-viewer-export   # see "Running a trial"
+npm run evidence:trial:summary
+npm run evidence:test                             # evidence tool tests
+npm run context:report                            # detailed API workspace context report
+```
+
+Profiles live in [`projects.json`](projects.json). Each context profile names the
+routing instructions, the one skill an agent loads, the task input and either its
+resolved context or an explicit file list. API and mockserver profiles read
+`contexts/.resolved/`; regenerate with `npm run context:resolve` or
+`npm run context:ui:resolve` after task or layout changes.
+
+## Reading the context numbers
+
+`instructions` is the fixed cost of workspace guidance (root routing, project
+instructions and one skill), about 5k tokens. `task files` is what the task needs
+from the project. The comparison corpus is the project's Git-tracked text files.
+Workspace guidance pays off on larger projects and can cost more than reading a
+very small project in full; the report keeps that visible instead of hiding it.
+
+## Project evidence
+
+`npm run evidence` also imports the latest output each project already produced,
+listed under `nativeEvidence` in `projects.json`: the API workspace's Surefire
+report, the mockserver's interception-vs-mockserver benchmark, and Playwright
+Agent's mutation campaign and evaluation report. It never reruns them. Each
+record keeps the source's own evidence kind (for example `synthetic`) and date;
+a source with no local output shows `not-run` with the command that produces it.
+
+## Running a trial
+
+A trial compares the same task done by your coding agent with and without
+workspace guidance. Tasks, their target project and oracle live in
+[`trials/tasks.json`](trials/tasks.json).
+
+```sh
+npm run evidence:trial -- prepare --task crm-manager-direct-route   # prints the exact next commands
+npm run evidence:trial -- start   --run RUN --arm baseline
+#   open RUN/baseline in your agent, paste RUN/PROMPT.md, let it finish
+npm run evidence:trial -- finish  --run RUN --arm baseline
+npm run evidence:trial -- collect --run RUN --arm baseline --model MODEL --model-version VERSION
+#   repeat for --arm framework, then:
+npm run evidence:trial:summary
+```
+
+To let Claude Code do the agent work instead of a person, replace the
+start/agent/finish steps for each arm with:
+
+```sh
+npm run evidence:trial -- run-agent --run RUN --arm baseline     # fresh headless Claude Code session
+npm run evidence:trial -- run-agent --run RUN --arm framework
+npm run evidence:trial -- collect   --run RUN --arm baseline     # model and token usage are recorded automatically
+```
+
+`run-agent` starts a new `claude -p` session inside the arm (project and local
+settings only, edits accepted, a fixed tool allowlist, 60 turns and 45 minutes at
+most), records the times, model, turns, cost and token usage, and saves the JSON
+summary beside the run.
+
+- `prepare` builds two clean Git copies of the project's last commit outside the
+  workspace (default `~/evidence-trials/`): `baseline` without agent guidance
+  (`AGENTS.md`, `.agents/`, `contexts/` and similar are removed) and `framework`
+  with the project's guidance plus the workspace context profile, bridged for
+  Claude Code (`CLAUDE.md` importing `AGENTS.md`, `.claude/skills` linking to
+  `.agents/skills`) as the workspace does. Both arms get
+  the identical prompt; its SHA-256 and the snapshot hash are recorded.
+- The independent oracle is added only at `collect`, after the agent has
+  finished, and runs only the required tests. Sample CRM tasks run it
+  automatically; the API task's Maven oracle is run by hand and passed with
+  `--report <surefire XML>`.
+- Alternate arm order across repeats (`--repeat N`; `prepare` suggests the order).
+  Use `--evidence-kind scripted-validation` only for pipeline checks, never for
+  agent results.
+- A passing oracle shows operational completion, not code quality. Review each
+  arm's diff (`git -C RUN/ARM diff`) before drawing conclusions.
+
+## History
+
+Created on 11 November 2026 from `evaluation/benchmarks/` and
+`tooling/scripts/context_efficiency_report.py`. Earlier publication tooling for
+the retired framework-benchmark dashboard is preserved under ignored
+`artifacts/retired/evaluation-publication-20261111/`.

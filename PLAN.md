@@ -4,7 +4,7 @@ Component ownership comes from workspace.projects.json. The checkboxes below des
 
 ## Workspace core {#core}
 files: [AGENTS.md, README.md, workspace.projects.json, package.json, .agents/**, agent-system/**, tooling/**, knowledge/docs/**]
-links: [finfolio-app, finfolio-agent, career-agent, portfolio-web, portfolio-template, agent-dashboard, microservices, playwright-framework, role-aware-ui, playwright-template, kafka, benchmarks]
+links: [finfolio-app, finfolio-agent, career-agent, portfolio-web, portfolio-template, agent-dashboard, microservices, playwright-framework, role-aware-ui, playwright-template, kafka, evidence]
 
 ## FinFolio app {#finfolio-app}
 files: [products/finance/finfolio-app/**]
@@ -57,6 +57,6 @@ links: [core]
 files: [labs/kafka-test-project/**]
 links: [core]
 
-## Shared agent benchmarks {#benchmarks}
-files: [evaluation/benchmarks/**]
+## Workspace evidence {#evidence}
+files: [evidence/**]
 links: [core]

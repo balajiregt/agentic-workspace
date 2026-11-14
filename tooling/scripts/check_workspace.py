@@ -66,7 +66,7 @@ def check(root: Path, overlay: Path | None = None) -> dict:
             errors.append('Project '+project['id']+' is not inside its declared group')
         if project['repository'].get('nested') and '/'+project['path']+'/' not in gitignore:
             errors.append('Nested repository is not ignored by the workspace: '+project['path'])
-    for legacy_root in ['projects', 'qa-projects']:
+    for legacy_root in ['projects', 'qa-projects', 'evaluation']:
         if locate(legacy_root).exists():
             errors.append('Retired category root exists: '+legacy_root)
     expected = {('Workspace core', '.')} | {(g['name'],g['path']) for g in groups}

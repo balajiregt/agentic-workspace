@@ -1,0 +1,215 @@
+[
+  {
+    "id": "crm-viewer-export",
+    "track": "ui-and-api",
+    "intent": "Verify viewer has a disabled export button and a direct GET /api/accounts/export returns 403 after authenticating via POST /api/session. Assert exact denial body. Use the existing SampleCrmPage page object and fixtures in the framework arm.",
+    "requiredTests": [
+      "viewer export denied in UI and API"
+    ],
+    "target": {
+      "project": "playwright-framework",
+      "path": "qa/playwright-agent/examples/sample-crm-app",
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
+    }
+  },
+  {
+    "id": "crm-manager-export",
+    "track": "api",
+    "intent": "Verify manager export contains the seeded account IDs and unauthenticated export returns 401. A status-only assertion is insufficient.",
+    "requiredTests": [
+      "manager exports exact account fixture",
+      "unauthenticated export denied"
+    ],
+    "target": {
+      "project": "playwright-framework",
+      "path": "qa/playwright-agent/examples/sample-crm-app",
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
+    }
+  },
+  {
+    "id": "crm-manager-direct-route",
+    "track": "ui",
+    "intent": "Verify manager cannot navigate directly to /crm/admin/users and the page displays Permission denied. Do not infer denial from disabled navigation.",
+    "requiredTests": [
+      "manager direct admin route denied"
+    ],
+    "target": {
+      "project": "playwright-framework",
+      "path": "qa/playwright-agent/examples/sample-crm-app",
+      "oracle": {
+        "type": "playwright",
+        "config": "evidence/trials/oracles/crm.playwright.config.ts"
+      },
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring"
+    }
+  },
+  {
+    "id": "api-customer-risk",
+    "track": "api",
+    "intent": "Verify low/medium/high risk responses and missing/blank customer-ID rejection with existing Java fixtures and shared QA helpers. Do not alter the oracle.",
+    "requiredTests": [
+      "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsLowRiskCustomer",
+      "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsMediumRiskCustomer",
+      "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskReturnsHighRiskCustomer",
+      "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsMissingCustomerId",
+      "com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest#getCustomerRiskRejectsBlankCustomerId"
+    ],
+    "target": {
+      "project": "microservices",
+      "path": "services/microservices/xyz-service",
+      "oracle": {
+        "type": "junit",
+        "steps": [
+          "cd xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=4283  (separate terminal)",
+          "mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283",
+          "report: qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-com.agentic.workspace.qa.xyz.tests.CustomerRiskApiTest.xml"
+        ]
+      },
+      "evidenceProject": "api-workspace",
+      "contextProfile": "api-test-change"
+    }
+  },
+  {
+    "id": "crm-assessment-A",
+    "kind": "assessment",
+    "variant": "A",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-B",
+    "kind": "assessment",
+    "variant": "B",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-C",
+    "kind": "assessment",
+    "variant": "C",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-assessment-D",
+    "kind": "assessment",
+    "variant": "D",
+    "intent": "Assess whether the Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts, including the page objects, assertion helpers and fixtures they use, actually verify each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M1",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "M1",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): a viewer's Export accounts button becomes enabled while the read-only banner is still shown?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M2",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "M2",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): after a wrong password, the login error text changes from 'Invalid credentials' to different wording?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M3",
+    "kind": "mutation-proof",
+    "variant": "C",
+    "case": "M3",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): after a manager retries the failed revenue report, the page no longer says the report is ready?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-mutation-proof-M4",
+    "kind": "mutation-proof",
+    "variant": "A",
+    "case": "M4",
+    "intent": "Would the existing Playwright tests in tests/sample-crm.spec.ts and tests/validation-login.spec.ts detect this regression in the sample CRM app (examples/sample-crm-app): the Admin users navigation button becomes enabled for managers (the admin page itself still denies access)?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-test-authoring",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/assessment/cases.json"
+      }
+    }
+  }
+]

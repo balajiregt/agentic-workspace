@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "notes": "Per-project evidence profiles. Context counts what a workspace-guided agent loads for one task (routing, one skill, the task and its resolved files) against the project's Git-tracked text files. Paths are workspace-relative.",
+  "corpusSuffixes": [
+    ".java",
+    ".kt",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".py",
+    ".json",
+    ".yml",
+    ".yaml",
+    ".md",
+    ".xml",
+    ".properties",
+    ".html",
+    ".css",
+    ".feature"
+  ],
+  "projects": {
+    "api-workspace": {
+      "registryId": "microservices",
+      "root": "services/microservices",
+      "contextProfiles": {
+        "api-test-change": {
+          "description": "Add or change RestAssured API tests for the customer-risk endpoint (task ABC-123).",
+          "instructions": [
+            "AGENTS.md",
+            "services/microservices/AGENTS.md",
+            "agent-system/skills/microservice-change/SKILL.md"
+          ],
+          "task": "services/microservices/contexts/tasks/ABC-123.yml",
+          "resolved": "services/microservices/contexts/.resolved/ABC-123.yml",
+          "resolveCommand": "npm run context:resolve"
+        }
+      },
+      "nativeEvidence": [
+        {
+          "name": "api-tests",
+          "description": "RestAssured API tests for the customer-risk endpoint (Surefire)",
+          "reader": "junit",
+          "glob": "qa-projects/xyz-service-api-tests/target/surefire-reports/TEST-*.xml",
+          "refreshCommand": "cd services/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=4283 (service running on 4283; see services/microservices/AGENTS.md)"
+        }
+      ]
+    },
+    "mockserver": {
+      "registryId": "role-aware-ui",
+      "root": "qa/ui-automation/role-aware-mockserver",
+      "contextProfiles": {
+        "ui-role-change": {
+          "description": "Change role-aware UI journeys and their mockserver behaviour (task UI-ROLE-001).",
+          "instructions": [
+            "AGENTS.md",
+            "qa/ui-automation/role-aware-mockserver/AGENTS.md",
+            "agent-system/skills/playwright-ui-change/SKILL.md"
+          ],
+          "task": "qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml",
+          "resolved": "qa/ui-automation/role-aware-mockserver/contexts/.resolved/UI-ROLE-001.yml",
+          "resolveCommand": "npm run context:ui:resolve"
+        }
+      },
+      "nativeEvidence": [
+        {
+          "name": "interception-vs-mockserver",
+          "description": "Same role journeys via browser interception and via the mockserver",
+          "reader": "mockserver-benchmark",
+          "glob": "benchmark-results/summary.json",
+          "refreshCommand": "cd qa/ui-automation/role-aware-mockserver && npm run benchmark"
+        }
+      ]
+    },
+    "playwright-agent": {
+      "registryId": "playwright-framework",
+      "root": "qa/playwright-agent",
+      "contextProfiles": {
+        "crm-assessment": {
+          "description": "Assess the sample CRM tests against the CRM-DEMO-001 acceptance criteria.",
+          "instructions": [
+            "AGENTS.md",
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-assessment/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/epic.md",
+          "files": [
+            "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/requirements.json",
+            "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/jira-tickets.json",
+            "qa/playwright-agent/tests/sample-crm.spec.ts",
+            "qa/playwright-agent/tests/validation-login.spec.ts",
+            "qa/playwright-agent/pages/sample-crm.page.ts",
+            "qa/playwright-agent/assertions/sample-crm.assertions.ts"
+          ]
+        },
+        "crm-test-authoring": {
+          "description": "Write sample CRM Playwright tests using the existing page object, assertions and fixtures.",
+          "instructions": [
+            "AGENTS.md",
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-test-authoring/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/contexts/tasks/CRM-DEMO-001/epic.md",
+          "files": [
+            "qa/playwright-agent/tests/sample-crm.spec.ts",
+            "qa/playwright-agent/pages/sample-crm.page.ts",
+            "qa/playwright-agent/assertions/sample-crm.assertions.ts",
+            "qa/playwright-agent/fixtures/base.fixture.ts",
+            "qa/playwright-agent/examples/sample-crm-app/README.md"
+          ]
+        }
+      },
+      "nativeEvidence": [
+        {
+          "name": "mutation-campaign",
+          "description": "Behavioral mutation campaign: reviewed faults run against the suite in disposable copies",
+          "reader": "mutation-campaign",
+          "glob": "artifacts/validation-demo/mutations/*/campaign.json",
+          "refreshCommand": "cd qa/playwright-agent && npm run mutation -- run --config examples/validation-demo/mutation.config.json --allow-run"
+        },
+        {
+          "name": "evaluation-report",
+          "description": "Capability scorecard (assessment, matrix, authoring, mutation, routing)",
+          "reader": "pa-evaluation",
+          "glob": "artifacts/agent-tasks/**/evaluation.json",
+          "refreshCommand": "cd qa/playwright-agent && npm run eval (see docs/evaluation-reports.md)"
+        }
+      ]
+    }
+  },
+  "guidancePaths": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".agents",
+    ".claude",
+    ".codex",
+    ".kilo",
+    ".cursor",
+    ".github/agents",
+    ".github/copilot-instructions.md",
+    "contexts"
+  ]
+}

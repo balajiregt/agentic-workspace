@@ -19,8 +19,9 @@ that every nested project's instructions have been loaded.
 Root `AGENTS.md` supplies common boundaries. Shared skills describe reusable
 procedures; they do not own a project's business rules. Root `knowledge/` holds
 workspace operations, shared research and lessons relevant across projects.
-Root `evaluation/` retains cross-project trials and collection contracts. Do not
-add identical empty `contexts`, `evaluation` and `knowledge` trees to each module.
+Root `evidence/` measures the workspace's claims per project (context, trials,
+imported project evidence). Do not add identical empty `contexts`, `evidence` and
+`knowledge` trees to each module.
 
 ## Select a task and resolve exact files
 
