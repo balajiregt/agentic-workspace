@@ -121,6 +121,10 @@ automatically.
 
 ## Results
 
+> **Phase 1: pilot on the small sample CRM.** These results come from a deliberately
+> small app. Opus alone solved most tasks, so Phase 2 repeats every trial on a larger,
+> harder application (CRM-Scale) with pre-registered success criteria.
+
 <!-- RESULTS:START -->
 Measured 13 November 2026 on a MacBook Air, from `evidence/results/`.
 
@@ -192,7 +196,7 @@ subscription and incurred no API charges.
 | --- | --- | --- |
 | Writing tests | **Yes, for quality and scope**: framework-consistent tests, no edits to the app; no change in pass rate | 6 pairs, diff review |
 | Coverage assessment | **None measurable on this benchmark**: Opus alone was already perfect | 18 pairs, frozen key |
-| Mutation verification | Being measured: proof by execution that tests catch a defect, with the app left unchanged | Trial in progress |
+| Mutation verification | **Yes, for safety and rigor**: disposable copies instead of editing the app in place (0/8 → 7/8), independent fault checks; no change in correctness | 8 pairs, transcripts |
 
 ### Project evidence
 
@@ -203,6 +207,69 @@ subscription and incurred no API charges.
 | Playwright Agent | Mutation campaign, 10 Nov 2026 | 2 reviewed faults: 1 killed, 1 survived (a known missing assertion); source restored and unchanged |
 | Playwright Agent | Evaluation report, 3 Nov 2026 (**synthetic**) | Acceptance assessment: 9 pass, 2 fail, 5 need review of 16 cases |
 <!-- RESULTS:END -->
+
+## Playwright Agent's skills, and what each adds to Claude Opus
+
+Playwright Agent is not a model or a separate agent. It is a set of skills, plain
+instructions that a coding agent such as Claude Code, Codex or Copilot loads on
+demand, plus local tools (an evidence reporter, a claim checker and a behavioral
+mutation runner). A **router** skill reads the request and loads only one of three
+working skills, so ordinary test work never triggers a formal assessment or a
+mutation campaign.
+
+| Skill | Loaded when the user asks to… | What it tells the agent to do |
+| --- | --- | --- |
+| `playwright-agent` (router) | do any functional Playwright work | Read the project's own instructions and config, respect exclusions ("read-only", "do not run tests", "no mutation"), then load exactly one skill |
+| `playwright-test-authoring` | create, edit, fix or run tests | Make the smallest change *in the project's own page objects, assertions and fixtures*; prefer accessible locators and web-first assertions; typecheck and run the narrowest relevant tests; never weaken an assertion to fit a product gap |
+| `playwright-assessment` | check tests against acceptance criteria, build a matrix, find gaps | Judge coverage from the *actual assertions*, not test names; keep source quotes, unknowns and evidence separate; leave source and tests unchanged |
+| `playwright-mutation` | prove whether tests catch a defect | Use a reviewed fault plan and *disposable application copies*; freeze the tests; take at least two healthy baselines; observe the fault independently; record killed or survived; restore and verify nothing changed |
+
+Each skill was measured the same way: Claude Opus alone versus Claude Opus with the
+skill available, same prompt, same project copy, scored by an independent oracle
+or a frozen answer key, with every transcript audited.
+
+### Test authoring: adds framework fit and scope discipline
+
+Measured on two test-writing tasks, three repeats each (results above). Opus alone
+and Opus with the skill passed every oracle. On the API task, Opus alone took the
+shortcut every time: it imported the app's internals and added a file inside the app.
+With the skill it extended the project's page object and assertion helpers in two
+of three runs and never changed the app. **Added value: tests that fit the project
+and stay out of the system under test, at about 40% more tokens.**
+
+### Coverage assessment: no measurable gain on this benchmark
+
+Measured on four suite variants with eight planted gaps and a fault-validated answer
+key (results above). Opus alone found every planted gap with no false alarms, and so
+did Opus with the skill. Opus opened the skill in only half the runs. **Added value:
+none measurable here**; the skill's structured, source-linked output may matter on
+larger suites or with smaller models, which this benchmark does not test.
+
+### Mutation verification
+
+<!-- MUTATION:START -->
+Measured on four questions of the form "would these tests detect this regression?"
+(two caught, two not, each truth proven by experiment), to be proved by execution
+with the app and tests left as found. 8 complete pairs were collected (cases M1–M3)
+before the batch was stopped; the rest were not run.
+
+| | Opus alone | Opus + Playwright Agent |
+| --- | --- | --- |
+| Correct verdict | 8/8 | 8/8 |
+| App and tests left unchanged | 8/8 | 8/8 |
+| **Edited the real application source** to inject the fault | **8/8** | **3/8** |
+| Used a disposable copy of the app | 0/8 | 7/8 |
+| Independent check that the fault was active | 6/8 | 8/8 |
+| Received the mutation skill content | — | 5/8 |
+| Median turns · est. cost* | 22 · $0.53 | 31.5 · $0.73 |
+
+Both arms answered every question correctly and restored everything. The
+difference is how the proof was made: Opus alone edited the real application in
+place every time, while with Playwright Agent it mostly built a disposable copy and
+confirmed the fault independently, as the skill instructs, for about 40% more
+effort. Neither arm used the bundled mutation runner. **Added value: a safer, more
+rigorous proof method; no change in correctness.**
+<!-- MUTATION:END -->
 
 ## What went wrong, and what changed
 
