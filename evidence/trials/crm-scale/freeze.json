@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "frozenAt": "2026-11-14T05:11:12Z",
-  "playwrightAgentCommit": "6abd261c175db2ae126087a05c8b66f4a5069780",
-  "appTreeHash": "f06359aa6005bf6b3f855004511b8c6e4a698b9d",
+  "frozenAt": "2026-11-14T05:49:13Z",
+  "playwrightAgentCommit": "e61648b24f56597502bcae305031800fb5ee1fd7",
+  "appTreeHash": "24747abdcd7d51e60adde408e403c5f206b44993",
   "files": {
-    "cases.json": "b77ec21faf8e498043b404beb09383859b962dbcb803b51df2d515dc0bdbe5b8",
-    "faults.json": "e9c3c0fe4c2b1683af747ad75ab4a63462b97de4d4b9cc05cb7a265ed5dbfcc8",
-    "PREREGISTRATION.md": "e3c5c87f291087b453c8a1f5c014ee1204ce51a12554248bb6de4aba5d8c950f",
+    "cases.json": "a4a2c31c38e8137405cf615fcecc8818aca76f8c4ebce7728d9f813f4f3a53cd",
+    "faults.json": "5050be7589a8e3e67fdbf96b47ca738c9939bb92a9b473b0cca1e53ab6364c42",
+    "PREREGISTRATION.md": "c4eccb22364d4b2907de12921adec6d984ee4fb7d7fa3510ac5474930021486d",
     "analyze.py": "b025827bfca36652573cf77354562bea5d8485e4cc534d7ee6de1c9c133f86b4",
-    "oracles/natural-gaps.spec.ts": "bbacdc630d7315f71f9e0069bfb932bd333def3251bc5acefc15953193a6ea17",
+    "oracles/natural-gaps.spec.ts": "97a391b52f8b8e64a7e0d8d009b2cfed5ef7e4e760702965e99ab1f25dd7f808",
     "crm-scale.playwright.config.ts": "619fc8613d5497a1b16998e82906dc5e6afa6e618eb669584caf903bdf4676fa",
-    "acceptance-criteria.json": "1ce2c58558561c21507ff35295c2427e3c3edaf5a2ffac0680915a6d1c05beca"
+    "acceptance-criteria.json": "5d601824b7e5bab18dafe9897b16e7a60dd2242e4a1d009597c83be63fa44593"
   },
-  "tasksSha256": "50f95e8227758dd5dde50a794525e801fc691ba593dd9ce1f9eeb64b7b65ff4a",
+  "tasksSha256": "b6f5fe04b04bc0838127ac80cd5a1f20a0c23c8b2aeb27eb896b2d1705170229",
   "tasks": 15,
   "keyValidation": {
     "ok": true,
-    "checks": 187,
-    "commit": "6abd261c175db2ae126087a05c8b66f4a5069780"
+    "checks": 200,
+    "commit": "e61648b24f56597502bcae305031800fb5ee1fd7"
   }
 }

@@ -302,7 +302,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"
@@ -319,7 +319,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"
@@ -336,7 +336,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"
@@ -353,7 +353,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"
@@ -370,7 +370,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"
@@ -387,7 +387,7 @@
     "target": {
       "project": "playwright-framework",
       "evidenceProject": "playwright-agent",
-      "contextProfile": "crm-scale-authoring",
+      "contextProfile": "crm-scale-mutation",
       "oracle": {
         "type": "mutation-proof",
         "cases": "evidence/trials/crm-scale/cases.json"

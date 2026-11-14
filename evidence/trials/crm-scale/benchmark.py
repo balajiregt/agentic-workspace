@@ -14,6 +14,7 @@ validate  runs five kinds of check and writes a JSON report:
   planted     each variant suite stays green under the fault of each gap it plants
   collateral  each variant suite still fails under every other covered fault
               (so a variant weakens only what the key says it weakens)
+  mutation    each mutation question's truth (caught / not caught) on its variant
 sweep     runs the unweakened suite against every fault and lists the failing tests
 """
 from __future__ import annotations
@@ -133,11 +134,11 @@ def plan(cases: dict, faults: dict, kinds: set[str]) -> list[dict]:
             if kind in kinds and spec["edits"]:
                 checks.append({"kind": kind, "variant": v, "criterion": crit, "fault": f, "expectGreen": planted,
                                "edits": spec["edits"] + fault_edits(f)})
-    for case_id, case in cases.get("mutationCases", {}).items():  # each mutation truth must be a check
-        match = [c for c in checks if c["variant"] == case["variant"] and c["fault"] == case["fault"]
-                 and c["kind"] in ("planted", "collateral")]
-        if kinds >= {"planted", "collateral"} and not (match and match[0]["expectGreen"] == (case["truth"] == "not-caught")):
-            raise SystemExit(f"mutation case {case_id} does not match the key's planted/collateral checks")
+    if "mutation" in kinds:  # each mutation question's truth, proven on its own variant
+        for case_id, case in cases.get("mutationCases", {}).items():
+            checks.append({"kind": "mutation", "variant": case["variant"], "criterion": case_id, "fault": case["fault"],
+                           "expectGreen": case["truth"] == "not-caught",
+                           "edits": variants[case["variant"]]["edits"] + fault_edits(case["fault"])})
     return checks
 
 
@@ -235,7 +236,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
     v = sub.add_parser("validate")
-    v.add_argument("--kinds", default="clean,natural,active,covered,planted,collateral")
+    v.add_argument("--kinds", default="clean,natural,active,covered,planted,collateral,mutation")
     v.add_argument("--jobs", type=int, default=2)
     v.add_argument("--workers", type=int, default=3)
     v.add_argument("--out", type=Path, default=RESULTS / "crm-scale-key-validation.json")

@@ -48,4 +48,41 @@ test.describe('oracle: natural gaps', () => {
     await signInAs('manager');
     await expect(page.getByTestId('my-overdue')).toHaveText('1 of your tasks are overdue.');
   });
+
+  test('PERM-EXPORT viewers see the export button disabled', async ({ signInAs, page }) => {
+    await signInAs('viewer');
+    await page.goto('/accounts');
+    await expect(page.getByTestId('export-accounts')).toBeDisabled();
+  });
+
+  test('ACC-DELETE sales users are not shown the delete action', async ({ signInAs, page }) => {
+    await signInAs('sales');
+    await page.goto('/accounts');
+    await expect(page.getByTestId('accounts-table').locator('tbody tr').filter({ hasText: 'Contoso Ltd' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete' })).toHaveCount(0);
+  });
+
+  test('LEAD-CONVERT-NO-COMPANY converting creates a contact', async ({ apiAs }) => {
+    const api = await apiAs('sales');
+    expect((await api.post('/api/leads/l2/convert')).status()).toBe(200);
+    const found = await (await api.get('/api/contacts?q=Pauling')).json();
+    expect(found.total).toBe(1);
+  });
+
+  test('QUO-APPROVE-ROLE admins can approve quotes', async ({ apiAs }) => {
+    const api = await apiAs('admin');
+    const quote = await (await api.post('/api/quotes', { data: { accountId: 'a1', discountPct: 30, lines: [{ item: 'Licences', qty: 1, unitPrice: 100 }] } })).json();
+    expect((await api.post(`/api/quotes/${quote.id}/approve`)).status()).toBe(200);
+  });
+
+  test('QUO-LINES a line needs a price', async ({ apiAs }) => {
+    const response = await (await apiAs('sales')).post('/api/quotes', { data: { accountId: 'a1', discountPct: 0, lines: [{ item: 'Licences', qty: 1 }] } });
+    expect(response.status()).toBe(422);
+  });
+
+  test('PERM-AUDIT support users see permission denied on the audit log', async ({ signInAs, page }) => {
+    await signInAs('support');
+    await page.goto('/audit');
+    await expect(page.getByTestId('permission-denied')).toHaveText('You do not have access to /audit.');
+  });
 });

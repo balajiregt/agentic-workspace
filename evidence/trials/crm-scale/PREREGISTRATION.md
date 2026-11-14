@@ -22,17 +22,28 @@ and its gaps are harder to see.
 | Application and suite | `qa/playwright-agent/examples/crm-scale` at the commit in `freeze.json` |
 | Acceptance criteria (90) | `examples/crm-scale/requirements/acceptance-criteria.json` |
 | Answer key, variants, mutation and authoring cases | `evidence/trials/crm-scale/cases.json` |
-| Faults (42 exact patches) | `evidence/trials/crm-scale/faults.json` |
+| Faults (49 exact patches) | `evidence/trials/crm-scale/faults.json` |
 | Key validation report | `evidence/results/assessments/crm-scale-key-validation.json` (must be VALID) |
 | Tasks and prompts | `evidence/trials/tasks.json` (ids starting `crm-scale-`) |
 | Authoring oracle | `evidence/trials/oracles/crm-scale.playwright.config.ts` |
 
-The answer key has 77 covered criteria, 8 natural gaps (missed by the unweakened suite)
-and 5 ambiguous criteria (answered, never scored). Variants B–E plant 18 more gaps with
+The answer key (revision 2) has 70 covered criteria, 14 natural gaps (missed by the
+unweakened suite) and 6 ambiguous criteria (answered, never scored). Variants B–E plant 18 more gaps with
 hidden techniques: buried helpers, data-table rows removed, permissive patterns, a
 conditional skip, the wrong role, a mocked response, swallowed assertions, and test
 data that can no longer fail. Every gap is proven with a fault; every covered criterion
 with a fault is proven caught, and every variant is proven to weaken only what the key says.
+
+## Revision before scoring
+
+One calibration pair (assessment variant B, repeat 0) ran against key revision 1. Both
+arms independently marked the same seven "covered" criteria as partial, with correct
+reasons. The key was too lenient. Six of those became fault-proven natural gaps, one
+became ambiguous, five criteria were reworded to remove untestable or loose clauses, and
+the seed gained a deal won before the quarter so that cutoff is testable. The key was
+then re-validated and re-frozen. The calibration pair is kept in
+`evidence/results/calibration/` and excluded from scoring. No other session ran before
+this revision.
 
 ## Model and runs
 

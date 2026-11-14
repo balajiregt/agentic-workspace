@@ -25,9 +25,9 @@
     "NAV-ACCESS": "covered",
     "NAV-DENIED": "covered",
     "PERM-API": "covered",
-    "PERM-EXPORT": "covered",
+    "PERM-EXPORT": "gap",
     "PERM-SETTINGS": "covered",
-    "PERM-AUDIT": "covered",
+    "PERM-AUDIT": "gap",
     "PERM-REPORTS": "covered",
     "PERM-CONTACT-DELETE": "covered",
     "PERM-OPP-VIEWER": "covered",
@@ -37,7 +37,7 @@
     "ACC-SEARCH": "covered",
     "ACC-PAGING": "covered",
     "ACC-DELETE-UNPAID": "covered",
-    "ACC-DELETE": "covered",
+    "ACC-DELETE": "gap",
     "ACC-EXPORT": "covered",
     "ACC-VIEWER-READONLY": "covered",
     "CON-CREATE": "covered",
@@ -49,7 +49,7 @@
     "LEAD-EMAIL-FORMAT": "covered",
     "LEAD-DUPLICATE": "covered",
     "LEAD-CONVERT-COMPANY": "covered",
-    "LEAD-CONVERT-NO-COMPANY": "covered",
+    "LEAD-CONVERT-NO-COMPANY": "gap",
     "LEAD-CONVERT-ONCE": "covered",
     "LEAD-MANAGER": "covered",
     "OPP-PROBABILITY": "covered",
@@ -63,12 +63,12 @@
     "QUO-TOTALS": "covered",
     "QUO-THRESHOLD": "covered",
     "QUO-THRESHOLD-SETTINGS": "covered",
-    "QUO-APPROVE-ROLE": "covered",
+    "QUO-APPROVE-ROLE": "gap",
     "QUO-APPROVE": "covered",
     "QUO-SEND-PENDING": "covered",
     "QUO-ACCEPT": "covered",
     "QUO-DISCOUNT-MAX": "covered",
-    "QUO-LINES": "covered",
+    "QUO-LINES": "gap",
     "INV-CREATE": "covered",
     "INV-ACCEPTED-ONLY": "covered",
     "INV-SEND": "covered",
@@ -83,7 +83,7 @@
     "TASK-OVERDUE": "covered",
     "TASK-REQUIRED": "covered",
     "TASK-COMPLETE": "covered",
-    "TASK-VIEWER": "covered",
+    "TASK-VIEWER": "ambiguous",
     "RPT-PIPELINE": "covered",
     "RPT-WEIGHTED": "covered",
     "RPT-WON-QUARTER": "covered",
@@ -115,11 +115,16 @@
     "USR-LAST-ADMIN-DEACTIVATE": "user-last-admin-deactivate",
     "AUD-LEAD-DELETE": "audit-missing-lead-delete",
     "AUD-SETTINGS": "audit-missing-settings",
-    "DASH-MY-OVERDUE": "dashboard-overdue-all"
+    "DASH-MY-OVERDUE": "dashboard-overdue-all",
+    "PERM-EXPORT": "export-ui-viewer",
+    "ACC-DELETE": "delete-action-sales",
+    "LEAD-CONVERT-NO-COMPANY": "lead-convert-no-company-contact",
+    "QUO-APPROVE-ROLE": "admin-cannot-approve",
+    "QUO-LINES": "quote-line-price-optional",
+    "PERM-AUDIT": "audit-ui-support"
   },
   "coveredFaults": {
     "AUTH-DEACTIVATED": "user-deactivated-login",
-    "PERM-EXPORT": "export-sales",
     "PERM-SETTINGS": "settings-manager",
     "PERM-CONTACT-DELETE": "support-delete-contacts",
     "PERM-OPP-VIEWER": "viewer-edit-opps",
@@ -136,7 +141,6 @@
     "OPP-LOST-REASON": "opp-lost-reason",
     "QUO-TOTALS": "quote-rounding",
     "QUO-THRESHOLD-SETTINGS": "quote-threshold",
-    "QUO-APPROVE-ROLE": "quote-approve-sales",
     "QUO-SEND-PENDING": "quote-send-unapproved",
     "INV-CREATE": "invoice-number",
     "INV-ACCEPTED-ONLY": "invoice-from-draft-quote",
@@ -150,7 +154,8 @@
     "USR-INVITE-EMAIL": "user-duplicate-email",
     "USR-LAST-ADMIN": "user-last-admin",
     "AUD-CREATE": "audit-missing-lead-create",
-    "AUD-DELETE": "audit-missing-delete"
+    "AUD-DELETE": "audit-missing-delete",
+    "RPT-WON-QUARTER": "report-won-quarter-cutoff"
   },
   "variants": {
     "A": {
@@ -395,5 +400,9 @@
       "title": "changing settings is audited",
       "intent": "Add a Playwright test to the CRM-Scale suite in examples/crm-scale proving that when an admin saves settings, the change is recorded in the audit log."
     }
+  },
+  "revision": {
+    "version": 2,
+    "reason": "Calibration pair crm-scale-assessment-B-r0 showed seven criteria the key called covered were only partly tested (both arms agreed). Six became fault-proven natural gaps, one became ambiguous, five criteria were made precise, and the seed gained a deal won before the quarter so the won-this-quarter cutoff is testable. The calibration pair is excluded from scoring."
   }
 }

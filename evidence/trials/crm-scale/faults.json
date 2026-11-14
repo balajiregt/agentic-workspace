@@ -22,6 +22,16 @@
         }
       ]
     },
+    "admin-cannot-approve": {
+      "behaviour": "Admins can no longer approve quotes",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "'quotes.approve': ['admin', 'manager']",
+          "replace": "'quotes.approve': ['manager']"
+        }
+      ]
+    },
     "audit-missing-delete": {
       "behaviour": "Deletions are no longer written to the audit log",
       "edits": [
@@ -62,6 +72,16 @@
         }
       ]
     },
+    "audit-ui-support": {
+      "behaviour": "Support users are not shown permission denied on the audit log page",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/public/assets/app.js",
+          "find": "  if (!can('audit.view')) return denied(path);",
+          "replace": "  if (!can('audit.view') && state.me.role !== 'support') return denied(path);"
+        }
+      ]
+    },
     "contact-email": {
       "behaviour": "Contact email is no longer required or validated",
       "edits": [
@@ -92,6 +112,16 @@
         }
       ]
     },
+    "delete-action-sales": {
+      "behaviour": "Sales users are shown the account Delete action (the API still refuses)",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/public/assets/app.js",
+          "find": "show: () => can('accounts.delete'), run: del('accounts')",
+          "replace": "show: () => can('accounts.delete') || state.me.role === 'sales', run: del('accounts')"
+        }
+      ]
+    },
     "export-sales": {
       "behaviour": "Sales users are allowed to export accounts",
       "edits": [
@@ -99,6 +129,16 @@
           "file": "examples/crm-scale/app/api.mjs",
           "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
           "replace": "    if (action === 'accounts.export' && role === 'sales') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    },
+    "export-ui-viewer": {
+      "behaviour": "Viewers see an enabled Export accounts button (the API still refuses)",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/public/assets/app.js",
+          "find": "extra: () => can('accounts.export') ?",
+          "replace": "extra: () => can('accounts.export') || state.me.role === 'viewer' ?"
         }
       ]
     },
@@ -159,6 +199,16 @@
           "file": "examples/crm-scale/app/api.mjs",
           "find": "        if (lead.company) {",
           "replace": "        if (false) {"
+        }
+      ]
+    },
+    "lead-convert-no-company-contact": {
+      "behaviour": "Converting a lead without a company creates no contact",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        db.contacts.unshift(contact);\n        lead.status = 'converted';",
+          "replace": "        if (lead.company) db.contacts.unshift(contact);\n        lead.status = 'converted';"
         }
       ]
     },
@@ -252,6 +302,16 @@
         }
       ]
     },
+    "quote-line-price-optional": {
+      "behaviour": "Quote lines without a price are accepted",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "|| !(Number(l.unitPrice) >= 0))) errors.lines",
+          "replace": ")) errors.lines"
+        }
+      ]
+    },
     "quote-rounding": {
       "behaviour": "Quote totals are truncated to whole units instead of rounded to cents",
       "edits": [
@@ -309,6 +369,16 @@
           "file": "examples/crm-scale/app/api.mjs",
           "find": "db.opportunities.filter(o => !['won', 'lost'].includes(o.stage))",
           "replace": "db.opportunities.filter(o => o.stage !== 'won')"
+        }
+      ]
+    },
+    "report-won-quarter-cutoff": {
+      "behaviour": "Won this quarter ignores the 1 October cutoff",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "o.stage === 'won' && (o.closedOn ?? '') >= '2026-10-01'",
+          "replace": "o.stage === 'won'"
         }
       ]
     },
