@@ -22,8 +22,14 @@ CASES = Path(__file__).resolve().parent / "cases.json"
 STATUSES = ("covered", "partial", "missing")
 
 
-def load_cases() -> dict:
-    return json.loads(CASES.read_text())
+def load_cases(path: str | Path | None = None) -> dict:
+    """Load an answer key: the Phase 1 sample CRM key by default, or a task's own cases file."""
+    return json.loads((WORKSPACE / path if path else CASES).read_text())
+
+
+def documented_gaps(cases: dict) -> set[str]:
+    """Gaps present in the unweakened suite (Phase 1 lists them under variant A)."""
+    return set(cases.get("naturalGaps") or cases["variants"]["A"]["gaps"])
 
 
 def apply_edits(root: Path, edits: list[dict]) -> None:

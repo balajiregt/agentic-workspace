@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-11-14T05:11:12Z",
+  "playwrightAgentCommit": "6abd261c175db2ae126087a05c8b66f4a5069780",
+  "appTreeHash": "f06359aa6005bf6b3f855004511b8c6e4a698b9d",
+  "files": {
+    "cases.json": "b77ec21faf8e498043b404beb09383859b962dbcb803b51df2d515dc0bdbe5b8",
+    "faults.json": "e9c3c0fe4c2b1683af747ad75ab4a63462b97de4d4b9cc05cb7a265ed5dbfcc8",
+    "PREREGISTRATION.md": "e3c5c87f291087b453c8a1f5c014ee1204ce51a12554248bb6de4aba5d8c950f",
+    "analyze.py": "b025827bfca36652573cf77354562bea5d8485e4cc534d7ee6de1c9c133f86b4",
+    "oracles/natural-gaps.spec.ts": "bbacdc630d7315f71f9e0069bfb932bd333def3251bc5acefc15953193a6ea17",
+    "crm-scale.playwright.config.ts": "619fc8613d5497a1b16998e82906dc5e6afa6e618eb669584caf903bdf4676fa",
+    "acceptance-criteria.json": "1ce2c58558561c21507ff35295c2427e3c3edaf5a2ffac0680915a6d1c05beca"
+  },
+  "tasksSha256": "50f95e8227758dd5dde50a794525e801fc691ba593dd9ce1f9eeb64b7b65ff4a",
+  "tasks": 15,
+  "keyValidation": {
+    "ok": true,
+    "checks": 187,
+    "commit": "6abd261c175db2ae126087a05c8b66f4a5069780"
+  }
+}

@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parents[2]
@@ -53,6 +54,11 @@ def load_task(task_id: str) -> dict:
         if task["id"] == task_id:
             return task
     raise SystemExit(f"Unknown task {task_id}; choose from: {', '.join(t['id'] for t in tasks)}")
+
+
+def task_cases(task: dict) -> dict:
+    """The answer key named by the task's oracle (Phase 1 tasks name the sample CRM key)."""
+    return assessment.load_cases(task["target"]["oracle"].get("cases"))
 
 
 def snapshot(root: Path, dest: Path) -> str:
@@ -168,7 +174,7 @@ def prompt_text(task: dict) -> str:
         return (f"# Task {task['id']}\n\n{task['intent']}\n\n"
                 "Do not change, create or run tests, and do not modify any file except `assessment.json`.\n\n"
                 "Write `assessment.json` at the repository root in exactly this shape, with one entry per criterion id:\n\n"
-                '```json\n{"criteria": [{"id": "LOGIN-VALID", "status": "covered | partial | missing", '
+                f'```json\n{{"criteria": [{{"id": "{assessment.criteria(task_cases(task))[0]["id"]}", "status": "covered | partial | missing", '
                 '"test": "test title or null", "assertion": "assertion or helper that proves it, or null", '
                 '"reason": "one sentence"}]}\n```\n\n'
                 "Work only inside this folder. Do not create or edit anything under `.evidence/`.\n")
@@ -194,11 +200,13 @@ def cmd_prepare(args) -> None:
     base.mkdir(parents=True)
     commit = snapshot(source_root, base)
     if task.get("kind") in ("assessment", "mutation-proof"):
-        cases = assessment.load_cases()
+        cases = task_cases(task)
         assessment.apply_edits(base, cases["variants"][task["variant"]]["edits"])
     if task.get("kind") == "assessment":
         items = [{"id": c["id"], "criterion": c["criterion"]} for c in assessment.criteria(cases)]
-        (base / "criteria.json").write_text(json.dumps({"criteria": items}, indent=2) + "\n")
+        source = json.loads((WORKSPACE / cases["criteriaSource"]).read_text())
+        extra = {"roleAccess": source["roleAccess"]} if "roleAccess" in source else {}
+        (base / "criteria.json").write_text(json.dumps({**extra, "criteria": items}, indent=2) + "\n")
     target_revision = tree_hash(base)
     prompt = prompt_text(task)
     (run / "PROMPT.md").write_text(prompt)
@@ -300,6 +308,50 @@ def blocked_tool_calls(session_id: str | None) -> list[str] | None:
     return blocked
 
 
+def transcript_metrics(session_id: str | None) -> dict | None:
+    """Effort measures from the transcript: tool calls (by tool), distinct files read, test runs."""
+    if not session_id:
+        return None
+    matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl"))
+    if not matches:
+        return None
+    by_name, files = {}, set()
+    for line in matches[0].read_text().splitlines():
+        content = (json.loads(line).get("message") or {}).get("content")
+        for item in content if isinstance(content, list) else []:
+            if item.get("type") != "tool_use":
+                continue
+            name = item.get("name") or "unknown"
+            by_name[name] = by_name.get(name, 0) + 1
+            data = item.get("input", {})
+            if name == "Read" and data.get("file_path"):
+                files.add(data["file_path"])
+            if name == "Bash":
+                for match in re.finditer(r"\b(?:cat|head|tail|sed -n \S+)\s+([\w./-]+\.\w+)", data.get("command", "")):
+                    files.add(match.group(1))
+    return {"toolCalls": sum(by_name.values()), "toolCallsByName": dict(sorted(by_name.items())), "distinctFilesRead": len(files)}
+
+
+def workspace_access(session_id: str | None) -> list[str] | None:
+    """Tool calls that reached into the workspace, where answer keys and faults live.
+
+    Trial arms are built outside the workspace, so any reference to it is a leak risk;
+    a run with entries here must be reviewed before it is scored.
+    """
+    if not session_id:
+        return None
+    matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl"))
+    if not matches:
+        return None
+    needle, hits = str(WORKSPACE), []
+    for line in matches[0].read_text().splitlines():
+        content = (json.loads(line).get("message") or {}).get("content")
+        for item in content if isinstance(content, list) else []:
+            if item.get("type") == "tool_use" and needle in json.dumps(item.get("input", {})):
+                hits.append(f"{item.get('name')}: {json.dumps(item.get('input', {}))[:200]}")
+    return hits
+
+
 def guidance_received(arm: Path, session_id: str | None) -> bool | None:
     """True when a successful tool result contains the content of a skill in the arm."""
     if not session_id:
@@ -323,7 +375,7 @@ def guidance_received(arm: Path, session_id: str | None) -> bool | None:
     return False
 
 
-def execution_evidence(session_id: str | None, arm: Path | None = None) -> dict:
+def execution_evidence(session_id: str | None, arm: Path | None = None, app_dir: str = "examples/sample-crm-app") -> dict:
     """How the agent proved its answer, read from its transcript.
 
     editedRealSource: changed the real app files (in place) at some point.
@@ -336,7 +388,9 @@ def execution_evidence(session_id: str | None, arm: Path | None = None) -> dict:
     matches = list((Path.home() / ".claude/projects").glob(f"*/{session_id}.jsonl")) if session_id else []
     if not matches:
         return {**{k: None for k in keys}, "testRuns": None}
-    real_app = str(arm / "examples/sample-crm-app") if arm else "/examples/sample-crm-app/"
+    real_app = str(arm / app_dir) if arm else f"/{app_dir}/"
+    app_name = re.escape(app_dir.split("/")[1] if app_dir.count("/") >= 1 else app_dir)  # e.g. sample-crm-app, crm-scale
+    app_path = re.escape(app_dir.split("/", 1)[1] if "/" in app_dir else app_dir)
     calls = {}
     for line in matches[0].read_text().splitlines():
         content = (json.loads(line).get("message") or {}).get("content")
@@ -358,9 +412,9 @@ def execution_evidence(session_id: str | None, arm: Path | None = None) -> dict:
                 if "playwright test" in command and any(w in text for w in (" passed", " failed", "flaky")):
                     found["ranTests"] = True
                     found["testRuns"] += 1
-                if re.search(r"\bcp\s+-[a-zA-Z]*R[a-zA-Z]*\s+\S*sample-crm-app", command) or "rsync" in command and "sample-crm-app" in command:
+                if re.search(rf"\bcp\s+-[a-zA-Z]*R[a-zA-Z]*\s+\S*{app_name}", command) or "rsync" in command and re.search(app_name, command):
                     found["usedDisposableCopy"] = True
-                if re.search(r"(sed|perl)\s+-i\S*.*sample-crm-app", command):
+                if re.search(rf"(sed|perl)\s+-i\S*.*{app_path}", command):
                     found["editedRealSource"] = True
                 if re.search(r"\bcurl\b|probe", command) and "playwright test" not in command:
                     found["independentCheck"] = True
@@ -428,6 +482,10 @@ def cmd_run_agent(args) -> None:
         "blockedToolCalls": blocked_tool_calls(data.get("session_id")),
         "guidanceReceived": guidance_received(arm, data.get("session_id")) if args.arm == "framework" else None,
         "leftoverProcessesStopped": stop_arm_processes(arm),
+        "effort": transcript_metrics(data.get("session_id")),
+        "workspaceAccess": workspace_access(data.get("session_id")),
+        "cacheReadTokens": usage.get("cache_read_input_tokens"),
+        "durationMs": data.get("duration_ms"),
     }
     save_run(run, record)
     a = arm_record["agent"]
@@ -472,7 +530,7 @@ def run_oracle(arm: Path, record: dict, task: dict, report_arg: str | None) -> P
 
 def collect_assessment(args, run: Path, record: dict, task: dict, arm: Path) -> None:
     arm_record = record["arms"][args.arm]
-    cases = assessment.load_cases()
+    cases = task_cases(task)
     answer_path = arm / "assessment.json"
     try:
         answer = json.loads(answer_path.read_text())
@@ -481,7 +539,7 @@ def collect_assessment(args, run: Path, record: dict, task: dict, arm: Path) -> 
     else:
         error = None
     result = assessment.score(answer, cases, task["variant"])
-    documented = set(cases["variants"]["A"]["gaps"])
+    documented = assessment.documented_gaps(cases)
     planted = [r for r in result["criteria"] if r["truth"] == "gap" and r["criterion"] not in documented]
     changed = [line[3:] for line in subprocess.run(["git", "status", "--porcelain", "-uall"], cwd=arm,
                capture_output=True, text=True).stdout.splitlines()
@@ -508,7 +566,7 @@ def collect_assessment(args, run: Path, record: dict, task: dict, arm: Path) -> 
 
 def collect_mutation_proof(args, run: Path, record: dict, task: dict, arm: Path) -> None:
     arm_record = record["arms"][args.arm]
-    cases = assessment.load_cases()
+    cases = task_cases(task)
     case = cases["mutationCases"][task["case"]]
     try:
         answer, error = json.loads((arm / "verdict.json").read_text()), None
@@ -522,7 +580,8 @@ def collect_mutation_proof(args, run: Path, record: dict, task: dict, arm: Path)
              and not line[3:].startswith((".evidence", "node_modules", "artifacts/", "test-results", "playwright-report"))]
     agent = arm_record.get("agent") or {}
     execution = execution_evidence(json.loads((run / f"{args.arm}-agent.json").read_text() or "{}").get("session_id")
-                                   if (run / f"{args.arm}-agent.json").exists() else None, arm)
+                                   if (run / f"{args.arm}-agent.json").exists() else None, arm,
+                                   cases.get("appDir", "examples/sample-crm-app"))
     correct = verdict == case["truth"]
     row = {"schemaVersion": 1, "kind": "mutation-proof", "trialId": f"{record['runId']}-{args.arm}",
            "taskId": record["taskId"], "case": task["case"], "truth": case["truth"], "arm": args.arm, "repeat": record["repeat"],
@@ -547,6 +606,82 @@ def collect_mutation_proof(args, run: Path, record: dict, task: dict, arm: Path)
                                            "fullyProven", "safeMethod", "answerError")}))
 
 
+def _oracle_run(arm: Path, name: str, titles: list[str], fault_edits: list[dict] | None) -> dict:
+    """Run the CRM-Scale oracle in a disposable copy of the arm; never touches the arm itself."""
+    with tempfile.TemporaryDirectory(prefix=f"oracle-{name}-") as temp:
+        copy = Path(temp) / "arm"
+        shutil.copytree(arm, copy, symlinks=True, ignore=shutil.ignore_patterns(".git", "test-results", "playwright-report", ".evidence"))
+        if fault_edits:
+            assessment.apply_edits(copy, fault_edits)
+        (copy / ".evidence").mkdir(exist_ok=True)
+        shutil.copy2(TRIALS / "oracles/crm-scale.playwright.config.ts", copy / ".evidence/oracle.config.ts")
+        report = copy / ".evidence/report.json"
+        env = {**os.environ, "EVIDENCE_REQUIRED_TESTS": json.dumps(titles), "EVIDENCE_REPORT": str(report), "CI": ""}
+        subprocess.run([str(copy / "node_modules/.bin/playwright"), "test", "-c", ".evidence/oracle.config.ts"],
+                       cwd=copy, env=env, capture_output=True, text=True, timeout=900)
+        if not report.is_file():
+            return {"ran": False, "passed": 0, "failed": [], "titles": []}
+        data = json.loads(report.read_text())
+    passed, failed, seen = 0, [], []
+
+    def walk(suite):
+        nonlocal passed
+        for child in suite.get("suites", []):
+            walk(child)
+        for spec in suite.get("specs", []):
+            for t in spec["tests"]:
+                seen.append(spec["title"])
+                if all(r["status"] == "passed" for r in t["results"]) and t["results"]:
+                    passed += 1
+                elif any(r["status"] not in ("passed", "skipped") for r in t["results"]):
+                    failed.append(spec["title"])
+    for s in data.get("suites", []):
+        walk(s)
+    return {"ran": True, "passed": passed, "failed": failed, "titles": seen}
+
+
+def collect_crm_scale_authoring(args, run: Path, record: dict, task: dict, arm: Path) -> None:
+    arm_record = record["arms"][args.arm]
+    oracle = task["target"]["oracle"]
+    fault = json.loads((WORKSPACE / oracle["faults"]).read_text())["faults"][oracle["fault"]]
+    required = task["requiredTests"]
+    clean = _oracle_run(arm, "clean", required, None)
+    suite = _oracle_run(arm, "suite", [], None)
+    faulted = _oracle_run(arm, "fault", required, fault["edits"])
+    found = [t for t in required if t in clean["titles"]]
+    status = subprocess.run(["git", "status", "--porcelain", "-uall"], cwd=arm, capture_output=True, text=True).stdout.splitlines()
+    changed = [line[3:] for line in status if not line[3:].startswith((".evidence", "node_modules", "test-results", "playwright-report"))]
+    app_changed = [p for p in changed if p.startswith("examples/crm-scale/app/")]
+    layers = sorted({p.split("/")[2] for p in changed if p.startswith("examples/crm-scale/") and p.count("/") >= 3})
+    outside = [p for p in changed if not p.startswith("examples/crm-scale/")]
+    spec_text = "".join((arm / p).read_text(errors="ignore") for p in changed
+                        if p.startswith("examples/crm-scale/tests/") and (arm / p).is_file())
+    agent = arm_record.get("agent") or {}
+    row = {"schemaVersion": 1, "kind": "authoring", "benchmark": "crm-scale", "trialId": f"{record['runId']}-{args.arm}",
+           "taskId": record["taskId"], "arm": args.arm, "repeat": record["repeat"], "criterion": oracle.get("criterion"),
+           "fault": oracle["fault"], "evidenceKind": args.evidence_kind,
+           "model": args.model or ("claude-code" if agent else None), "modelVersion": args.model_version or agent.get("model"),
+           "startedAt": arm_record["startedAt"], "finishedAt": arm_record["finishedAt"],
+           "requiredTests": len(required), "requiredTestsFound": len(found),
+           "requiredTestsPassed": bool(found) and len(found) == len(required) and not clean["failed"],
+           "suiteGreen": suite["ran"] and not suite["failed"] and suite["passed"] > 0, "suiteFailures": suite["failed"][:10],
+           "faultCaught": bool(found) and any(t in faulted["failed"] for t in required),
+           "appUnchanged": not app_changed, "appFilesChanged": app_changed,
+           "filesChanged": changed, "filesOutsideProject": outside, "frameworkLayersTouched": layers,
+           "usesProjectFixture": "fixtures/crm.fixture" in spec_text,
+           "rawRequestsInSpecs": spec_text.count("request.newContext") + spec_text.count("fetch("),
+           "agent": agent}
+    row["correct"] = bool(row["requiredTestsPassed"] and row["suiteGreen"] and row["faultCaught"])
+    out = Path(args.results_dir).resolve() if args.results_dir else WORKSPACE / "evidence/results"
+    (out / "authoring").mkdir(parents=True, exist_ok=True)
+    target = out / "authoring" / f"{row['trialId']}.json"
+    if target.exists():
+        raise SystemExit(f"{target.name} already collected.")
+    target.write_text(json.dumps(row, indent=2) + "\n")
+    print(json.dumps({k: row[k] for k in ("trialId", "requiredTestsFound", "requiredTestsPassed", "suiteGreen", "faultCaught",
+                                           "correct", "appUnchanged", "frameworkLayersTouched", "usesProjectFixture")}))
+
+
 def cmd_collect(args) -> None:
     run, record = load_run(args.run)
     arm_record = record["arms"][args.arm]
@@ -561,6 +696,9 @@ def cmd_collect(args) -> None:
         return
     if task.get("kind") == "mutation-proof":
         collect_mutation_proof(args, run, record, task, arm)
+        return
+    if task["target"]["oracle"]["type"] == "crm-scale-authoring":
+        collect_crm_scale_authoring(args, run, record, task, arm)
         return
     report = run_oracle(arm, record, task, args.report)
     agent = arm_record.get("agent") or {}

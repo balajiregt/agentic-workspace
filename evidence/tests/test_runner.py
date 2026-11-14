@@ -57,12 +57,16 @@ class TrialRunnerTests(unittest.TestCase):
             with self.subTest(task=task["id"]):
                 target = task["target"]
                 self.assertIn(target["contextProfile"], manifest["projects"][target["evidenceProject"]]["contextProfiles"])
-                self.assertIn(target["oracle"]["type"], ("playwright", "junit", "assessment-key", "mutation-proof"))
+                self.assertIn(target["oracle"]["type"], ("playwright", "junit", "assessment-key", "mutation-proof", "crm-scale-authoring"))
                 if target["oracle"]["type"] == "mutation-proof":
-                    self.assertIn(task["case"], runner.assessment.load_cases()["mutationCases"])
+                    self.assertIn(task["case"], runner.task_cases(task)["mutationCases"])
                 if target["oracle"]["type"] == "assessment-key":
                     self.assertTrue((ROOT / target["oracle"]["cases"]).is_file())
-                    self.assertIn(task["variant"], runner.assessment.load_cases()["variants"])
+                    self.assertIn(task["variant"], runner.task_cases(task)["variants"])
+                if target["oracle"]["type"] == "crm-scale-authoring":
+                    faults = runner.json.loads((ROOT / target["oracle"]["faults"]).read_text())["faults"]
+                    self.assertIn(target["oracle"]["fault"], faults)
+                    self.assertEqual(len(task["requiredTests"]), 1)
                 if target["oracle"]["type"] == "playwright":
                     self.assertTrue((ROOT / target["oracle"]["config"]).is_file())
 

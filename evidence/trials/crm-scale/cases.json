@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "benchmark": "crm-scale",
+  "notes": "Coverage-assessment answer key for CRM-Scale, frozen before any agent runs. Each variant weakens the committed suite in known ways. Validated by benchmark.py validate with faults from faults.json applied to disposable copies. truth: covered | gap | ambiguous (ambiguous criteria must be answered but are not scored). A gap is found when the agent marks the criterion partial or missing.",
+  "project": "playwright-agent",
+  "criteriaSource": "qa/playwright-agent/examples/crm-scale/requirements/acceptance-criteria.json",
+  "suite": {
+    "config": "examples/crm-scale/playwright.config.ts",
+    "scope": [
+      "examples/crm-scale/tests",
+      "examples/crm-scale/assertions",
+      "examples/crm-scale/lib",
+      "examples/crm-scale/pages",
+      "examples/crm-scale/fixtures",
+      "examples/crm-scale/data"
+    ]
+  },
+  "baseTruth": {
+    "AUTH-SIGNIN": "covered",
+    "AUTH-INVALID": "covered",
+    "AUTH-SIGNOUT": "covered",
+    "AUTH-API-SESSION": "covered",
+    "AUTH-REDIRECT": "covered",
+    "AUTH-DEACTIVATED": "covered",
+    "NAV-ACCESS": "covered",
+    "NAV-DENIED": "covered",
+    "PERM-API": "covered",
+    "PERM-EXPORT": "covered",
+    "PERM-SETTINGS": "covered",
+    "PERM-AUDIT": "covered",
+    "PERM-REPORTS": "covered",
+    "PERM-CONTACT-DELETE": "covered",
+    "PERM-OPP-VIEWER": "covered",
+    "ACC-CREATE": "covered",
+    "ACC-NAME-REQUIRED": "covered",
+    "ACC-UNIQUE": "covered",
+    "ACC-SEARCH": "covered",
+    "ACC-PAGING": "covered",
+    "ACC-DELETE-UNPAID": "covered",
+    "ACC-DELETE": "covered",
+    "ACC-EXPORT": "covered",
+    "ACC-VIEWER-READONLY": "covered",
+    "CON-CREATE": "covered",
+    "CON-EMAIL": "covered",
+    "CON-DELETE": "covered",
+    "CON-SEARCH": "gap",
+    "LEAD-CREATE": "covered",
+    "LEAD-REQUIRED": "covered",
+    "LEAD-EMAIL-FORMAT": "covered",
+    "LEAD-DUPLICATE": "covered",
+    "LEAD-CONVERT-COMPANY": "covered",
+    "LEAD-CONVERT-NO-COMPANY": "covered",
+    "LEAD-CONVERT-ONCE": "covered",
+    "LEAD-MANAGER": "covered",
+    "OPP-PROBABILITY": "covered",
+    "OPP-CREATE": "covered",
+    "OPP-VALUE": "covered",
+    "OPP-ACCOUNT": "covered",
+    "OPP-ADVANCE": "covered",
+    "OPP-WON": "covered",
+    "OPP-LOST-REASON": "covered",
+    "OPP-LOST-RECORDED": "gap",
+    "QUO-TOTALS": "covered",
+    "QUO-THRESHOLD": "covered",
+    "QUO-THRESHOLD-SETTINGS": "covered",
+    "QUO-APPROVE-ROLE": "covered",
+    "QUO-APPROVE": "covered",
+    "QUO-SEND-PENDING": "covered",
+    "QUO-ACCEPT": "covered",
+    "QUO-DISCOUNT-MAX": "covered",
+    "QUO-LINES": "covered",
+    "INV-CREATE": "covered",
+    "INV-ACCEPTED-ONLY": "covered",
+    "INV-SEND": "covered",
+    "INV-PARTIAL": "covered",
+    "INV-PAID": "covered",
+    "INV-OVERPAY": "covered",
+    "INV-DRAFT-PAYMENT": "covered",
+    "INV-OVERDUE": "covered",
+    "INV-SUPPORT": "covered",
+    "INV-DUE-DATE": "gap",
+    "TASK-ORDER": "covered",
+    "TASK-OVERDUE": "covered",
+    "TASK-REQUIRED": "covered",
+    "TASK-COMPLETE": "covered",
+    "TASK-VIEWER": "covered",
+    "RPT-PIPELINE": "covered",
+    "RPT-WEIGHTED": "covered",
+    "RPT-WON-QUARTER": "covered",
+    "RPT-OUTSTANDING": "covered",
+    "RPT-OVERDUE-TASKS": "covered",
+    "USR-INVITE-EMAIL": "covered",
+    "USR-INVITE-ROLE": "gap",
+    "USR-ROLE-CHANGE": "covered",
+    "USR-LAST-ADMIN": "covered",
+    "USR-LAST-ADMIN-DEACTIVATE": "gap",
+    "SET-THRESHOLD": "covered",
+    "SET-CURRENCY": "covered",
+    "AUD-CREATE": "covered",
+    "AUD-DELETE": "covered",
+    "AUD-LEAD-DELETE": "gap",
+    "AUD-SETTINGS": "gap",
+    "DASH-MY-OVERDUE": "gap",
+    "UX-OVERDUE-VISIBLE": "ambiguous",
+    "UX-FORM-ERRORS": "ambiguous",
+    "UX-REPORTS-FAST": "ambiguous",
+    "UX-CURRENCY-CONSISTENT": "ambiguous",
+    "UX-APPROVAL-CLEAR": "ambiguous"
+  },
+  "naturalGaps": {
+    "CON-SEARCH": "contact-search-email-only",
+    "OPP-LOST-RECORDED": "opp-lost-reason-dropped",
+    "INV-DUE-DATE": "invoice-due-date",
+    "USR-INVITE-ROLE": "user-invite-role",
+    "USR-LAST-ADMIN-DEACTIVATE": "user-last-admin-deactivate",
+    "AUD-LEAD-DELETE": "audit-missing-lead-delete",
+    "AUD-SETTINGS": "audit-missing-settings",
+    "DASH-MY-OVERDUE": "dashboard-overdue-all"
+  },
+  "coveredFaults": {
+    "AUTH-DEACTIVATED": "user-deactivated-login",
+    "PERM-EXPORT": "export-sales",
+    "PERM-SETTINGS": "settings-manager",
+    "PERM-CONTACT-DELETE": "support-delete-contacts",
+    "PERM-OPP-VIEWER": "viewer-edit-opps",
+    "ACC-UNIQUE": "account-unique",
+    "ACC-PAGING": "paging",
+    "ACC-DELETE-UNPAID": "account-delete-open-invoice",
+    "CON-EMAIL": "contact-email",
+    "LEAD-EMAIL-FORMAT": "lead-email-format",
+    "LEAD-DUPLICATE": "lead-duplicate",
+    "LEAD-CONVERT-COMPANY": "lead-convert-no-account",
+    "LEAD-CONVERT-ONCE": "lead-convert-twice",
+    "OPP-PROBABILITY": "opp-weighted",
+    "OPP-VALUE": "opp-value-negative",
+    "OPP-LOST-REASON": "opp-lost-reason",
+    "QUO-TOTALS": "quote-rounding",
+    "QUO-THRESHOLD-SETTINGS": "quote-threshold",
+    "QUO-APPROVE-ROLE": "quote-approve-sales",
+    "QUO-SEND-PENDING": "quote-send-unapproved",
+    "INV-CREATE": "invoice-number",
+    "INV-ACCEPTED-ONLY": "invoice-from-draft-quote",
+    "INV-PARTIAL": "invoice-partial",
+    "INV-OVERDUE": "invoice-overdue",
+    "TASK-ORDER": "task-sort",
+    "TASK-REQUIRED": "task-due-required",
+    "TASK-COMPLETE": "task-complete-other",
+    "RPT-PIPELINE": "report-pipeline",
+    "RPT-OUTSTANDING": "report-outstanding",
+    "USR-INVITE-EMAIL": "user-duplicate-email",
+    "USR-LAST-ADMIN": "user-last-admin",
+    "AUD-CREATE": "audit-missing-lead-create",
+    "AUD-DELETE": "audit-missing-delete"
+  },
+  "variants": {
+    "A": {
+      "description": "The committed suite, unchanged. Only the natural gaps apply.",
+      "technique": [],
+      "edits": [],
+      "gaps": []
+    },
+    "B": {
+      "description": "Weakened inside shared helpers and data tables; every test body and title is unchanged.",
+      "technique": [
+        "helper asserts only the negative case",
+        "helper derives its expected count from the page",
+        "matrix row removed with its UI check",
+        "data-driven row removed"
+      ],
+      "edits": [
+        {
+          "file": "examples/crm-scale/assertions/commerce.assertions.ts",
+          "find": "    await expect(row.getByTestId('overdue-badge')).toHaveCount(overdue ? 1 : 0);\n",
+          "replace": "    if (!overdue) await expect(row.getByTestId('overdue-badge')).toHaveCount(0);\n"
+        },
+        {
+          "file": "examples/crm-scale/assertions/work.assertions.ts",
+          "find": "    await expect(this.page.getByTestId('audit-table').locator('tbody tr').filter({ hasText: id }).filter({ hasText: action }).filter({ hasText: entity })).toHaveCount(1);\n",
+          "replace": "    const entries = this.page.getByTestId('audit-table').locator('tbody tr').filter({ hasText: id });\n    await expect(entries.filter({ hasText: action }).filter({ hasText: entity })).toHaveCount(await entries.count() ? 1 : 0);\n"
+        },
+        {
+          "file": "examples/crm-scale/data/roles.ts",
+          "find": "  { id: 'edit-settings', method: 'PATCH', path: '/api/settings', body: { currency: 'USD' }, allowed: ['admin'] },\n",
+          "replace": ""
+        },
+        {
+          "file": "examples/crm-scale/tests/settings.spec.ts",
+          "find": "    await work.expectReadOnlyBanner();\n    await work.expectDisabled(settings.page.getByRole('button', { name: 'Save settings' }));\n",
+          "replace": "    await work.expectPage('settings-page');\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/opportunities.spec.ts",
+          "find": "  { name: 'Northwind renewal', stage: 'negotiation', probability: '75%', weighted: 'USD 90,000.00' },\n",
+          "replace": ""
+        }
+      ],
+      "gaps": [
+        "INV-OVERDUE",
+        "AUD-CREATE",
+        "AUD-DELETE",
+        "PERM-SETTINGS",
+        "OPP-PROBABILITY"
+      ]
+    },
+    "C": {
+      "description": "Weakened in test bodies: a permissive pattern, a conditional skip, the wrong role and a mocked response.",
+      "technique": [
+        "permissive regex",
+        "permissive regex replaces exact paging checks",
+        "conditional skip",
+        "wrong role under the right title",
+        "mocked API response"
+      ],
+      "edits": [
+        {
+          "file": "examples/crm-scale/tests/quotes.spec.ts",
+          "find": "    await commerce.expectToast('Quote needs approval before it can be sent');\n    await commerce.expectQuoteStatus(quotes.quoteRow('Q-1003'), 'pending-approval');\n",
+          "replace": "    await commerce.expectToast(/Quote/);\n    await expect(quotes.quoteRow('Q-1003')).toBeVisible();\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/accounts.spec.ts",
+          "find": "    await records.expectVisibleRows('accounts-table', 10);\n    await records.expectPageInfo(1, 2, 12);\n    await crm.nextPage();\n    await records.expectVisibleRows('accounts-table', 2);\n    await records.expectPageInfo(2, 2, 12);\n",
+          "replace": "    await expect(crm.page.getByTestId('page-info')).toHaveText(/Page 1 of \\d+ · 12 total/);\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/users.spec.ts",
+          "find": "  test('the last active admin cannot be demoted', async ({ signInAs, users, work }) => {\n",
+          "replace": "  test('the last active admin cannot be demoted', async ({ signInAs, users, work }) => {\n    test.skip(!process.env.CRM_SCALE_DESTRUCTIVE, 'Changes the only admin; run with CRM_SCALE_DESTRUCTIVE=1');\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/contacts.spec.ts",
+          "find": "    await signInAs('support');\n    await crm.goto('/contacts');\n    await expect(crm.row('contacts-table', 'Ada Lovelace').getByRole('button', { name: 'Delete' })).toHaveCount(0);\n    const api = await apiAs('support');\n",
+          "replace": "    await signInAs('viewer');\n    await crm.goto('/contacts');\n    await expect(crm.row('contacts-table', 'Ada Lovelace').getByRole('button', { name: 'Delete' })).toHaveCount(0);\n    const api = await apiAs('viewer');\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/reports.spec.ts",
+          "find": "    await (await apiAs('manager')).post('/api/invoices/i2/payments', { data: { amount: 1500 } });\n    await signInAs('manager');\n",
+          "replace": "    await (await apiAs('manager')).post('/api/invoices/i2/payments', { data: { amount: 1500 } });\n    await signInAs('manager');\n    await crm.page.route('**/api/reports/summary', route => route.fulfill({ json: { pipelineTotal: 220000, weightedPipeline: 132000, wonThisQuarter: 15000, outstandingInvoices: 3500, overdueTasks: 2 } }));\n"
+        }
+      ],
+      "gaps": [
+        "QUO-SEND-PENDING",
+        "ACC-PAGING",
+        "USR-LAST-ADMIN",
+        "PERM-CONTACT-DELETE",
+        "RPT-OUTSTANDING"
+      ]
+    },
+    "D": {
+      "description": "Tests whose titles promise more than they check: the key step or assertion was dropped or swallowed.",
+      "technique": [
+        "second attempt never made",
+        "key step removed",
+        "permissive regex replaces exact message and state",
+        "assertion swallowed by try/catch"
+      ],
+      "edits": [
+        {
+          "file": "examples/crm-scale/tests/leads.spec.ts",
+          "find": "    const again = await api.post('/api/leads/l1/convert');\n    expect(again.status()).toBe(409);\n    expect((await again.json()).error).toBe('Lead is already converted');\n",
+          "replace": "    const lead = (await (await api.get('/api/leads')).json()).items.find((l: { id: string }) => l.id === 'l1');\n    expect(lead.status).toBe('converted');\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/users.spec.ts",
+          "find": "    await users.signOut();\n    await expect(page.getByTestId('login-page')).toBeVisible();\n    await page.request.delete('/api/session');\n    await login.signIn('sales2@example.com', 'password', tenant);\n    await access.expectLoginError('This account is deactivated');\n",
+          "replace": ""
+        },
+        {
+          "file": "examples/crm-scale/tests/users.spec.ts",
+          "find": "  test('a deactivated user cannot sign in', async ({ signInAs, users, work, login, access, page, tenant }) => {\n",
+          "replace": "  test('a deactivated user cannot sign in', async ({ signInAs, users, work }) => {\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/accounts.spec.ts",
+          "find": "    await records.expectToast('Account has unpaid invoices and cannot be deleted');\n    await records.expectRowWithText('accounts-table', 'Northwind Traders');\n",
+          "replace": "    await records.expectToast(/Account/);\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/tasks.spec.ts",
+          "find": "    await work.expectToast('Only the assignee or an admin can complete this task');\n",
+          "replace": "    try {\n      await work.expectToast('Only the assignee or an admin can complete this task');\n    } catch {\n      test.info().annotations.push({ type: 'flaky', description: 'toast can disappear before the check' });\n    }\n"
+        }
+      ],
+      "gaps": [
+        "LEAD-CONVERT-ONCE",
+        "AUTH-DEACTIVATED",
+        "ACC-DELETE-UNPAID",
+        "TASK-COMPLETE"
+      ]
+    },
+    "E": {
+      "description": "Test data that can no longer fail, and a guarded assertion; titles unchanged.",
+      "technique": [
+        "input exercises a different rule",
+        "amounts chosen so rounding never matters",
+        "nonexistent record instead of a draft",
+        "assertion guarded by isVisible"
+      ],
+      "edits": [
+        {
+          "file": "examples/crm-scale/tests/leads.spec.ts",
+          "find": "    await crm.fill({ 'Lead name': 'Bad Email Lead', Email: 'bad@address', Source: 'Web' });\n    await crm.submit('Create lead');\n    await records.expectFieldError('email', 'Enter a valid email address');\n",
+          "replace": "    await crm.fill({ 'Lead name': 'Bad Email Lead', Email: '', Source: 'Web' });\n    await crm.submit('Create lead');\n    await records.expectFieldError('email', 'Email is required');\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/quotes.spec.ts",
+          "find": "aQuoteLine('Licences', 2, 150), aQuoteLine('Support', 1, 99.5)], discount: 10, subtotal: 'USD 399.50', tax: 'USD 64.72', total: 'USD 424.27' }",
+          "replace": "aQuoteLine('Licences', 2, 150), aQuoteLine('Support', 1, 200)], discount: 10, subtotal: 'USD 500.00', tax: 'USD 81.00', total: 'USD 531.00' }"
+        },
+        {
+          "file": "examples/crm-scale/tests/quotes.spec.ts",
+          "find": "lines: [aQuoteLine('Seats', 3, 33.33)], discount: 0, subtotal: 'USD 99.99', tax: 'USD 18.00', total: 'USD 117.99' }",
+          "replace": "lines: [aQuoteLine('Seats', 3, 50)], discount: 0, subtotal: 'USD 150.00', tax: 'USD 27.00', total: 'USD 177.00' }"
+        },
+        {
+          "file": "examples/crm-scale/tests/invoices.spec.ts",
+          "find": "    const response = await api.post('/api/invoices', { data: { quoteId: 'q2' } });\n    expect(response.status()).toBe(409);\n    expect((await response.json()).error).toBe('Only accepted quotes can be invoiced');\n",
+          "replace": "    const response = await api.post('/api/invoices', { data: { quoteId: 'q-draft' } });\n    expect(response.ok()).toBe(false);\n"
+        },
+        {
+          "file": "examples/crm-scale/tests/tasks.spec.ts",
+          "find": "    await work.expectFieldError('dueOn', 'Due date is required');\n",
+          "replace": "    if (await tasks.page.getByTestId('error-dueOn').isVisible()) {\n      await work.expectFieldError('dueOn', 'Due date is required');\n    }\n"
+        }
+      ],
+      "gaps": [
+        "LEAD-EMAIL-FORMAT",
+        "QUO-TOTALS",
+        "INV-ACCEPTED-ONLY",
+        "TASK-REQUIRED"
+      ]
+    }
+  },
+  "appDir": "examples/crm-scale/app",
+  "mutationCases": {
+    "MS1": {
+      "variant": "B",
+      "fault": "invoice-overdue",
+      "truth": "not-caught",
+      "behaviour": "unpaid invoices past their due date are no longer flagged overdue"
+    },
+    "MS2": {
+      "variant": "C",
+      "fault": "report-outstanding",
+      "truth": "not-caught",
+      "behaviour": "the outstanding-invoices report sums full invoice totals instead of the remaining balances"
+    },
+    "MS3": {
+      "variant": "D",
+      "fault": "task-complete-other",
+      "truth": "not-caught",
+      "behaviour": "any user can complete a task that is assigned to someone else"
+    },
+    "MS4": {
+      "variant": "C",
+      "fault": "quote-rounding",
+      "truth": "caught",
+      "behaviour": "quote totals are truncated to whole currency units instead of being rounded to cents"
+    },
+    "MS5": {
+      "variant": "E",
+      "fault": "user-last-admin",
+      "truth": "caught",
+      "behaviour": "the last active admin can be demoted to another role"
+    },
+    "MS6": {
+      "variant": "B",
+      "fault": "export-sales",
+      "truth": "caught",
+      "behaviour": "sales users are allowed to export accounts"
+    }
+  },
+  "authoringCases": {
+    "AU1": {
+      "criterion": "INV-DUE-DATE",
+      "fault": "invoice-due-date",
+      "title": "a new invoice is due 30 days after it is issued",
+      "intent": "Add a Playwright test to the CRM-Scale suite in examples/crm-scale proving that a new invoice created from an accepted quote is due 30 days after it is issued, as shown in the invoices list."
+    },
+    "AU2": {
+      "criterion": "USR-LAST-ADMIN-DEACTIVATE",
+      "fault": "user-last-admin-deactivate",
+      "title": "the last active admin cannot be deactivated",
+      "intent": "Add a Playwright test to the CRM-Scale suite in examples/crm-scale proving that the last active admin cannot be deactivated from the users page, and stays active."
+    },
+    "AU3": {
+      "criterion": "DASH-MY-OVERDUE",
+      "fault": "dashboard-overdue-all",
+      "title": "the dashboard counts only my overdue tasks",
+      "intent": "Add a Playwright test to the CRM-Scale suite in examples/crm-scale proving that the dashboard tells a signed-in user how many of their own tasks are overdue, not everyone's."
+    },
+    "AU4": {
+      "criterion": "AUD-SETTINGS",
+      "fault": "audit-missing-settings",
+      "title": "changing settings is audited",
+      "intent": "Add a Playwright test to the CRM-Scale suite in examples/crm-scale proving that when an admin saves settings, the change is recorded in the audit log."
+    }
+  }
+}

@@ -27,7 +27,7 @@ def audit(trials_root: Path) -> dict:
                 continue
             session = json.loads(summary.read_text() or "{}").get("session_id")
             blocked = runner.blocked_tool_calls(session) or []
-            arms[arm] = {"headless": True, "blockedToolCalls": blocked,
+            arms[arm] = {"headless": True, "blockedToolCalls": blocked, "workspaceAccess": runner.workspace_access(session) or [],
                          "guidanceReceived": runner.guidance_received(Path(info["path"]), session) if arm == "framework" else None}
         runs[record["runId"]] = {"taskId": record["taskId"], "repeat": record["repeat"], "arms": arms}
     return {"schemaVersion": 1, "runs": runs}
@@ -41,7 +41,9 @@ def main() -> int:
         arms = r["arms"]
         f, b = arms.get("framework", {}), arms.get("baseline", {})
         if f.get("headless") or b.get("headless"):
-            print(f"{run_id[:44]:44} guidance={f.get('guidanceReceived')!s:5} blocked b={len(b.get('blockedToolCalls', []))} f={len(f.get('blockedToolCalls', []))}")
+            leak = len(b.get("workspaceAccess", [])) + len(f.get("workspaceAccess", []))
+            print(f"{run_id[:44]:44} guidance={f.get('guidanceReceived')!s:5} blocked b={len(b.get('blockedToolCalls', []))} f={len(f.get('blockedToolCalls', []))}"
+                  + (f"  WORKSPACE ACCESS x{leak}" if leak else ""))
     print(f"Wrote {out.relative_to(WORKSPACE)}")
     return 0
 

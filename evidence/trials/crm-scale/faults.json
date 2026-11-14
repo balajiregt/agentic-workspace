@@ -1,0 +1,431 @@
+{
+  "version": 1,
+  "notes": "Behavioural faults for CRM-Scale, applied as exact find/replace edits to a disposable copy of qa/playwright-agent. Never applied to the real source. Paths are relative to the Playwright Agent repository.",
+  "faults": {
+    "account-delete-open-invoice": {
+      "behaviour": "Accounts with unpaid invoices can be deleted",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (open) return reply(409",
+          "replace": "        if (false) return reply(409"
+        }
+      ]
+    },
+    "account-unique": {
+      "behaviour": "Account name uniqueness becomes case-sensitive",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        const clash = db.accounts.some(a => a.name.toLowerCase() === name.toLowerCase());",
+          "replace": "        const clash = db.accounts.some(a => a.name === name);"
+        }
+      ]
+    },
+    "audit-missing-delete": {
+      "behaviour": "Deletions are no longer written to the audit log",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    const audit = (action, entity, id) => db.audit.push(",
+          "replace": "    const audit = (action, entity, id) => action !== 'delete' && db.audit.push("
+        }
+      ]
+    },
+    "audit-missing-lead-create": {
+      "behaviour": "Lead creation is no longer audited",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "db.leads.unshift(lead); audit('create', 'lead', lead.id);",
+          "replace": "db.leads.unshift(lead);"
+        }
+      ]
+    },
+    "audit-missing-lead-delete": {
+      "behaviour": "Lead deletion is no longer audited",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "audit('delete', 'lead', id);",
+          "replace": "void id;"
+        }
+      ]
+    },
+    "audit-missing-settings": {
+      "behaviour": "Settings changes are no longer audited",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "audit('update', 'settings', 'settings');",
+          "replace": "void 0;"
+        }
+      ]
+    },
+    "contact-email": {
+      "behaviour": "Contact email is no longer required or validated",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (!EMAIL.test(String(body.email ?? ''))) errors.email",
+          "replace": "        if (false) errors.email"
+        }
+      ]
+    },
+    "contact-search-email-only": {
+      "behaviour": "Contact search matches email only, not name",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "list(db.contacts, url.searchParams.get('q'), ['name', 'email'])",
+          "replace": "list(db.contacts, url.searchParams.get('q'), ['email'])"
+        }
+      ]
+    },
+    "dashboard-overdue-all": {
+      "behaviour": "The dashboard counts everyone’s overdue tasks as the user’s own",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/public/assets/app.js",
+          "find": "tasks.filter(t => t.overdue && t.assignee === state.me.id).length",
+          "replace": "tasks.filter(t => t.overdue).length"
+        }
+      ]
+    },
+    "export-sales": {
+      "behaviour": "Sales users are allowed to export accounts",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
+          "replace": "    if (action === 'accounts.export' && role === 'sales') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    },
+    "invoice-due-date": {
+      "behaviour": "New invoices are due on 31 December instead of 30 days after issue",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "issuedOn: TODAY, dueOn: '2026-12-15' }",
+          "replace": "issuedOn: TODAY, dueOn: '2026-12-31' }"
+        }
+      ]
+    },
+    "invoice-from-draft-quote": {
+      "behaviour": "Quotes that are not accepted can be invoiced",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (quote.status !== 'accepted') return",
+          "replace": "        if (false) return"
+        }
+      ]
+    },
+    "invoice-number": {
+      "behaviour": "Every new invoice gets number 0001",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        const n = ++db.seq.invoice;",
+          "replace": "        const n = 1;"
+        }
+      ]
+    },
+    "invoice-overdue": {
+      "behaviour": "Invoices are never shown as overdue",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "overdue: i.status !== 'paid' && i.dueOn < TODAY",
+          "replace": "overdue: false"
+        }
+      ]
+    },
+    "invoice-partial": {
+      "behaviour": "Any payment marks the invoice fully paid",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        invoice.status = invoice.paid >= invoice.total ? 'paid'",
+          "replace": "        invoice.status = true ? 'paid'"
+        }
+      ]
+    },
+    "lead-convert-no-account": {
+      "behaviour": "Converting a lead with a company no longer creates an account",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (lead.company) {",
+          "replace": "        if (false) {"
+        }
+      ]
+    },
+    "lead-convert-twice": {
+      "behaviour": "A converted lead can be converted again",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (lead.status === 'converted') return",
+          "replace": "        if (false) return"
+        }
+      ]
+    },
+    "lead-duplicate": {
+      "behaviour": "Duplicate lead emails are accepted",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        else if (db.leads.some(",
+          "replace": "        else if (false && db.leads.some("
+        }
+      ]
+    },
+    "lead-email-format": {
+      "behaviour": "Lead email format is not validated",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        else if (!EMAIL.test(email)) errors.email",
+          "replace": "        else if (false) errors.email"
+        }
+      ]
+    },
+    "opp-lost-reason": {
+      "behaviour": "Opportunities can be closed as lost without a reason",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "!String(body.lostReason ?? '').trim())",
+          "replace": "!String(body.lostReason ?? '').trim() && false)"
+        }
+      ]
+    },
+    "opp-lost-reason-dropped": {
+      "behaviour": "The lost reason is not stored when an opportunity is closed as lost",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": " if (body.stage === 'lost') opp.lostReason = body.lostReason ?? '';",
+          "replace": ""
+        }
+      ]
+    },
+    "opp-value-negative": {
+      "behaviour": "Zero and negative opportunity values are accepted",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "value <= 0",
+          "replace": "false"
+        }
+      ]
+    },
+    "opp-weighted": {
+      "behaviour": "Negotiation-stage opportunities carry 50% instead of 75% probability",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        const prob = STAGES[o.stage];",
+          "replace": "        const prob = o.stage === 'negotiation' ? 50 : STAGES[o.stage];"
+        }
+      ]
+    },
+    "paging": {
+      "behaviour": "Lists return 20 rows per page instead of 10",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "      const size = PAGE_SIZE;\n",
+          "replace": "      const size = 20;\n"
+        }
+      ]
+    },
+    "quote-approve-sales": {
+      "behaviour": "Sales users are allowed to approve quotes",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
+          "replace": "    if (action === 'quotes.approve' && role === 'sales') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    },
+    "quote-rounding": {
+      "behaviour": "Quote totals are truncated to whole units instead of rounded to cents",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "  const total = round2(raw);\n",
+          "replace": "  const total = Math.floor(raw);\n"
+        }
+      ]
+    },
+    "quote-send-unapproved": {
+      "behaviour": "Quotes pending approval can be sent",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (quote.status === 'pending-approval') return",
+          "replace": "        if (false) return"
+        }
+      ]
+    },
+    "quote-tax": {
+      "behaviour": "Quote tax is calculated at 8% instead of 18%",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "  const taxRate = TAX_RATE;\n",
+          "replace": "  const taxRate = 0.08;\n"
+        }
+      ]
+    },
+    "quote-threshold": {
+      "behaviour": "The approval threshold is fixed at 20% instead of following settings",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "      const threshold = db.settings.approvalThresholdPct;",
+          "replace": "      const threshold = 20;"
+        }
+      ]
+    },
+    "report-outstanding": {
+      "behaviour": "Outstanding invoices sum full totals instead of remaining balances",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "s + (i.total - i.paid)",
+          "replace": "s + (i.total)"
+        }
+      ]
+    },
+    "report-pipeline": {
+      "behaviour": "The open pipeline report includes lost deals",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "db.opportunities.filter(o => !['won', 'lost'].includes(o.stage))",
+          "replace": "db.opportunities.filter(o => o.stage !== 'won')"
+        }
+      ]
+    },
+    "settings-manager": {
+      "behaviour": "Managers are allowed to edit settings",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
+          "replace": "    if (action === 'settings.edit' && role === 'manager') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    },
+    "support-delete-contacts": {
+      "behaviour": "Support users are allowed to delete contacts",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
+          "replace": "    if (action === 'contacts.delete' && role === 'support') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    },
+    "task-complete-other": {
+      "behaviour": "Any user can complete someone else’s task",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (task.assignee !== me.id && role !== 'admin') return",
+          "replace": "        if (false) return"
+        }
+      ]
+    },
+    "task-due-required": {
+      "behaviour": "Tasks can be created without a due date",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (!/^\\d{4}",
+          "replace": "        if (false && !/^\\d{4}"
+        }
+      ]
+    },
+    "task-sort": {
+      "behaviour": "Tasks are listed latest due date first",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "sort((a, b) => a.dueOn.localeCompare(b.dueOn))",
+          "replace": "sort((a, b) => b.dueOn.localeCompare(a.dueOn))"
+        }
+      ]
+    },
+    "user-deactivated-login": {
+      "behaviour": "Deactivated users can still sign in and use the API",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "      if (!user.active) return reply(403",
+          "replace": "      if (false) return reply(403"
+        },
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    if (!me || !me.active) return",
+          "replace": "    if (!me) return"
+        }
+      ]
+    },
+    "user-duplicate-email": {
+      "behaviour": "An existing user email can be invited again",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        else if (db.users.some(",
+          "replace": "        else if (false && db.users.some("
+        }
+      ]
+    },
+    "user-invite-role": {
+      "behaviour": "Invited users always get the viewer role",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "role: body.role, active: true };",
+          "replace": "role: 'viewer', active: true };"
+        }
+      ]
+    },
+    "user-last-admin": {
+      "behaviour": "The last active admin can be demoted or deactivated",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "        if (losesAdmin && admins.length <= 1) return",
+          "replace": "        if (false) return"
+        }
+      ]
+    },
+    "user-last-admin-deactivate": {
+      "behaviour": "The last active admin can be deactivated (demotion is still blocked)",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": " || body.active === false)",
+          "replace": ")"
+        }
+      ]
+    },
+    "viewer-edit-opps": {
+      "behaviour": "Viewers are allowed to edit opportunities",
+      "edits": [
+        {
+          "file": "examples/crm-scale/app/api.mjs",
+          "find": "    return (PERMISSIONS[action] ?? []).includes(role);\n",
+          "replace": "    if (action === 'opportunities.edit' && role === 'viewer') return true;\n    return (PERMISSIONS[action] ?? []).includes(role);\n"
+        }
+      ]
+    }
+  }
+}

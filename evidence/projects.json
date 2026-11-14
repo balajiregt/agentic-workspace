@@ -111,6 +111,45 @@
             "qa/playwright-agent/fixtures/base.fixture.ts",
             "qa/playwright-agent/examples/sample-crm-app/README.md"
           ]
+        },
+        "crm-scale-assessment": {
+          "description": "Assess the CRM-Scale suite against its acceptance criteria.",
+          "instructions": [
+            "AGENTS.md",
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-assessment/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/examples/crm-scale/README.md",
+          "files": [
+            "qa/playwright-agent/examples/crm-scale/requirements/acceptance-criteria.json",
+            "qa/playwright-agent/examples/crm-scale/data/roles.ts",
+            "qa/playwright-agent/examples/crm-scale/lib/generic.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/access.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/records.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/commerce.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/work.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/fixtures/crm.fixture.ts"
+          ]
+        },
+        "crm-scale-authoring": {
+          "description": "Write or verify CRM-Scale Playwright tests with its layered framework.",
+          "instructions": [
+            "AGENTS.md",
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-test-authoring/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/examples/crm-scale/README.md",
+          "files": [
+            "qa/playwright-agent/examples/crm-scale/fixtures/crm.fixture.ts",
+            "qa/playwright-agent/examples/crm-scale/pages/crm.page.ts",
+            "qa/playwright-agent/examples/crm-scale/lib/generic.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/commerce.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/work.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/data/builders.ts",
+            "qa/playwright-agent/examples/crm-scale/playwright.config.ts"
+          ]
         }
       },
       "nativeEvidence": [
