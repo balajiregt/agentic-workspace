@@ -416,7 +416,10 @@ def cmd_run_agent(args) -> None:
     except (TypeError, ValueError):
         data = {}
     usage = data.get("usage") or {}
+    result_text = str(data.get("result") or "")
+    rate_limited = bool(data.get("api_error_status") == 429 or (data.get("is_error") and "limit" in result_text.lower()))
     arm_record["agent"] = {
+        "rateLimited": rate_limited,
         "tool": "claude-code-headless", "exitCode": code, "isError": data.get("is_error", code != 0),
         "subtype": data.get("subtype"), "turns": data.get("num_turns"),
         "model": primary_model(data.get("modelUsage") or {}), "costUsd": data.get("total_cost_usd"),
@@ -428,6 +431,9 @@ def cmd_run_agent(args) -> None:
     }
     save_run(run, record)
     a = arm_record["agent"]
+    if rate_limited:
+        print(f"RATE LIMITED {args.arm}: {result_text[:120]}. This run did not happen; prepare a new run after the limit resets.")
+        raise SystemExit(3)
     print(f"{args.arm}: agent finished {arm_record['finishedAt']} (exit {code}, {a['turns']} turns, model {a['model']}, "
           f"cost ${a['costUsd']}). Transcript summary: {run / (args.arm + '-agent.json')}")
     if args.arm == "framework" and a["guidanceReceived"] is False:
@@ -548,6 +554,8 @@ def cmd_collect(args) -> None:
         raise SystemExit("Record `start` and `finish` for this arm before collecting.")
     task = load_task(record["taskId"])
     arm = Path(arm_record["path"])
+    if (arm_record.get("agent") or {}).get("rateLimited"):
+        raise SystemExit("This arm was refused by a usage limit and did not run; it cannot be collected.")
     if task.get("kind") == "assessment":
         collect_assessment(args, run, record, task, arm)
         return
