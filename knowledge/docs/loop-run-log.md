@@ -1,0 +1,527 @@
+# Loop Run Log
+
+This log records historical validation evidence for the workspace's
+context-routing loop. Dated entries retain the paths, commands and measurements
+used at the time; they are not current operating instructions.
+
+For active work, follow [the project workflow](project-workflow.md): root routing,
+project-local `AGENTS.md`, the explicitly selected task context, its matching
+project-local resolved output and the relevant shared skill. Keep new private
+execution evidence with the owning project; promote reusable verified lessons
+into project docs rather than appending every run here.
+
+## 2026-08-02 Isolated Playwright UI Automation Slice
+
+Reason:
+
+- The workspace needed to adopt the existing role-aware Playwright and
+  mockserver framework without mixing it into the Maven/RestAssured API
+  automation slice.
+- Future agents need separate context routing for API changes and UI/browser
+  automation changes.
+
+Implementation:
+
+- Added `projects/ui-automation/role-aware-mockserver` as an isolated
+  Playwright, Koa mockserver, and demo app project.
+- Added `agent-system/contexts/current/ui-context.yml`,
+  `tooling/scripts/resolve_ui_context.py`, and
+  `agent-system/skills/playwright-ui-change/SKILL.md`.
+- Updated `AGENTS.md`, `README.md`, `.gitignore`, and root `package.json`
+  scripts so UI automation uses `npm --prefix` wrappers and keeps Playwright
+  dependencies out of the workspace root.
+
+Validation:
+
+- `npm run context:resolve`
+- `npm run context:ui:resolve`
+- `python3 -m py_compile tooling/scripts/resolve_context.py tooling/scripts/resolve_ui_context.py tooling/scripts/context_efficiency_report.py agent-system/local-agents/check-tool-calls.py`
+- `npm run context:report`
+- `npm --prefix projects/ui-automation/role-aware-mockserver install`
+- `npx --prefix projects/ui-automation/role-aware-mockserver playwright install chromium`
+- `npm run ui:test`
+- `npm run ui:test:roles`
+- `npm run ui:test:legacy-interception`
+- `cd projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
+- `cd projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+UI full suite: 21 passed
+UI role suite: 18 passed
+UI legacy interception suite: 3 passed
+API suite: Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Context report: central context 174 tokens, 30.51x compression ratio
+Python compile checks: PASS
+```
+
+Local model validation:
+
+- `npm run agent:doctor`
+
+Result:
+
+```text
+TOOL_CALL_CHECK=ERROR server request failed: HTTP Error 404
+```
+
+Interpretation:
+
+- Port `8080` was occupied by a Java process, not the expected
+  OpenAI-compatible llama.cpp model server.
+- The framework implementation is verified, but local model structured
+  tool-call validation must be rerun after starting the local agent runtime with
+  `npm run agent:tool-agent` or an equivalent profile and confirming it serves
+  `http://localhost:8080/v1`.
+
+## 2026-08-05 Graph-Based Test Intelligence Direction
+
+Decision:
+
+- Use the built-in graph as the first-class deterministic test-routing graph.
+- Keep duplicate prevention instruction-first in the API and Playwright skills.
+- Treat Graphify as an optional broad workspace knowledge-graph exploration
+  layer, not as the primary duplicate-detection mechanism.
+
+Implementation:
+
+- Added `tooling/scripts/build_test_graph.py`.
+- Added `tooling/scripts/graphify_local.py` to build/serve a local Graphify view without
+  a global CLI install.
+- Added `tooling/scripts/serve_graph_views.py` to launch the built-in test graph and
+  Graphify view together.
+- Added `tooling/scripts/build_qa_dashboard.py` to generate a static stakeholder
+  dashboard from contexts, graph artifacts, test reports, and loop evidence.
+- Expanded the dashboard with release confidence, git changed-file impact
+  recommendations, deterministic coverage/gap signals, duplicate/overlap
+  candidates, and runtime usage readiness.
+- Added CSS-only bars and stacked test-mix visuals so stakeholders can scan
+  quality, coverage, duplicate, graph freshness, and impact signals without a
+  heavy charting dependency.
+- Added lightweight table search, row counts, top-10 default caps, and Show all
+  toggles so the dashboard remains usable when API and Playwright suites grow
+  to hundreds of tests.
+- Added `tooling/docker/Dockerfile.graphs` and `tooling/docker/docker-compose.graphs.yml` so the graph views
+  can run in a container for non-IDE users.
+- Added root scripts:
+  - `npm run graph:build`
+  - `npm run graph:test`
+  - `npm run graph:serve -- --port 8766`
+  - `npm run dashboard:build`
+  - `npm run dashboard:serve -- --port 8765`
+  - `npm run graphify:build`
+  - `npm run graphify:serve -- --port 8767`
+  - `npm run graphs:serve`
+  - `npm run graphs:docker:build`
+  - `npm run graphs:docker:up`
+- Added `artifacts/` to `.gitignore` for generated graph JSON, HTML, and
+  screenshots.
+- Expanded `agent-system/skills/playwright-ui-change/SKILL.md` with duplicate coverage,
+  page-object, locator, fixture, storage-state, session-storage, network, and
+  assertion rules.
+
+Validation:
+
+- `npm run context:resolve`
+- `npm run context:ui:resolve`
+- `python3 -m py_compile tooling/scripts/build_test_graph.py`
+- `python3 -m py_compile tooling/scripts/build_qa_dashboard.py`
+- `npm run graph:test`
+- `npm run dashboard:build`
+- `python3 -m py_compile tooling/scripts/graphify_local.py tooling/scripts/serve_graph_views.py`
+- `npm run graphify:build`
+- Browser smoke test against `http://127.0.0.1:8766/`
+- Browser smoke test against `http://127.0.0.1:8765/`
+- Browser smoke test against `http://127.0.0.1:8767/graph.html`
+- `npm run graphs:docker:build`
+
+Validation result:
+
+```text
+Graph nodes: 45
+Graph edges: 74
+Dashboard smoke test: rendered Agentic QA Dashboard
+Browser smoke test: rendered 45 SVG nodes and 74 SVG edges
+Graphify local code-only graph: 350 nodes and 582 edges across 30 communities
+Docker graph image: build passed
+Docker dashboard: API pass, Playwright pass, 45/74 test graph, 350/30 Graphify, stale=false
+Dashboard insight model: confidence strong, no deterministic coverage gaps,
+duplicate candidates classified as coverage siblings, runtime usage export
+marked pending
+Dashboard visual model: CSS-only quality bars, test-mix stack, duplicate signal
+bars, and impact focus bars rendered
+Dashboard scale model: searchable capped tables and Show all toggles rendered
+Docker graph container: test graph rendered 45 SVG nodes and 74 SVG edges
+Docker graph container: Graphify canvas view loaded
+```
+
+## 2026-07-20 Generic API Automation Refactor
+
+Reason:
+
+- The framework should not be shaped around one demo service, field, or negative
+  test value.
+- It should work for API automation teams using different APIs and different
+  API test frameworks.
+
+Refactor:
+
+- Core rules now say "existing API test framework" instead of assuming
+  RestAssured/Java/JUnit.
+- Skill point 11 now describes unsupported behavior generically: if a test
+  expects a response not implemented by source or documented in OpenAPI, report
+  a product/contract gap.
+- Resolver-derived validation hints are generic contract/source signals, not
+  hardcoded `customerId` or `INVALID_ID_FORMAT` rules.
+- Demo-specific details remain only in the sample project and historical proof
+  log entries.
+
+Validation:
+
+- `npm run context:resolve`
+- `python3 -m py_compile tooling/scripts/resolve_context.py tooling/scripts/context_efficiency_report.py`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
+## 2026-07-20 Point 11 Read-Only Gap Test Failure
+
+Prompt scenario:
+
+```text
+I added a test expectation:
+GET /xyz?customerId=INVALID_ID_FORMAT should return 400 Bad Request.
+
+Tell me whether this expectation is supported behavior, a test bug, or a
+product/contract gap.
+```
+
+Observed local-model failure:
+
+- The model correctly generated/read `agent-system/contexts/current/resolved-context.yml`.
+- It found `resolved_files.api_test`.
+- It incorrectly edited the API test and replaced the blank-customerId test
+  with an invalid-format test.
+- It did not stop at skill point 11.
+
+Framework update:
+
+- Gap-analysis prompts are now explicitly read-only unless the user asks to
+  implement the service/contract change.
+- `tooling/scripts/resolve_context.py` now derives validation hints from OpenAPI and
+  source code:
+  - OpenAPI `customerId` has `minLength: 1` and no `pattern`.
+  - Controller has `@NotBlank` and no `@Pattern`.
+  - Service trims/uppercases customerId and has no invalid-format check.
+- Skill point 11 now tells the agent to use `derived_validation` when present.
+
+Expected agent conclusion:
+
+```text
+This is a product/contract gap. INVALID_ID_FORMAT is nonblank, so current
+service behavior evaluates it. To return 400, add explicit service validation
+and document it in OpenAPI.
+```
+
+Validation:
+
+- `npm run context:resolve`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
+## 2026-07-20 Lean Context Resolver Refactor
+
+Problem:
+
+- `agent-system/contexts/current/service-context.yml` was becoming too large and hard to
+  maintain.
+- Exact paths, commands, fixtures, and response examples were being added to the
+  task YAML to compensate for local-model mistakes.
+- That made the framework less dynamic and less practical.
+
+Refactor:
+
+- `agent-system/contexts/current/service-context.yml` now contains only the current task.
+- `tooling/scripts/resolve_context.py` generates `agent-system/contexts/current/resolved-context.yml`
+  with exact paths and verification commands.
+- The resolver derives from the current task, repo layout, and OpenAPI instead
+  of requiring one metadata YAML per service.
+- Agents read the small task context first, then the generated resolved context.
+
+Context-size proof:
+
+```text
+Current task context: 28 lines
+Estimated current task tokens: 179
+```
+
+Model-behavior lesson:
+
+- The local model found `resolved_files.api_test`, so generated path context
+  solved the file-discovery problem.
+- It then duplicated an already-covered medium scenario and guessed
+  `decisionReason contains "review"`.
+- The framework now says to check existing endpoint/input/expected-behavior
+  coverage before adding another API test.
+- Exact response values come from service code or OpenAPI; guessed substrings
+  are not acceptable.
+
+Validation:
+
+- `npm run context:resolve`
+- `python3 tooling/scripts/context_efficiency_report.py --task-profile api-test-change`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices/xyz-service && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+## 2026-07-20 Target File Breadcrumb Validation
+
+Prompt scenario:
+
+```text
+add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is
+'medium'
+```
+
+Observed failure mode after the first routing guardrail:
+
+- The model searched for `CustomerRiskAPitest.java` under the QA project.
+- It did not map the near-match name to `CustomerRiskApiTest.java`.
+- It then created a placeholder file under `src/test/java/CustomerRiskAPitest.java`
+  with an invented package, base URL, request body, and endpoint.
+
+Framework update:
+
+- `agent-system/contexts/current/service-context.yml` now includes `target_files`.
+- `target_files.api_test` points directly to the real RestAssured test class.
+- `AGENTS.md`, `agent-system/skills/microservice-change/SKILL.md`, and
+  `knowledge/docs/prompts/existing-test-assertion.md` now require target files to be used
+  before fuzzy search.
+
+Expected agent conclusion:
+
+```text
+Use target_files.api_test:
+<workspace-root>/projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java
+
+Do not create CustomerRiskAPitest.java or any new QA project.
+```
+
+Validation:
+
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+
+Validation result:
+
+```text
+BUILD SUCCESS
+```
+
+## 2026-07-20 Existing Test File Routing Validation
+
+Prompt scenario:
+
+```text
+add one more api test in CustomerRiskAPitest.java for 'riskCategory' when it is
+'medium'
+```
+
+Observed failure mode:
+
+- A local model created `qa-projects/CustomerRiskAPI-api-tests/CustomerRiskAPitest.java`.
+- That path is outside the YAML-declared QA project.
+- The generated test invented `http://api.example.com` and
+  `/riskCategory/{riskCategory}` instead of using `GET /xyz`.
+
+Expected routing:
+
+- Read `AGENTS.md`.
+- Read `agent-system/contexts/current/service-context.yml`.
+- Search the YAML-declared QA test root.
+- Map the prompt's near-match class name `CustomerRiskAPitest.java` to the real
+  existing file `CustomerRiskApiTest.java`.
+- Add the medium-risk case to the existing RestAssured test file.
+- Use existing fixtures and service rules instead of invented endpoints.
+
+Actual changed file:
+
+- `projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java`
+
+Expected agent conclusion:
+
+```text
+MEDIUM risk is supported behavior. Use MEDIUM_RISK_CUSTOMER / CUST-5000, call
+GET /xyz, and assert riskCategory = MEDIUM in the existing API test.
+```
+
+Framework updates:
+
+- `AGENTS.md` now requires exact case-sensitive filename verification under
+  YAML-declared test roots.
+- `agent-system/skills/microservice-change/SKILL.md` now treats "add one more API test" like
+  an existing-test edit unless the user explicitly asks for a new file.
+- `knowledge/docs/prompts/existing-test-assertion.md` now forbids invented endpoints,
+  base URLs, request bodies, and near-match test projects.
+
+Validation:
+
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+## 2026-07-19 QA Gap Guardrail Validation
+
+Prompt scenario:
+
+```text
+I added a test expecting GET /xyz?customerId=INVALID_ID_FORMAT to return 400.
+Run/analyze it and tell me whether this is supported behavior or a
+product/contract gap.
+```
+
+Expected routing:
+
+- Read `AGENTS.md`.
+- Read `agent-system/contexts/current/service-context.yml`.
+- Read `agent-system/skills/microservice-change/SKILL.md`.
+- Inspect the controller, service, OpenAPI, shared QA utilities, and API test
+  files only.
+- Do not delete or rewrite a test only to make the suite pass.
+
+Actual evidence:
+
+- `CustomerRiskController` validates `customerId` with `@NotBlank`.
+- `CustomerRiskService` trims and uppercases the value, then evaluates risk.
+- OpenAPI declares `customerId` as a required string with `minLength: 1`.
+- There is no `@Pattern`, regex check, allowlist, or OpenAPI `pattern`.
+
+Expected agent conclusion:
+
+```text
+INVALID_ID_FORMAT is a nonblank customerId, so the current service evaluates it.
+A test expecting 400 is a product/contract gap unless service validation and
+OpenAPI are updated. Do not silently remove or rewrite the test.
+```
+
+Framework updates:
+
+- `AGENTS.md` now treats unsupported test expectations as QA/product gaps.
+- `agent-system/skills/microservice-change/SKILL.md` now requires reporting the gap instead
+  of hiding it by deleting the test.
+- `knowledge/docs/prompts/qa-gap-analysis.md` adds a reusable Pi prompt for this scenario.
+
+Validation:
+
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test-compile`
+- `cd <workspace-root>/projects/microservices && mvn -pl qa-projects/xyz-service-api-tests -am test -Dapi.port=8081`
+
+Validation result:
+
+```text
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+## 2026-07-18 API Test Change Validation
+
+Prompt used:
+
+```text
+Add RestAssured coverage for the GET /xyz blank customerId validation case.
+
+Use the workspace instructions and current service context to decide where the
+test belongs. Do not change service code unless the existing behavior is wrong.
+After the change, run the relevant Maven verification command and report the
+context files inspected, files changed, and validation result.
+```
+
+Expected routing:
+
+- Read `AGENTS.md`.
+- Read `agent-system/contexts/current/service-context.yml`.
+- Read `agent-system/skills/microservice-change/SKILL.md`.
+- Use `repository_topology.service_and_tests: split-qa`.
+- Keep actual API test changes in
+  `projects/microservices/qa-projects/xyz-service-api-tests`.
+- Reuse shared RestAssured utilities from `projects/microservices/qa-steps`.
+
+Actual inspected files:
+
+- `AGENTS.md`
+- `agent-system/contexts/current/service-context.yml`
+- `agent-system/skills/microservice-change/SKILL.md`
+- `projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/api/CustomerRiskController.java`
+- `projects/microservices/xyz-service/src/main/java/com/agentic/workspace/xyz/exception/ApiExceptionHandler.java`
+- `projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java`
+
+Framework files added or updated before the prompt test:
+
+- `AGENTS.md`
+- `knowledge/docs/agent-workflow/LOOP.md`
+- `knowledge/docs/agent-workflow/STATE.md`
+- `knowledge/docs/agent-workflow/loop-budget.md`
+- `tooling/scripts/context_efficiency_report.py`
+- `knowledge/docs/prompts/api-test-change-prompt.md`
+- `knowledge/docs/loop-run-log.md`
+
+Prompt-routed changed files:
+
+- `projects/microservices/qa-projects/xyz-service-api-tests/src/test/java/com/agentic/workspace/qa/xyz/tests/CustomerRiskApiTest.java`
+
+Validation:
+
+- `python3 -m py_compile tooling/scripts/context_efficiency_report.py agent-system/local-agents/render-pi-models.py`
+- `python3 tooling/scripts/context_efficiency_report.py --task-profile api-test-change`
+- `curl http://localhost:8080/actuator/health`
+- `cd <workspace-root>/projects/microservices && /tmp/agentic-workspace-tools/apache-maven-3.9.9/bin/mvn -pl qa-projects/xyz-service-api-tests -am test`
+
+Validation result:
+
+```text
+Actuator health: {"status":"UP","groups":["liveness","readiness"]}
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+Reactor result: BUILD SUCCESS
+Finished at: 2026-07-18T12:01:57+05:30
+```
+
+Context-efficiency proof:
+
+```text
+Central context tokens: 594
+Central context plus skills tokens: 1754
+Full microservices corpus tokens: 5077
+Task profile tokens (api-test-change): 3001
+Task profile compression ratio: 1.69x
+Central context compression ratio: 8.55x
+```
+
+Conclusion:
+
+The prompt did not name the split-QA test folder directly. The workspace routed
+the change through `AGENTS.md`, `service-context.yml`, and
+`microservice-change/SKILL.md`, then placed the new RestAssured test in the
+actual API test project declared by `repository_topology.service_and_tests:
+split-qa`.

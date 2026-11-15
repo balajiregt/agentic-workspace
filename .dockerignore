@@ -2,25 +2,25 @@
 .idea/
 .DS_Store
 artifacts/
-graphify-out/
+artifacts/graphify-out/
 node_modules/
 target/
 build/
 __pycache__/
 *.py[cod]
-projects/ui-automation/**/node_modules/
-projects/ui-automation/**/playwright-report/**
-!projects/ui-automation/**/playwright-report/
-!projects/ui-automation/**/playwright-report/index.html
-projects/ui-automation/**/test-results/**
-!projects/ui-automation/**/test-results/
-!projects/ui-automation/**/test-results/.last-run.json
-local-agents/models/
-local-agents/cache/
-local-agents/.cache/
-local-agents/llama.cpp/
-local-agents/node_modules/
-local-agents/*.log
+qa/ui-automation/**/node_modules/
+qa/ui-automation/**/playwright-report/**
+!qa/ui-automation/**/playwright-report/
+!qa/ui-automation/**/playwright-report/index.html
+qa/ui-automation/**/test-results/**
+!qa/ui-automation/**/test-results/
+!qa/ui-automation/**/test-results/.last-run.json
+agent-system/local-agents/models/
+agent-system/local-agents/cache/
+agent-system/local-agents/.cache/
+agent-system/local-agents/llama.cpp/
+agent-system/local-agents/node_modules/
+agent-system/local-agents/*.log
 
 # Private local state must never enter a build context.
 **/.env
@@ -53,3 +53,10 @@ local-agents/*.log
 **/*.log
 **/storage-state*.json
 **/storageState*.json
+
+# Private task inputs and generated context are never image source inputs.
+**/contexts/tasks/**
+!services/microservices/contexts/tasks/ABC-123.yml
+!qa/ui-automation/role-aware-mockserver/contexts/tasks/UI-ROLE-001.yml
+**/contexts/.resolved
+**/context-inputs

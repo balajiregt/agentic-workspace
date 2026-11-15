@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    "knowledge/resources/instagram-sources": false
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/target": true,
+    "**/.runtime": true,
+    "knowledge/resources/instagram-sources": true,
+    "**/graphify-out": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.venv/**": true,
+    "**/.runtime/**": true
+  }
+}

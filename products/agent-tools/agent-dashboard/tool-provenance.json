@@ -1,0 +1,18 @@
+{
+  "agenttrail-map": {
+    "package": "agenttrail",
+    "version": "0.2.0",
+    "repository": "https://github.com/sodiumsun/agenttrail",
+    "license": "MIT",
+    "publishedCliSha256": "85b4219691491412947332911ec4af9ea3b965dc2a09dd1574ab0416a87d9f55",
+    "adapter": "scripts/map-adapter.mjs",
+    "localAdaptations": [
+      "Project-local state and explicit plan path",
+      "Exclude recovery/private runtime directories from tree and activity",
+      "Workspace-bound service identity",
+      "Refuse alternate-port fallback"
+    ],
+    "providerHooksInstalled": false,
+    "loginAutostartInstalled": false
+  }
+}

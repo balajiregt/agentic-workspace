@@ -1,0 +1,91 @@
+{
+  "prepared_date": "2026-10-20",
+  "active_new_skills": [
+    "tdd",
+    "diagnosing-bugs",
+    "codebase-design",
+    "change-planning",
+    "change-review",
+    "test-integrity",
+    "frontend-design-review",
+    "security-review",
+    "ai-framework-selection",
+    "context-cost-control",
+    "engineering-handoff",
+    "simplicity-check",
+    "resource-adoption"
+  ],
+  "registered_existing_skills": [
+    "microservice-change",
+    "playwright-ui-change",
+    "context-efficiency-audit"
+  ],
+  "sources": [
+    {
+      "name": "mattpocock",
+      "repository": "https://github.com/mattpocock/skills",
+      "revision": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+      "skill_count": 38,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "superpowers",
+      "repository": "https://github.com/obra/superpowers",
+      "revision": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+      "skill_count": 15,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "addy",
+      "repository": "https://github.com/addyosmani/agent-skills",
+      "revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+      "skill_count": 25,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "impeccable",
+      "repository": "https://github.com/pbakaus/impeccable",
+      "revision": "46b822f7dda9f7dba799a9c7776fdc19b3a93559",
+      "skill_count": 1,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "security",
+      "repository": "https://github.com/cloudflare/security-audit-skill",
+      "revision": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8",
+      "skill_count": 1,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "ecc",
+      "repository": "https://github.com/affaan-m/ECC",
+      "revision": "6f1881aeafa3c48f7b603cc4be4b2e4e70daad59",
+      "skill_count": 311,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "ponytail",
+      "repository": "https://github.com/DietrichGebert/ponytail",
+      "revision": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+      "skill_count": 6,
+      "scope": "reference snapshot only"
+    },
+    {
+      "name": "caveman",
+      "repository": "https://github.com/JuliusBrussee/caveman",
+      "revision": "bad48a0e1df55e05e3f52249afa35ecc1909ee76",
+      "skill_count": 22,
+      "scope": "reference snapshot only"
+    }
+  ],
+  "snapshot_mode": "reference-only text; omitted runtime resources listed per source",
+  "agent_bridges": [
+    "AGENTS.md",
+    ".github/copilot-instructions.md",
+    "CLAUDE.md",
+    ".claude/skills",
+    ".kilo/rules/agentic-workspace.md",
+    "kilo.jsonc"
+  ],
+  "validation": "Static integrity and format; editor discovery and behavior require a real task."
+}

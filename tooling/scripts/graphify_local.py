@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""Build or serve a local Graphify view without requiring a global install."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import subprocess
+import sys
+import venv
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from typing import Any
+
+
+WORKSPACE = Path(__file__).resolve().parents[2]
+DEFAULT_VENV = WORKSPACE / "artifacts/tools/graphify-venv"
+DEFAULT_OUTPUT = WORKSPACE / "artifacts/graphify-out"
+GRAPHIFY_VERSION = "0.9.70"
+
+
+def run(command: list[str], cwd: Path = WORKSPACE, env: dict[str, str] | None = None) -> None:
+    print("+ " + " ".join(command))
+    subprocess.run(command, cwd=cwd, check=True, env=env)
+
+
+def venv_bin(venv_dir: Path, name: str) -> Path:
+    return venv_dir / ("Scripts" if sys.platform == "win32" else "bin") / name
+
+
+def ensure_graphify(venv_dir: Path) -> Path:
+    graphify_bin = os.environ.get("GRAPHIFY_BIN")
+    if graphify_bin:
+        graphify = Path(graphify_bin)
+        if graphify.exists():
+            result = subprocess.run([str(graphify), "--version"], capture_output=True, text=True, check=True)
+            if GRAPHIFY_VERSION not in result.stdout:
+                raise SystemExit(f"GRAPHIFY_BIN must provide the reviewed Graphify {GRAPHIFY_VERSION} release.")
+            return graphify
+    graphify = venv_bin(venv_dir, "graphify")
+    if graphify.exists():
+        result = subprocess.run(
+            [str(venv_bin(venv_dir, "python")), "-c", "from importlib.metadata import version; print(version('graphifyy'))"],
+            capture_output=True, text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip() == GRAPHIFY_VERSION:
+            return graphify
+    venv_dir.parent.mkdir(parents=True, exist_ok=True)
+    venv.EnvBuilder(with_pip=True).create(venv_dir)
+    python = venv_bin(venv_dir, "python")
+    os.environ.setdefault("PYYAML_FORCE_LIBYAML", "0")
+    run([str(python), "-m", "pip", "install", "--require-hashes", "--only-binary=:all:",
+         "-r", str(WORKSPACE / "tooling/scripts/requirements-python-build.lock")])
+    run([str(python), "-m", "pip", "install", "--no-build-isolation", "--require-hashes", "--only-binary=:all:",
+         "--no-binary=PyYAML,tree-sitter",
+         "-r", str(WORKSPACE / "tooling/scripts/requirements-graphify.lock")])
+    return graphify
+
+
+def build(venv_dir: Path, output_dir: Path) -> None:
+    graphify = ensure_graphify(venv_dir)
+    env = {**os.environ, "GRAPHIFY_OUT": str(output_dir)}
+    run([str(graphify), "extract", ".", "--code-only", "--out", "."], env=env)
+    run([str(graphify), "cluster-only", ".", "--no-label"], env=env)
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, format: str, *args: Any) -> None:
+        pass
+
+
+def serve(host: str, port: int, output_dir: Path) -> None:
+    if not (output_dir / "graph.html").is_file():
+        raise SystemExit("Missing artifacts/graphify-out/graph.html. Run `npm run graphify:build` first.")
+    handler = lambda *args, **kwargs: QuietHandler(*args, directory=str(output_dir), **kwargs)
+    server = ThreadingHTTPServer((host, port), handler)
+    display_host = "127.0.0.1" if host == "0.0.0.0" else host
+    print(f"Serving Graphify view at http://{display_host}:{port}/graph.html")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["setup", "build", "serve"])
+    parser.add_argument("--venv", default=str(DEFAULT_VENV))
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=8767)
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT))
+    args = parser.parse_args()
+
+    venv_dir = Path(args.venv).expanduser().resolve()
+    output_dir = Path(args.output_dir).expanduser().resolve()
+    if args.command == "setup":
+        ensure_graphify(venv_dir)
+    elif args.command == "build":
+        build(venv_dir, output_dir)
+    elif args.command == "serve":
+        serve(args.host, args.port, output_dir)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,91 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Agent flows: Open",
+      "type": "process",
+      "command": "${workspaceFolder:Workspace core}/Open-Agent-Dashboard.command",
+      "detail": "Start or reuse the local chef dashboard and open live observations.",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Agent flows: Example",
+      "type": "process",
+      "command": "${workspaceFolder:Workspace core}/Open-Agent-Example.command",
+      "detail": "Open the clearly labelled scripted example.",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Agent flows: Stop",
+      "type": "process",
+      "command": "${workspaceFolder:Workspace core}/Stop-Agent-Dashboard.command",
+      "detail": "Stop only the dashboard owned by this workspace launcher.",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Workspace: Check organisation",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder:Workspace core}/tooling/scripts/check_workspace.py"
+      ],
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Skills: Validate",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder:Workspace core}/tooling/scripts/validate_agentic_skills.py"
+      ],
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Agent map: Open",
+      "type": "process",
+      "command": "${workspaceFolder:Workspace core}/Open-Agent-Map.command",
+      "detail": "Open the managed Agenttrail project/component map.",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    },
+    {
+      "label": "Agent map: Stop",
+      "type": "process",
+      "command": "${workspaceFolder:Workspace core}/Stop-Agent-Map.command",
+      "detail": "Stop only the Map process owned by this workspace launcher.",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder:Workspace core}"
+      }
+    }
+  ]
+}
