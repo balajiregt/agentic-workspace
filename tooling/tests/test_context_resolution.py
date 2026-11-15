@@ -17,7 +17,8 @@ from resolve_context import build_resolved as resolve_api
 from resolve_ui_context import build_resolved as resolve_ui
 from build_test_graph import build_graph
 from build_qa_dashboard import build_dashboard
-from context_efficiency_report import task_profile_stats
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "evidence" / "context"))
+from context_efficiency_report import task_profile_stats  # noqa: E402
 
 
 class ContextResolutionTests(unittest.TestCase):

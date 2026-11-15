@@ -1,15 +1,45 @@
 {
   "folders": [
-    { "name": "Workspace core", "path": "." },
-    { "name": "01 Products", "path": "products" },
-    { "name": "02 Services", "path": "services" },
-    { "name": "03 QA frameworks", "path": "qa" },
-    { "name": "04 Labs", "path": "labs" },
-    { "name": "05 Agent system", "path": "agent-system" },
-    { "name": "06 Evaluation", "path": "evaluation" },
-    { "name": "07 Knowledge", "path": "knowledge" },
-    { "name": "08 Tooling", "path": "tooling" },
-    { "name": "09 Generated outputs", "path": "artifacts" }
+    {
+      "name": "Workspace core",
+      "path": "."
+    },
+    {
+      "name": "01 Products",
+      "path": "products"
+    },
+    {
+      "name": "02 Services",
+      "path": "services"
+    },
+    {
+      "name": "03 QA frameworks",
+      "path": "qa"
+    },
+    {
+      "name": "04 Labs",
+      "path": "labs"
+    },
+    {
+      "name": "05 Agent system",
+      "path": "agent-system"
+    },
+    {
+      "name": "06 Evidence",
+      "path": "evidence"
+    },
+    {
+      "name": "07 Knowledge",
+      "path": "knowledge"
+    },
+    {
+      "name": "08 Tooling",
+      "path": "tooling"
+    },
+    {
+      "name": "09 Generated outputs",
+      "path": "artifacts"
+    }
   ],
   "settings": {
     "task.quickOpen.history": 10

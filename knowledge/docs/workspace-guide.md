@@ -35,7 +35,7 @@ agentic-workspace/
     playwright-template/ -> Playwright starter
   labs/
     kafka-test-project/ -> Kafka and event-quality lab
-  evaluation/         -> shared controlled trials and evidence collection
+  evidence/           -> workspace measurement: context, agent trials, project evidence
   tooling/scripts/            -> context efficiency utilities
 ```
 
@@ -199,7 +199,7 @@ Playwright Agent tasks through the mockserver's sample context.
 Durable project explanations belong in each project's existing `docs/`.
 Workspace `knowledge/` holds cross-project guidance, research, adoption records
 and shared lessons. Local tests, `quality/` and `benchmarks/` retain their
-existing owners; shared controlled comparisons remain under `evaluation/`.
+existing owners; shared measurement lives under `evidence/`.
 
 Examples live at:
 
@@ -451,7 +451,7 @@ knowledge/docs/local-agent-runtime.md
 
 ## Controlled benchmark instrumentation
 
-See [benchmark protocol and validation](../../evaluation/benchmarks/README.md) for reproducible synthetic tasks, measured evidence, missing metrics and claim limitations.
+See [the agent trial protocol](../../evidence/trials/PROTOCOL.md) for reproducible synthetic tasks, measured evidence, missing metrics and claim limitations.
 
 ## Instagram engineering resource integration
 

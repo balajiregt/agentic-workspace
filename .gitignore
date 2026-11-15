@@ -4,8 +4,6 @@
 .netlify/
 projects/**/.netlify/
 
-# Local reference symlink.
-agent-system/context-starter
 
 # Local runtime downloads/builds stay out of Git.
 agent-system/local-agents/models/
@@ -35,6 +33,8 @@ knowledge/docs/blog-agentic-workspace-v2.md
 projects/copilot-sprint-metrics-starter/
 
 benchmark-results/
+# Evidence runs stay private until reviewed.
+evidence/results/
 
 # The single canonical UI project retains its independent Git history.
 /qa/ui-automation/role-aware-mockserver/

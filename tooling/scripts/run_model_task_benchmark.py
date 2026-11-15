@@ -10,7 +10,8 @@ import time
 from pathlib import Path
 from urllib import request
 
-from context_efficiency_report import TASK_PROFILES
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "evidence" / "context"))
+from context_efficiency_report import TASK_PROFILES  # noqa: E402
 
 DEFAULT_WORKSPACE = Path(__file__).resolve().parents[2]
 

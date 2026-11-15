@@ -98,7 +98,7 @@ See knowledge/docs/instagram/README.md for examples, the complete resource catal
 
 ## Workspace organisation and agent dashboard
 
-- Read workspace.projects.json or knowledge/docs/workspace-organisation.md to locate projects before introducing another folder. Use the nine category folders (products/<domain>, services, qa, labs, agent-system, evaluation, knowledge, tooling, artifacts) and preserve nested Git repository boundaries; every nested repository is listed in .gitignore. Keep registered paths stable unless the user requests a migration; update callers and resolved contexts when paths change.
+- Read workspace.projects.json or knowledge/docs/workspace-organisation.md to locate projects before introducing another folder. Use the nine category folders (products/<domain>, services, qa, labs, agent-system, evidence, knowledge, tooling, artifacts) and preserve nested Git repository boundaries; every nested repository is listed in .gitignore. Keep registered paths stable unless the user requests a migration; update callers and resolved contexts when paths change.
 - Agenttrail Kitchen is maintained in products/agent-tools/agent-dashboard. Launch it through Open-Agent-Dashboard.command or npm run agents:dashboard. It observes existing sessions; it does not launch model agents.
 - Use qa/ui-automation as the current mockserver UI root. The resolver accepts the earlier qa-projects/ui-automation and projects/ui-automation layouts for compatibility and regenerates exact paths.
 - Keep local dashboard runtime state, logs, and registration tokens inside the ignored products/agent-tools/agent-dashboard/.runtime directory. Do not commit or print them.

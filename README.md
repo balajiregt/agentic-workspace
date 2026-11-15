@@ -22,8 +22,8 @@ See the [actual folder hierarchy and Mermaid maps](knowledge/docs/workspace-map.
 | `services/` | Backend services with contracts, deployment assets and RestAssured API tests |
 | `qa/` | Playwright Agent, role-aware UI automation and the Playwright starter template |
 | `labs/` | Experiments such as the Kafka testing lab |
-| `evaluation/` | [Shared controlled trials and evidence collection](evaluation/benchmarks/README.md) |
-| `agent-system/` | Task context, canonical skills, [local inference](agent-system/local-agents/README.md) and context starter |
+| `evidence/` | [Workspace evidence](evidence/README.md): context size, with/without-workspace agent trials and imported project evidence |
+| `agent-system/` | Shared agent skills and the [local model setup](agent-system/local-agents/README.md) (fallback when cloud sessions run out) |
 | `knowledge/` | [Guides](knowledge/docs/workspace-guide.md), prompts, [adoption catalogue](knowledge/docs/instagram/README.md) and reference snapshots |
 | `tooling/` | Workspace scripts, their regression tests and Docker configuration |
 | `artifacts/` | Ignored generated reports, Graphify output, local tools and migration records |
@@ -63,7 +63,7 @@ showcase checkouts and preserved local project boundaries.
 - Role-aware demo, mockserver and UI tests: `qa/ui-automation/role-aware-mockserver/`, the sole Git-backed checkout.
 - API source, contracts and RestAssured tests: `services/microservices/`, including its existing `qa-projects/xyz-service-api-tests/`.
 - Public portfolio site (balaji-kumarasamy.netlify.app): `products/portfolio/portfolio-web/`.
-- Agent activity observation: `products/agent-tools/agent-dashboard/`; shared trial tooling: `evaluation/benchmarks/`.
+- Agent activity observation: `products/agent-tools/agent-dashboard/`; workspace measurement: `evidence/`.
 
 The Playwright starter template is reference scaffolding, not another active agent
 or application. The old decision-bench and standalone QA viewer have no active

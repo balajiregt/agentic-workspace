@@ -21,7 +21,7 @@ flowchart LR
   W --> Q["qa/<br/>QA frameworks and templates"]
   W --> L["labs/<br/>Experiments"]
   W --> A["agent-system/<br/>Shared skills and local agents"]
-  W --> E["evaluation/<br/>Cross-project trials"]
+  W --> E["evidence/<br/>Workspace measurement"]
   W --> K["knowledge/<br/>Guides and reference sources"]
   W --> T["tooling/<br/>Workspace scripts and tests"]
   W --> O["artifacts/<br/>Ignored generated output"]
@@ -64,10 +64,11 @@ agentic-workspace/
 │   └── kafka-test-project/        [repo]  — Kafka and event-quality lab
 ├── agent-system/
 │   ├── skills/                            — canonical task workflows
-│   ├── local-agents/                      — Pi and llama.cpp setup and launchers
-│   └── context-starter/                   — symlink to an external directory
-├── evaluation/
-│   └── benchmarks/                        — controlled trials and evidence collection
+│   └── local-agents/                      — Pi and llama.cpp fallback setup and launchers
+├── evidence/                              — measures the workspace's claims per project
+│   ├── context/                           — context-size measurement
+│   ├── trials/                            — with/without-workspace agent trial kit
+│   └── results/                           — ignored, private run output
 ├── knowledge/
 │   ├── docs/                              — cross-project guides, research and evidence
 │   └── resources/instagram-sources/       — passive upstream reference snapshots
@@ -146,7 +147,7 @@ additional API-test copy under the outer QA category. See the
 | Playwright Agent | [Project instructions](<../../qa/playwright-agent/AGENTS.md>) |
 | Role-aware UI automation | [Mockserver instructions](../../qa/ui-automation/role-aware-mockserver/AGENTS.md) |
 | Acceptance and mutation evidence | [Playwright Agent quality tools](<../../qa/playwright-agent/quality/README.md>) |
-| Controlled trials | [Shared benchmarks](../../evaluation/benchmarks/README.md) |
+| Workspace evidence | [Evidence home](../../evidence/README.md) |
 | Local inference | [Local agents](../../agent-system/local-agents/README.md) |
 | Resource adoption | [Catalogue README](instagram/README.md) |
 | Existing runtime and QA commands | [Workspace manual](workspace-guide.md) |
@@ -178,12 +179,12 @@ career runtime state and portfolio sites stay outside the workspace.
 
 | Previous root folder | Current location |
 | --- | --- |
-| `benchmarks/` | `evaluation/benchmarks/` |
+| `benchmarks/` | `evaluation/benchmarks/`, then `evidence/trials/` (11 November) |
 | Retired decision-bench checkout | Ignored recovery artifacts; active quality tools live inside Playwright Agent |
 | `contexts/` | Project-owned `contexts/`; reusable service templates in `agent-system/skills/microservice-change/examples/` |
 | `skills/` | `agent-system/skills/` |
 | `local-agents/` | `agent-system/local-agents/` |
-| `context-starter/` | `agent-system/context-starter/` |
+| `context-starter/` | `agent-system/context-starter/`; link removed 11 November 2026 |
 | `docs/` | `knowledge/docs/` |
 | `resources/` | `knowledge/resources/` |
 | `scripts/` | `tooling/scripts/` |

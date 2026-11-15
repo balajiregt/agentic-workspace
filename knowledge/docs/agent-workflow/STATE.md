@@ -18,7 +18,7 @@ outputs for concurrent sessions on the same task. See
 [the project workflow](../project-workflow.md) for commands and ownership.
 
 Keep raw evidence in ignored project outputs and durable explanations in the
-owning project's docs. Shared comparisons remain in workspace `evaluation/`.
+owning project's docs. Shared comparisons remain in workspace `evidence/`.
 
 Graph-based engineering stance:
 
