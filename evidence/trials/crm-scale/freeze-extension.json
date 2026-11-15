@@ -1,6 +1,6 @@
 {
-  "frozenAt": "2026-11-15T11:40:53+05:30",
-  "playwrightAgentCommit": "7b594cb0dd148db782661f7b8b437fd72ab1e8fc",
+  "frozenAt": "2026-11-15T11:41:34+05:30",
+  "playwrightAgentCommit": "bcdb143feffeb7fdc6439c3f0bba48a45bd65234",
   "playwrightAgentClean": true,
   "sha256": {
     "evidence/trials/crm-scale/EXTENSION.md": "b8557ff1261c69275679a6774a1ceb1ee9e035f5656f37fd4ffa0d03c11ae501",
@@ -16,6 +16,7 @@
     "qa/playwright-agent/.agents/skills/playwright-mutation/SKILL.md": "16c91294157de58c4058546195f5f5388271d1ee6db864cb89f113a2138d0b37",
     "qa/playwright-agent/AGENTS.md": "7184b57a583c38a295e2714238629d618ffb9d18485144633cb27f621eba9f55",
     "qa/playwright-agent/scripts/mutate.mjs": "18d5ed059de330383fa0a3903604d6984e4b88c6819e9651b015e322a3bedd1f",
-    "qa/playwright-agent/scripts/coverage-matrix.mjs": "2cbde16995fa0614fc4580c30eee7c729ef6e0c4884739099506d2506a9b7f33"
-  }
+    "qa/playwright-agent/scripts/coverage-matrix.mjs": "4b2c7dce51ea7251a09b9ce69fe01a801edf4994b3d0e5129a376ca8f59e4061"
+  },
+  "note": "Re-frozen before any session: coverage:matrix now also reads a criteria array (the trial criteria.json shape), found in a dry-run prepare."
 }
