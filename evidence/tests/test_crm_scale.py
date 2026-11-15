@@ -28,7 +28,7 @@ class AnalysisRuleTests(unittest.TestCase):
             for row in rows:
                 (results / "assessments" / f"{row['trialId']}.json").write_text(json.dumps(row))
             with patch.object(analyze, "RESULTS", results):
-                analyze.main()
+                analyze.main([])
                 return json.loads((results / "crm-scale-analysis.json").read_text())
 
     def test_ten_point_recall_gain_with_more_wins_adds_accuracy(self):

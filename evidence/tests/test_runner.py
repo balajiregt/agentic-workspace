@@ -96,3 +96,21 @@ class ExecutionEvidenceTests(unittest.TestCase):
             self.assertTrue(found["editedRealSource"])
             self.assertFalse(found["usedDisposableCopy"])  # the copy was denied, so it does not count
             self.assertEqual(found["testRuns"], 1)
+
+
+class MutateToolEvidenceTests(unittest.TestCase):
+    def test_the_single_fault_tool_counts_as_a_disposable_copy_with_test_runs(self):
+        import json as _json
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / ".claude/projects/p").mkdir(parents=True)
+            use = {"message": {"content": [{"type": "tool_use", "id": "1", "name": "Bash",
+                                            "input": {"command": "npm run mutate -- --project examples/crm-scale --file app/api.mjs --find a --replace b"}}]}}
+            result = {"message": {"content": [{"type": "tool_result", "tool_use_id": "1",
+                                               "content": "baseline-1: 4 passed\n\nVERDICT: killed\nOriginal project unchanged: yes"}]}}
+            (home / ".claude/projects/p/s.jsonl").write_text(_json.dumps(use) + "\n" + _json.dumps(result))
+            with patch.object(runner.Path, "home", return_value=home):
+                found = runner.execution_evidence("s", home / "arm", "examples/crm-scale/app")
+            self.assertTrue(found["usedDisposableCopy"] and found["usedMutationRunner"] and found["ranTests"])
+            self.assertFalse(found["editedRealSource"])

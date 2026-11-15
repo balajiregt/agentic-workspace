@@ -481,5 +481,187 @@
         "criterion": "AUD-SETTINGS"
       }
     }
+  },
+  {
+    "id": "crm-tools-assessment-A",
+    "kind": "assessment",
+    "variant": "A",
+    "intent": "Assess whether the CRM-Scale Playwright suite in examples/crm-scale (the specs under tests/ and the page objects, assertion helpers, fixtures and data tables they use) actually verifies each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names. A criterion verified only in part is partial.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-assessment-B",
+    "kind": "assessment",
+    "variant": "B",
+    "intent": "Assess whether the CRM-Scale Playwright suite in examples/crm-scale (the specs under tests/ and the page objects, assertion helpers, fixtures and data tables they use) actually verifies each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names. A criterion verified only in part is partial.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-assessment-C",
+    "kind": "assessment",
+    "variant": "C",
+    "intent": "Assess whether the CRM-Scale Playwright suite in examples/crm-scale (the specs under tests/ and the page objects, assertion helpers, fixtures and data tables they use) actually verifies each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names. A criterion verified only in part is partial.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-assessment-D",
+    "kind": "assessment",
+    "variant": "D",
+    "intent": "Assess whether the CRM-Scale Playwright suite in examples/crm-scale (the specs under tests/ and the page objects, assertion helpers, fixtures and data tables they use) actually verifies each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names. A criterion verified only in part is partial.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-assessment-E",
+    "kind": "assessment",
+    "variant": "E",
+    "intent": "Assess whether the CRM-Scale Playwright suite in examples/crm-scale (the specs under tests/ and the page objects, assertion helpers, fixtures and data tables they use) actually verifies each acceptance criterion in criteria.json. Judge from what the code asserts, not from test names. A criterion verified only in part is partial.",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-assessment",
+      "oracle": {
+        "type": "assessment-key",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS1",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "MS1",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): unpaid invoices past their due date are no longer flagged overdue?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS2",
+    "kind": "mutation-proof",
+    "variant": "C",
+    "case": "MS2",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): the outstanding-invoices report sums full invoice totals instead of the remaining balances?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS3",
+    "kind": "mutation-proof",
+    "variant": "D",
+    "case": "MS3",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): any user can complete a task that is assigned to someone else?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS4",
+    "kind": "mutation-proof",
+    "variant": "C",
+    "case": "MS4",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): quote totals are truncated to whole currency units instead of being rounded to cents?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS5",
+    "kind": "mutation-proof",
+    "variant": "E",
+    "case": "MS5",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): the last active admin can be demoted to another role?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
+  },
+  {
+    "id": "crm-tools-mutation-MS6",
+    "kind": "mutation-proof",
+    "variant": "B",
+    "case": "MS6",
+    "intent": "Would the existing CRM-Scale Playwright suite in examples/crm-scale detect this regression in the CRM-Scale app (examples/crm-scale/app): sales users are allowed to export accounts?",
+    "requiredTests": [],
+    "target": {
+      "project": "playwright-framework",
+      "evidenceProject": "playwright-agent",
+      "contextProfile": "crm-tools-mutation",
+      "oracle": {
+        "type": "mutation-proof",
+        "cases": "evidence/trials/crm-scale/cases.json"
+      }
+    }
   }
 ]

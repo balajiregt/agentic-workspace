@@ -194,15 +194,19 @@ def mutation(runs: dict[str, dict]) -> dict:
             "consistency": consistency(pairs, proven)}
 
 
-def main() -> int:
-    report = {"schemaVersion": 1, "rules": "evidence/trials/crm-scale/PREREGISTRATION.md", "models": {}}
-    sources = {"assessment": ("assessments", "crm-scale-assessment", assessment),
-               "authoring": ("authoring", "crm-scale-author", authoring),
-               "mutation": ("mutation-proofs", "crm-scale-mutation", mutation)}
+def main(argv: list[str] | None = None) -> int:
+    # --prefix crm-tools analyses the tools-first extension (EXTENSION.md) separately; never pooled.
+    argv = sys.argv[1:] if argv is None else argv
+    base = argv[argv.index("--prefix") + 1] if "--prefix" in argv else "crm-scale"
+    rules = "PREREGISTRATION.md" if base == "crm-scale" else "EXTENSION.md"
+    report = {"schemaVersion": 1, "rules": f"evidence/trials/crm-scale/{rules}", "prefix": base, "models": {}}
+    sources = {"assessment": ("assessments", f"{base}-assessment", assessment),
+               "authoring": ("authoring", f"{base}-author", authoring),
+               "mutation": ("mutation-proofs", f"{base}-mutation", mutation)}
     for skill, (folder, prefix, fn) in sources.items():
         for model, runs in load(folder, prefix).items():
             report["models"].setdefault(model, {})[skill] = fn(runs)
-    out = RESULTS / "crm-scale-analysis.json"
+    out = RESULTS / f"{base}-analysis.json"
     out.write_text(json.dumps(report, indent=2) + "\n")
     for model, skills in report["models"].items():
         for skill, r in skills.items():

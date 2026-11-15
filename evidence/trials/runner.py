@@ -409,6 +409,10 @@ def execution_evidence(session_id: str | None, arm: Path | None = None, app_dir:
                 command = data.get("command", "")
                 if "npm run mutation" in command or "mutation-cli" in command:
                     found.update(usedMutationRunner=True, usedDisposableCopy=True, ranTests=True)
+                if re.search(r"npm run mutate\b|scripts/mutate\.mjs", command) and "VERDICT:" in text:
+                    # Playwright Agent's single-fault tool: copies the project, runs baselines and faulted runs.
+                    found.update(usedMutationRunner=True, usedDisposableCopy=True, ranTests=True)
+                    found["testRuns"] += 1
                 if "playwright test" in command and any(w in text for w in (" passed", " failed", "flaky")):
                     found["ranTests"] = True
                     found["testRuns"] += 1

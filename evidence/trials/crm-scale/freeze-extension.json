@@ -1,0 +1,21 @@
+{
+  "frozenAt": "2026-11-15T11:40:53+05:30",
+  "playwrightAgentCommit": "7b594cb0dd148db782661f7b8b437fd72ab1e8fc",
+  "playwrightAgentClean": true,
+  "sha256": {
+    "evidence/trials/crm-scale/EXTENSION.md": "b8557ff1261c69275679a6774a1ceb1ee9e035f5656f37fd4ffa0d03c11ae501",
+    "evidence/trials/crm-scale/PREREGISTRATION.md": "c4eccb22364d4b2907de12921adec6d984ee4fb7d7fa3510ac5474930021486d",
+    "evidence/trials/crm-scale/cases.json": "a4a2c31c38e8137405cf615fcecc8818aca76f8c4ebce7728d9f813f4f3a53cd",
+    "evidence/trials/crm-scale/faults.json": "5050be7589a8e3e67fdbf96b47ca738c9939bb92a9b473b0cca1e53ab6364c42",
+    "evidence/trials/tasks.json": "2ab0caa007772ac8c1867e4adb2e223c5809ad6cbe6b10d75317ab8160db854f",
+    "evidence/projects.json": "b21b264689b6e46531c0281832c160267fecd008b239a0ff28a82a7d95dfd359",
+    "evidence/trials/runner.py": "d794c666d5a7bc947107d19d164f74f2645a3cc53e3aef2e1e55bd40b9230ec3",
+    "evidence/trials/crm-scale/analyze.py": "b488587254afa51b7b7de919d7d1d5d2fcc1da3b16dc22372ecb0a16f74ebaef",
+    "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md": "eb4464a472a751872ff7071c1ff7af202904890b066fb5fef90eed2ff38e2ffd",
+    "qa/playwright-agent/.agents/skills/playwright-assessment/SKILL.md": "521e07cb68e72eb705b5ff608475d0d40f108528b7d16aa5d4cd5142d36bbbb2",
+    "qa/playwright-agent/.agents/skills/playwright-mutation/SKILL.md": "16c91294157de58c4058546195f5f5388271d1ee6db864cb89f113a2138d0b37",
+    "qa/playwright-agent/AGENTS.md": "7184b57a583c38a295e2714238629d618ffb9d18485144633cb27f621eba9f55",
+    "qa/playwright-agent/scripts/mutate.mjs": "18d5ed059de330383fa0a3903604d6984e4b88c6819e9651b015e322a3bedd1f",
+    "qa/playwright-agent/scripts/coverage-matrix.mjs": "2cbde16995fa0614fc4580c30eee7c729ef6e0c4884739099506d2506a9b7f33"
+  }
+}

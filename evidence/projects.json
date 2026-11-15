@@ -169,6 +169,43 @@
             "qa/playwright-agent/examples/crm-scale/data/builders.ts",
             "qa/playwright-agent/examples/crm-scale/playwright.config.ts"
           ]
+        },
+        "crm-tools-assessment": {
+          "description": "Assess the CRM-Scale suite against its acceptance criteria. Tools-first extension: no workspace-wide instructions.",
+          "instructions": [
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-assessment/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/examples/crm-scale/README.md",
+          "files": [
+            "qa/playwright-agent/examples/crm-scale/requirements/acceptance-criteria.json",
+            "qa/playwright-agent/examples/crm-scale/data/roles.ts",
+            "qa/playwright-agent/examples/crm-scale/lib/generic.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/access.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/records.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/commerce.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/work.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/fixtures/crm.fixture.ts"
+          ]
+        },
+        "crm-tools-mutation": {
+          "description": "Prove whether the CRM-Scale suite detects a given regression. Tools-first extension: no workspace-wide instructions.",
+          "instructions": [
+            "qa/playwright-agent/AGENTS.md",
+            "qa/playwright-agent/.agents/skills/playwright-agent/SKILL.md",
+            "qa/playwright-agent/.agents/skills/playwright-mutation/SKILL.md"
+          ],
+          "task": "qa/playwright-agent/examples/crm-scale/README.md",
+          "files": [
+            "qa/playwright-agent/examples/crm-scale/fixtures/crm.fixture.ts",
+            "qa/playwright-agent/examples/crm-scale/pages/crm.page.ts",
+            "qa/playwright-agent/examples/crm-scale/lib/generic.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/commerce.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/assertions/work.assertions.ts",
+            "qa/playwright-agent/examples/crm-scale/data/builders.ts",
+            "qa/playwright-agent/examples/crm-scale/playwright.config.ts"
+          ]
         }
       },
       "nativeEvidence": [
