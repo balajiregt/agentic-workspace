@@ -20,7 +20,7 @@
     "map:stop": "node scripts/manage.mjs stop --map"
   },
   "dependencies": {
-    "agenttrail": "0.2.0",
+    "agenttrail": "0.4.1",
     "agenttrail-kitchen": "0.1.0-alpha.3"
   }
 }
